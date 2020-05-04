@@ -1,0 +1,831 @@
+============================================================================
+      Everything You Always Wanted To Know About NeoGeo Pocket Color *
+============================================================================
+
+                        * but were afraid to ask
+
+                      Last update 00-Apr-16 by NeeGee
+
+ Forward: The following was typed up for informational purposes regarding
+          the inner workings on the hand-held game machine known as
+          NeoGeo Pocket Color, manufactured and designed by SNK.
+          This info is presented to inform a user on how their NGPC
+          works and what makes it "tick". NGPC is copyrighted by SNK.
+          Any reference to copyrighted material is not presented for
+          monetary gain, but for educational purposes and higher learning.
+
+Terms
+-----
+
+ NGPC = NeoGeo Pocket Colo(u)r
+ K1GE = K1 Graphics Engine (NGP / Monochrome mode)
+ K2GE = K2 Graphics Engine (NGPC / Colo(u)r mode)
+ Hint = Horizontal Interrupt
+ Vint = Vertical Interrupt
+ LUT  = Look Up Table
+
+NGPC Specs
+----------
+
+ MAIN CPU
+ --------
+  CPU: Toshiba TLCS-900/H
+  Clock Speed: 384KHz - 6.144MHz
+  Internal ROM: 64K Byte (8/16 bit, 0 wait)
+  Internal RAM: 12K Byte (8/16 bit, 0 wait)
+  Cart ROM: 2M Byte Max (8 bit, 0 wait) flash memory
+  Timers: 4 channels (1 channel used for CPU interrupt generation),
+     (Using 2 channel allows use as a 16 bit timer),(Use of timer 0
+     and micro DMA allows raster scroll effect.)
+
+ SOUND CONTROL CPU
+ -----------------
+  CPU: Z80 compatible
+  Clock Speed: 3.072MHz
+  Internal RAM: 4K Byte (8 bit, 0 wait, accessible through the cpu)
+  Sound source: 3 square wave, 1 noise modulation, total of 4 sounds
+     simultaneously out
+
+ GRAPHICS
+ --------
+  Resolution: 160x152 pixels
+  Max # of sprites: 64
+  Sprites per line: 64
+  Sprite size: 8x8 pixel
+  Scroll planes: 2
+  Character RAM: 8K Bytes (8/16 bit)
+     (8 dots x 8 dots x 4 levels (clear + 3 levels) x 512 characters)
+  Scroll VRAM: 4K Bytes (8/16 bit)
+     (32 characters x 32 characters x 2 scroll planes)
+  Sprite VRAM: Monochrome - 256 Bytes (8/16 bit)
+	       Colo(u)r - 288 Bytes (8/16 bit)
+  Colo(u)r Palette RAM: 312 Bytes (16 bit)
+  Virtual Display Area: 256x256 pixels
+  Maximum Display Colo(u)rs: 146 out of 4096
+  Scroll Display Functions:
+     Display priority change function
+     Window function
+     Character flip function (horizontal/vertical)
+  Sprite display functions:
+     Position correction function
+     Character flip function (horizontal/vertical)
+     Character position chain function
+     Priority level setting with respect to scroll plane function
+
+
+MAIN CPU MEMORY MAP
+-------------------
+
+ 0x000000 -----------------------
+            Internal I/O
+ 0x000100 -----------------------
+            Reserved
+ 0x004000 -----------------------
+            Main RAM (12KByte)
+              (0x4000-0x5FFF is battery saved when the user program
+              request the resume function and the system "eye catch"
+              is not displayed.)
+ 0x006C00
+            RAM reserved by Internal program.
+ 0x007000 -----------------------
+            Z80 RAM (4KByte)
+ 0x008000 -----------------------
+            Video Registers
+ 0x008800 -----------------------
+            Sprite VRAM (256Byte)
+ 0x009000 -----------------------
+            Scroll plane 1 VRAM (2KByte)
+ 0x009800 -----------------------
+            Scroll plane 2 VRAM (2KByte)
+ 0x00A000 -----------------------
+            Character RAM (8KByte)
+ 0x00C000 -----------------------
+            Reserved
+ 0x010000 -----------------------
+            Reserved
+ 0x200000 -----------------------
+            Cart ROM (Flash memory)
+ 0x3F0000
+            - Monitor ROM (64KByte)
+             (Installed at factory in each cart.)
+ 0x400000 -----------------------
+            Reserved
+ 0xFF0000 -----------------------
+            Internal ROM (64KByte)
+ 0xFFFFFF -----------------------
+
+
+Internal I/O
+------------
+ 0x6F - Watch Dog Timer
+    (A value of 0x4e must be written to this register atleast once
+     every ~100 milliseconds or else the program will terminate.)
+
+
+System Information
+------------------
+ 0x6F80 - Battery Voltage
+ 0x6F82 - Sys Lever
+ 0x6F84 - User Boot
+ 0x6F85 - User Shutdown
+ 0x6F86 - User Answer
+ 0x6F87 - Language
+ 0x6F91 - OS Version
+
+
+User Program Interrupt Vectors
+------------------------------
+ ADDRESS                           MICRO DMA START VECTOR
+ 0x6FB8 - Software Interrupt (SWI 3)        -
+ 0x6FBC - Software Interrupt (SWI 4)        -
+ 0x6FC0 - Software Interrupt (SWI 5)        -
+ 0x6FC4 - Software Interrupt (SWI 6)        -
+ 0x6FC8 - RTC Alarm Interrupt              0x0A
+          (During normal operation)
+ 0x6FCC - Vertical Blanking Interrupt      0x0B
+ 0x6FD0 - Interrupt from Z80               0x0C
+ 0x6FD4 - Timer Interrupt (8 bit timer 0)  0x10
+ 0x6FD8 - Timer Interrupt (8 bit timer 1)  0x11
+ 0x6FDC - Timer Interrupt (8 bit timer 2)  0x12
+ 0x6FE0 - Timer Interrupt (8 bit timer 3)  0x13
+ 0x6FE4 - Serial Transmission Interrupt    0x18
+          (In principle not usable.)
+ 0x6FE8 - Serial Reception Interrupt       0x19
+          (In principle not usable.)
+ 0x6FEC - (Reserved)                        -
+ 0x6FF0 - End Micro DMA Int (MicroDMA 0)    -
+ 0x6FF4 - End Micro DMA Int (MicroDMA 1)    -
+ 0x6FF8 - End Micro DMA Int (MicroDMA 2)    -
+ 0x6FFC - End Micro DMA Int (MicroDMA 3)    -
+
+* It is forbidden to prohibit Vertical Blanking Interrupt
+  (Interrupt level 4) because the operation has system involvement.
+* Serial Reception Interrupt and Serial Transmission Interrupt
+  is used during Serial Communication BIOS (system Call).
+  In principle, use of Serial Communication BIOS outside
+  of Expanded Library is prohibited.
+
+Cart ROM Header Info
+--------------------
+ ADDRESS   LENGTH     CONTENT
+ 0x200000  28 Bytes   Software cassette recognition code *
+ 0x20001C   4 Bytes   Software cassette startup address (Specify in little endian)
+ 0x200020   2 Bytes   Software cassette ID code **(Specify in little endian BCD)
+ 0x200022   1 Byte    Software cassette ID sub-code (version)
+ 0x200023   1 Byte    Compatible system code (Monochrome = 0x00 / Color = 0x10)
+ 0x200024  12 Bytes   Software cassette title name (Specify in ASCII)
+ 0x200030  16 Bytes   (Reserved: please write in 0)
+
+ * Software recognition code
+  " COPYRIGHT BY SNK CORPORATION" (SNK use) or
+  "  LICENSED BY SNK CORPORATION" (Third party use)
+ ** Software provisional development ID code = 0x0000
+
+  The last 1 block (16KB) of the software cassette is reserve
+ for the system program.  Please DO NOT use this area for
+ program code, data or backup area.
+
+NEOGEO POCKET SYSTEM CALL (BIOS CALL)
+-------------------------------------
+
+  NEOGEO POCKET system calls are subroutines prepared to
+ allow changes to settings managed by the system program, allow
+ access to flash memory (for NEOGEO POCKET), allow serial
+ communication and other special tasks.
+
+
+ VECT_SHUTDOWN      :       Shutdown (Power OFF)
+ VECT_CLOCKGEARSET  :       CPU operation clock setting
+ VECT_INTLVSET      :       Interrupt level setting
+ VECT_RTCGET        :       Real time clock - obtain time
+ VECT_ALARMSET      :       Real time clock - alarm setting during game operation
+ VECT_ALARMDOWNSET  :       Real time clock - unit start up alarm setting
+ VECT_SYSFONTSET    :       System font setting
+ VECT_FLASHWRITE    :       Flash memory - data write
+ VECT_FLASHALLERS   :       Flash memory - erase all blocks
+ VECT_FLASHERS      :       Flash memory - erase specified blocks
+ VECT_FLASHPROTECT  :       Flash memory - protect specified blocks
+ VECT_GEMODESET     :       Color LCD color mode setting (color version only)
+
+ (Serial Communication)
+ VECT_COMINIT          :       Initialize serial communication BIOS
+ VECT_COMSENDSTART     :       Communication start send BIOS
+ VECT_COMRECIVESTART   :       Communication start reception BIOS
+ VECT_COMCREATEDATA    :       Communication create send data BIOS
+ VECT_COMGETDATA       :       Communication obtain reception data BIOS
+ VECT_COMONRTS         :       Communication allow RTS signal send BIOS
+ VECT_COMOFFRTS        :       Communication prohibit RTS signal send BIOS
+ VECT_COMSENDSTATUS    :       Communication obtain send status BIOS
+ VECT_COMRECIVESTATUS  :       Communication obtain reception status BIOS
+ VECT_COMCREATEBUFDATA :       Communication obtain create data buffer BIOS
+ VECT_COMGETBUFDATA    :       Communication write reception obtaining buffer BIOS
+
+
+Window Registers
+----------------
+
+ 0x8002  WBA.H = Window Horizontal Origin (0 at reset)
+ 0x8003  WBA.V = Window Vertical Origin   (0 at reset)
+ 0x8004  WSI.H = Window X Size            (0xff at reset)
+ 0x8005  WSI.V = Window Y Size            (0xff at reset)
+
+  Determines the window display area. Non-display area is blank.
+ (Blank area is set with 2D control register OOWC).
+
+  Caution: The window is defined by the origin and the size, and thus
+ the maximum value is determined by the sum of WBA.n and WSI.n. When
+ the sum exceeds the hardware upper limit of 256, display and Vint/Hint
+ generations are disrupted. To avoid this disruption, please use and
+ follow the condition given below:
+
+  Horizontal value: WBA.H + WSI.H =< 160
+  Vertical value:   WBA.V + WSI.V =< 152
+
+
+Frame Rate Register
+-------------------
+
+ 0x8006  REF = Frame Rate Register (0xc6 at reset)
+
+  Sets the blanking period.
+
+  This register is locked and only a PRIORITY USER MAY BE ALLOWED TO
+ CHANGE THE VALUES. PLEASE DO NOT CHANGE THE INITIAL VALUE SET.
+
+
+Raster Position Register
+------------------------
+
+ 0x8008  RAS.H = Raster Position Horizontal
+ 0x8009  RAS.V = Raster Position Vertical
+
+  Unlike a CRT, LCD does not have a scan line. In this case, the signal
+ inside the video chip is used as the raster position. Upper 8 bits of
+ the 10 bit internal subtraction counter of the horizontal drawing
+ operation time (internally 515 clock) is read in to RAS.H, (The value
+ decreases as the horizontal drawing operation period progresses, and
+ this value is accessible during V blank.)
+ RAS.V obtains the current line number during horizontal drawing
+ operation. (Accessible during V blank.)
+
+
+2D Status Register
+------------------
+
+ 0x8010  Bit 7 - C.OVR = Character Over
+                 (0=false, 1 = Character Over has occured: With the end
+                  of V blanking, it is cleared.)
+         Bit 6 - BLNK = Blanking (0 = displaying, 1 = V Blanking)
+         Bit 5/Bit 0 - Not Used (bits read "0".)
+
+ Character over is:
+ K2GE sprites use the line buffer method. Character Over is a phenomenon
+ associated with a line buffer method sprite system. This phenomenon
+ results from the system determining visibility of the sprite after
+ reading in from the VRAM and then updating the line buffer. Due to an
+ operation which results in this process not being completed in one scan
+ line period, the character disappears partially or completely. This
+ phenomenon is called Character Over, or Sprite Line Over. Because the
+ K2GE writes two scroll planes and sprites to the line buffer,
+ processing time is limited. Even so, the system has been designed to
+ complete the task, and normally Character Over will not occur. But if
+ a program is written that accesses the VRAM frequently, Character Over
+ may occur and care must be taken.
+
+
+2D Control Register
+-------------------
+
+ 0x8012  Bit 7 - NEG = Negative & Positive Switched
+                 (0 = Normal Display) (default at reset)
+                 (1 = Switched display)
+                This function affects the RGB signal output by the K2GE.
+         Bit 6/Bit 3 - Not Used (Exists as reserved RAM)
+         Bit 2/Bit 0 - OOWC = Outside Window Colo(u)r (0 at reset)
+                This setting colors through the use of the background color palette.
+                This is used both for K1GE upper palette compatible & K2GE mode.
+
+  Settings to this register take effect in the next line drawn on screen.
+
+Sprite Position Offset Function
+-------------------------------
+
+ 0x8020  PO.H = Position Offset Horizontal (0 at reset)
+ 0x8021  PO.V = Position Offset Vertical   (0 at reset)
+
+    The value inside this register is added as an offset to the
+   sprite position. The relationship between sprite position and
+   offset is as follows:
+      H = H.P + PO.H
+      V = V.P + PO.V
+
+
+Scroll Plane Priority Function
+------------------------------
+
+ 0x8030  Bit 7 - P.F = (0 = Scroll plane 1 in front) (default at reset)
+                       (1 = Scroll plane 2 in front)
+         Bit 6/Bit 0 - Not used
+
+  The result of the value set in this register is displayed from
+ the next line being drawn.
+
+
+Scroll Offset Registers
+-----------------------
+
+ 0x8032  S1SO.H = Scroll Plane 1 X Scroll Offset (0 at reset)
+ 0x8033  S1SO.V = Scroll Plane 1 Y Scroll Offset (0 at reset)
+ 0x8034  S2SO.H = Scroll Plane 2 X Scroll Offset (0 at reset)
+ 0x8035  S2SO.V = Scroll Plane 2 Y Scroll Offset (0 at reset)
+
+  The result of the values set in these registers is displayed from
+ the next line being drawn.
+
+
+Palette LUT For Sprites (K1GE Mode)
+-----------------------------------
+
+ 0x8100  Not Used (No defined value when read.)
+ 0x8101  SPPLT.01 (Value "0" when read.)
+ 0x8102  SPPLT.02 (Value "0" when read.)
+ 0x8103  SPPLT.03 (Value "0" when read.)
+
+ 0x8104  Not Used   "
+ 0x8105  SPPLT.11   "
+ 0x8106  SPPLT.12   "
+ 0x8107  SPPLT.13   "
+
+  Palette Code (P.C) defined in the Sprite VRAM is changed to the value
+ set in this register. The values set are only valid in K1GE upper
+ palette compatible mode.
+
+  The values set in these registers take effect immediately.
+
+
+Palette LUT For Scroll Plane 1 (K1GE mode)
+------------------------------------------
+
+ 0x8108  Not Used (No defined value when read.)
+ 0x8109  SPPLT.01 (Value "0" when read.)
+ 0x810A  SPPLT.02 (Value "0" when read.)
+ 0x810B  SPPLT.03 (Value "0" when read.)
+
+ 0x810C  Not Used   "
+ 0x810D  SPPLT.11   "
+ 0x810E  SPPLT.12   "
+ 0x810F  SPPLT.13   "
+
+  Palette Code (P.C) defined in the Scroll Plane 1 VRAM is changed
+ to the value set in this register. The values set are only valid in
+ K1GE upper palette compatible mode.
+
+  The values set in these registers take effect immediately.
+
+
+Palette LUT For Scroll Plane 2 (K1GE mode)
+------------------------------------------
+
+ 0x8110  Not Used (No defined value when read.)
+ 0x8111  SPPLT.01 (Value "0" when read.)
+ 0x8112  SPPLT.02 (Value "0" when read.)
+ 0x8113  SPPLT.03 (Value "0" when read.)
+
+ 0x8114  Not Used   "
+ 0x8115  SPPLT.11   "
+ 0x8116  SPPLT.12   "
+ 0x8117  SPPLT.13   "
+
+  Palette Code (P.C) defined in the Scroll Plane 2 VRAM is changed
+ to the value set in this register. The values set are only valid in
+ K1GE upper palette compatible mode.
+
+  The values set in these registers take effect immediately.
+
+
+Colo(u)r Palette RAM
+--------------------
+
+ 0x8200 Bit 15/Bit 12 - Not Used (Value of "0" when read.)
+        Bit 11/Bit 8  - B_PLT = Blue Palette    (Undefined at reset)
+        Bit 7 /Bit 4  - G_PLT = Green Palette   (Undefined at reset)
+        Bit 3 /Bit 0  - R_PLT = Red Palette     (Undefined at reset)
+
+ 0x8202 Same as above
+
+  NUMBER   ADDRESS        VALID MODE                   AREA
+  0-63     0x8200-0x827F  K2GE mode                    Sprite
+  64-127   0x8280-0x82FF  K2GE mode                    Scroll 1
+  128-191  0x8300-0x837F  K2GE mode                    Scroll 2
+  192-207  0x8380-0x839F  K1GE upper pal compat. mode  Sprite
+  208-223  0x83A0-0x83BF  K1GE upper pal compat. mode  Scroll 1
+  224-239  0x83C0-0x83DF  K1GE upper pal compat. mode  Scroll 2
+  240-247  0x83E0-0x83EF  K2GE/K1GE upper pal compat.  Background Colo(u)r Palette
+  248-255  0x83F0-0x83FF  K2GE/K1GE upper pal compat.  Window Colo(u)r Palette
+
+  This RAM are is 16 BIT ACCESS ONLY. Using 8 bit access will produce
+ unreliable values.
+
+  Values written are immediately reflected.
+
+  Access to colo(u)r palettes are always 0 WAIT operation possible.
+ (Even during hardware display write it is 0 WAIT operation possible.)
+
+
+Background Colo(u)r Register
+-------------------------
+
+ 0x8118  Bit 7/Bit 6 - BGON = Background ON  (0/0 at reset)
+         (Bit7=1,Bit6=0 sets the BGC valid. Other values set the BGC to be
+          not valid, and the background colo(u)r is set to black.)
+
+         Bit 5/Bit 3 - Reserved
+         Bit 2/Bit 0 - BGC = Background Colo(u)r  (0 at reset)
+         (Sets the background colo(u)r palette to use.)
+
+  The value set in this register is reflected from the next line on screen.
+
+
+Mode Selection Register
+-----------------------
+
+ 0x87E2  Bit 7 - MODE (0 = K2GE Color mode, 1 = K1GE upper palette compatible mode)
+         Bit 6/Bit 0 - Not Used (bits read "0".)
+
+  This register define the operation mode of the K2GE. This register
+ is locked and only a PRIORITY USER MAY BE ALLOWED TO CHANGE THE VALUES.
+ PLEASE DO NOT CHANGE THE INITIAL VALUE SET.
+
+
+Sprite VRAM Format
+------------------
+
+ 0x8800  C.C = Character Tile Number (lower 8 bits of 9)
+ 0x8801  Bit 7 - H.F = Horizontal Flip (0=normal,1=flipped)
+         Bit 6 - V.F = Vertical Flip   (0=normal,1=flipped
+         Bit 5 - P.C = Palette Code (Valid for K1GE upper palette compatible mode)
+         Bit 4 - PR.C = Priority Code MSB   (00=Hide,01=Furthest,10=Middle,11=Front)
+         Bit 3 - PR.C = Priority Code LSB
+         Bit 2 - H.ch = H Position Chain (0 = Normal, 1 = Offset coordinates)
+                 (Value defined becomes the offset value with respect to the
+                  previous character.)
+         Bit 1 - V.ch = V Position Chain (0 = Normal, 1 = Offset coordinates)
+                 (Value defined becomes the offset value with respect to the
+                  previous character.)
+         Bit 0 - C.C = Character Tile Number (Upper 1 bit of 9)
+ 0x8802  H.P = Horizontal Position
+ 0x8803  V.P = Vertical Position
+ 0x8C00  CP.C = Colo(u)r Palette Code
+         Bit 7/Bit 4 - Read value of "0"
+         Bit 3/Bit 0 - Selection of sprite palette 0-15
+
+ 0x8804 - 0x8807,0x8C01 Sprite #2
+ 0x8808 - 0x880C,0x8C02 Sprite #3
+  ...
+ 0x88FC - 0x88FF,0x8C3F Sprite #64
+
+ * The K2GE has an additional byte per character starting from 0x8C00 for
+  the colo(u)r palette code. This colo(u)r palette is only valid in K2GE
+  mode and does not exist in K1GE palette compatible mode.
+
+
+Data Format for Scroll Plane VRAM
+---------------------------------
+
+ 0x9000  C.C = Character Tile Number (lower 8 bits of 9)
+ 0x9001  Bit 7 - H.F = Horizontal Flip (0=normal,1=flipped)
+         Bit 6 - V.F = Vertical Flip   (0=normal,1=flipped)
+         Bit 5 - P.C = Palette Code (Valid for K1GE upper palette compatible mode)
+         Bit 4 - CP.C = Color Palette Code
+         Bit 3 - CP.C     (Selection of sprite palette 0-15)
+         Bit 2 - CP.C
+         Bit 1 - CP.C
+         Bit 0 - C.C = Character Tile Number (Upper 1 bit of 9)
+
+
+Data Format for Sprite/Scroll Characters
+----------------------------------------
+
+ Each dot of the sprite character has 4 colo(u)rs available (2 bits).
+
+ ROW 1 of pixels
+  0xA000 bit 0/bit 1 = upper right pixel
+         bit 2/bit 3 = pixel just to the left of pixel above
+         bit 4/bit 5 = pixel just to the left of pixel above
+         bit 6/bit 7 = pixel just to the left of pixel above
+  0xA001 bit 0/bit 1 = pixel just to the left of pixel above
+         bit 2/bit 3 = pixel just to the left of pixel above
+         bit 4/bit 5 = pixel just to the left of pixel above
+         bit 6/bit 7 = pixel just to the left of pixel above
+ ROW 2 of pixels
+  0xA002 bit 0/bit 1 = pixel just below upper right pixel
+         bit 2/bit 3 = pixel just to the left of pixel above
+          ...
+
+
+Video Operation Timing
+----------------------
+
+  A horizontal scan line is 83.83 microseconds or 515 clocks.
+ Approximately 5 microseconds of that value is during H blank.
+ Vblank occurs every 16.68 milliseconds (59.95 Hz). Vertical
+ blank itself has a period of 3.94 milliseconds and lasts for
+ 47 scan lines.
+
+  Access to each RAM area is possible during the Hardware
+ Drawing Period. Please be aware of the adjustment circuitry
+ delaying the Hardware Drawing Period if software accesses the
+ RAM during this period. If the total time surpasses "H Time
+ Remaining (approx. 5 us)." Character Over occurs. (Accessing
+ the registers does not have an effect. Sprite VRAM, scroll VRAM,
+ and character RAM read/write access invokes the adjustment
+ circuitry.)
+
+ H_INT generation timing
+
+  The signal generation begins 1 H before the Hardware Drawing
+ Period starts. (Please be aware H_INT signal is not generated
+ at line 151 and signal generation for the 0th line occurs at
+ the beginning of line 198.)
+
+
+User Program Startup/Shutdown
+-----------------------------
+
+  Please follow the steps below for NEOGEO POCKET compatible
+ user software startup. User software startup begins from the
+ startup address listed in the exterior software header. As startup
+ conditions, there are:
+   Normal Startup (Startup Status Flag: Power SW ON)
+   Resume Startup and RTC Alarm (Startup Status Flag:  Alarm).
+ Please check the Startup Status Flag (User_Boot) and run the
+ appropriate program.
+
+ Startup
+ -------
+
+  User Software Initialize
+      |
+  Startup status: Alarm?  Yes ----------------+
+      | no                                    |
+      |                                       |
+  Startup status: Resume? Yes --+             |
+      | no                      |             |
+      |                         |             |
+  User Program         User Program     External Software
+  Normal Initialize    Resume Startup   Alarm Startup
+      |                         |             |
+      |<------------------------+-------------+
+  Game Code
+
+   There are foreseeable changes in the hardware, system
+  version up, and other factors resulting in additional startups.
+  Please program the software to operate with normal startup
+  routines for other startup statuses.
+
+
+ Shutdown
+ --------
+
+  User Initialization Code
+     |
+     |<-------------------+
+     |                    |
+  Main Game Loop          |
+     |                    |
+     |                    |
+  Shutdown request? no ---+
+     |
+  Shutdown (System Call)
+
+   As one of the operations of shutdown, it may be necessary to
+  save data. If this is the case, please return to the main operation
+  to save the data and quickly call the shutdown function afterwards.
+  During a shutdown request from low voltage, the system begins to
+  drain the secondary power supply. If a user makes a selection during
+  saving, please take into account the time limit allowed during
+  selection. With the change of hardware specification, system version
+  ups, and other reasons, there is the possibility of additional
+  shutdown requests. Please take other shutdown requests into account
+  by shutting the system down with the use of system call. When the
+  Power SW is pressed, the user program is forced to shutdown in the
+  current version of the system.
+
+
+Software Notes
+--------------
+
+ WINDOW SIZE
+
+  The window size is minimized during user program start up.
+  After initial setup, and after displaying on the LCD is
+ possible, please define the display area.
+ (H origin + H size =< 160, V origin + V size =< 152)
+
+ RELATIONSHIP OF VINT AND SCREEN SETUP
+
+  After the screen is drawn by the K1GE, an interrupt is generated
+ and sent to the CPU. The timing of the interrupt generation is
+ determined by the value set in the Window Registers and care must
+ be taken. This value is evaluated after the end of drawing in the
+ display area, and Vint is generated after WBA.V + WSI.V line is
+ drawn. If WSI.V is "0", Vint is produced after WBA.V line.
+
+
+ RELATIONSHIP OF HINT AND SCREEN SETUP
+
+  Hist is different from Vint and is not dependent on the value
+ set in the Window Registers. It is constant and 152 Hint occur
+ every time.
+
+ INTERRUPT STATE
+
+  The software starts up with interrupts prohibited (DI).
+
+ INTERRUPT VECTORS
+
+  Please set the interrupt vectors (0x6FB8~) with the addresses
+ where the interrupt operation function exists and the interrupt
+ level.  Next set interrupt permission to (EI 0) allow interrupt
+ operations. Please be aware that out of the interrupts public
+ to the user, the vertical blanking operation function (0x6FCC)
+ permission is set to "allow" normally.
+
+ HALT
+
+  Please DO NOT use the "halt" command because voltage management
+ is done by the system program.
+
+ REGISTER USE RESTRICTIONS
+
+  Unless necessary (i.e. system calls, library, etc.), please
+ DO NOT use register bank 3.  The system program uses register bank 3.
+
+ INTERRUPT MASK REGISTER RESTRICTIONS
+
+  Other than during interrupt operations, when the user program
+ is in normal operation, setting high values in interrupt mask
+ register (IFF2 ~ IFF0) will interfere with the power management
+ by the system program.  It is not prohibited to set high values
+ in the interrupt mask register during initialization, but soon
+ afterwards, please set the values to low (EI 0 ~ 2).
+
+ CLEARING WATCH DOG TIMER
+
+  A Watch Dog Timer exists to detect the user program if it
+ starts destroying itself.  There is a need to clear the Watch
+ Dog Timer Control Register (0x6F) with the clear code (0x4E)
+ periodically.
+
+ RESUME FUNCTION
+
+  Requesting resume function to the system saves the values in
+ work RAM area 0x4000 ~ 0x5FFF.  This area is destroyed when
+ another software from cart or internal software is run.
+   If resume operation request is to be made with the use of
+ User_Answer of the System Work, it is necessary to do the
+ following on startup.  At startup check the resume startup flag,
+ User_Boot, and verify the validity of the data.  If the data is
+ valid, operations to resume user software should be taken.
+
+ INITIAL PRODUCTION SYSTEM PROGRAM BUGS
+
+  Sudden change or interruption in the main power supply
+ (rapid cyclical removal and insertion of batteries, etc.) may
+ result in the inability of the system to shutdown with the
+ depression on the main power SW.  As a measure to correct this
+ problem, please call SYS_PATCH when starting the user program
+ from the software cart.
+
+ ERASURE OF FLASH MEMORY (SOFTWARE CASSETTE)
+
+  The system call VECT_FLASHERS will only erase up to the 32nd
+ block. If higher blocks are requested, it will result in erasure
+ of random blocks. If the need exists to erase blocks higher than
+ 32nd, please use the system library call CLR_FLASH_RAM.
+
+ BLOCK PROTECT OF FLASH MEMORY (SOFTWARE CASSETTE)
+
+  The system call VECT_FLASHPROTECT will only protect up to the
+ 32nd block. If higher blocks are requested, it will result in
+ protection of random blocks. DO NOT specify blocks higher than
+ 32 for protection. Please be aware, if a block protect is done
+ once, there is no way of removing this protection.
+
+ SETTING INTERRUPT REQUEST LEVEL
+
+  Interrupt requests produced during setting of the interrupt
+ request level by the use of the system call VECT_INTLVSET is
+ held even during when interrupts are prohibited.  Thus it is
+ necessary to stop the system including timers and arrest the
+ production of interrupts.
+  If it is inappropriate to do the above, the use of system
+ library INT_LV_SET during setting of interrupt request levels
+ will allow clearing of the interrupt requests.
+
+ RESUME/RTC ALARM STARTUP CASSETTE VERIFICATION
+
+  Software cassette ID code is used for verifying the version
+ of the resume/RTC alarm startup cassette. The software cassette
+ ID sub-code is not used. If a difference of versions results in
+ incorrect resume startup, it is necessary to compare the saved
+ data for exception handling.
+
+ MONOCHROME/COLOR COMPATIBILITY
+
+  If the user program is color compatible, please evaluate OS_Version
+ of the system information to determine if the hardware is monochrome
+ or color and run the software appropriately. If the software is
+ only monochrome compatible, software recognition header information's
+ compatible system code is 0x00, please do not use any of the K2GE
+ expanded functionality even when the hardware is color compatible.
+  If the system information is color compatible, and the system code
+ of the software is 0x00, the user program runs in K1GE upper palette
+ compatible mode. If the system code of the software is 0x10, the user
+ program will run in K2GE mode. Please use the system call VECT_GEMODESET
+ to switch between K1GE upper palette compatible mode or K2GE mode
+ when the software is color compatible.
+
+
+NeoGeo Pocket Software Check List
+---------------------------------
+
+ The list below is a check list of articles to be followed
+before master submission.
+
+ During user program startup, is the new system library
+ subroutine SYS_PATCH called?
+
+ During user program initialization, excluding interrupt
+ operations, is the value of the interrupt maskable register
+ of normal operation (IIF2 ~ IIF0) less than or equal to 2?
+
+ During initialization and other operations which require
+ long periods of time, is the watch dog timer cleared
+ (Maximum cycle of approximately 100 ms)?
+
+ When using the resume function, is the User_Boot resume
+ startup flag and the validity of the saved data checked?
+ (Unless the same game is normally started up, the saved
+ data is easily destroyed.)
+
+ When using saved data in the software cassette, is the
+ validity of the data checked with the use of check sum
+ and other methods? (Depressing the power SW during a save
+ produces an error message from the flash memory side and
+ the save is not concluded. It is recommended to retry
+ several times when the error message is produced.  Also
+ there is a need for exception handling when the data is
+ not valid.)
+
+ When the user program starts up with an undefined startup
+ flag (User_Boot) value, does the program start up as usual?
+
+ When the user program is shut down with an undefined shutdown
+ request flag (User_Shutdown) is it shutdown (system call)?
+
+ During user program shutdown with a shutdown request flag
+ (User_Shutdown) from main power off, is the only method
+ used shutdown with system call? (In the current system
+ program, main power off shutdown is a forced OFF in case
+ of bugs in the software which does not allow normal shutdown.
+ To take further updates of system program into consideration,
+ please only use the system call shutdown when the request arises.
+ The assumption is that when the main power is turned off,
+ and unlike the batteries dying, the user decision is involved.)
+
+ Is the fifth bit of User_Answer the system request flag
+ cleared? (The bit is currently reserved, but undetermined
+ values may change the operation timing. Because the value may
+ be manipulated by library functions in the future, please input
+ the value 0 during user program startup. Also for other flags
+ not defined at this time, please input 0 for future considerations.)
+
+ Is the last block of the software cassette (16 KB) being used
+ as a program, data, save area or protected?
+
+ Is erase/write pair occurring in the same memory cell on the
+ software cassette often? (One of the characteristics of flash
+ memory is the limited number of erase/write possible. If saving
+ is necessary frequently, it is necessary to save to different
+ memory cells and erasing a block of data to conserve the number
+ of erase/write.)
+
+ Are all system calls used during serial communication used by
+ subroutine call (SYSTEM_CALL) rather than software interrupt (SWI 1)?
+ (When quick response is necessary, interrupt generated in serial
+ communication, software interrupts may obstruct the interrupt
+ requiring quick response.)
+
+ Is the user program created with the assumption that data
+ transmission and reception is not synchronized when using
+ serial communication? (There is no method to synchronize
+ vertical blanking periods of the two units connected. The
+ amount of operations each system is handled during operation
+ over flow is different for each of the system.)
+
+ When the user program is running, does the system restart and
+ display illegal initialization screen? (The restart of the
+ system may be due to the following: watchdog circuit reset,
+ undefined command operation, or system managed system RAM may
+ be destroyed by the user program.)

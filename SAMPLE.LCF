@@ -1,0 +1,37 @@
+-ga -la -o sample.abs
+vect.rel 
+work.rel
+main.rel
+init.rel
+print.rel
+system.lib
+
+
+MEMORY {
+	io(RW)		: org=0x0	len=0x100
+	work(RW)	: org=0x4000	len=0x2c00
+	z80(RW)		: org=0x7000	len=0x1000
+	lcd(RW)		: org=0x8000	len=0x4000
+	user(RX)	: org=0x200000	len=0x200000
+ 	}
+
+
+SECTIONS {
+	HEADER
+		org=0x200000 : {
+		*(INT_TBL)
+		} > user
+
+	PROGRAM
+		org=0x200100 : {
+		*(PROG)
+		system.lib
+		} > user
+
+	WORK
+		org=0x4000 : {
+		*(WORK)
+		} > work
+}
+
+
