@@ -5,12 +5,12 @@ $MAXIMUM						;
 	module  init					;
 
 ;  ---------------------------------
-;	    EXTERNAL LOOKUP
+;	EXTERNAL LOOKUP
 ;  ---------------------------------
 	extern	RAM_Vector
 
 ;  ---------------------------------
-;           EXTERNAL DEFIINITION
+;   EXTERNAL DEFIINITION
 ;  ---------------------------------
 	public  init_setting     			;
 
@@ -132,8 +132,8 @@ pal_data:
 	db	0x00,0x00,0x07				;sprite palette 0
 	db	0x00,0x00,0x07				;sprite palette 1
 
-	db	0x07,0x07,0x07				;scroll 0 palette 0
-	db	0x07,0x07,0x07				;scroll 0 palette 1
+	db	0x01,0x02,0x03				;scroll 0 palette 0
+	db	0x01,0x02,0x03				;scroll 0 palette 1
 	db	0x01,0x02,0x03				;scroll 1 palette 0
 	db	0x01,0x02,0x03				;scroll 1 palette 1
 	align   2	

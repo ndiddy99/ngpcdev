@@ -5,11 +5,11 @@
 	module print
 
 ;  ---------------------------------
-;	    EXTERNAL LOOK UP
+;	EXTERNAL LOOK UP
 ;  ---------------------------------
 	extern SYSTEM_CALL
 ;  ---------------------------------
-;           EXTERNAL DEFINITION
+;   EXTERNAL DEFINITION
 ;  ---------------------------------
 	public print_init,print_string,print_byte,print_word
 
@@ -101,7 +101,7 @@ byte_doneadd1:
 ;-------------------------------------------------------
 ; print_word	
 ;-------------------------------------------------------
-; xix: pointer to byte to print
+; xix: pointer to word to print
 ; wa: x pos
 ; bc: y pos
 ;-------------------------------------------------------

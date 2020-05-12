@@ -31,7 +31,7 @@ Header_Data:
 	dl	reset					;startup address
 	dw	0x0000					;GAME ID Code
 	db	0x02					;GAME Version
-	db	0x00					;System Reserve K1 MODE
+	db	0x10					;0x10 = Color, 0x00 = Monochrome
 	db	"TEST GAME 2 "			;GAME NAME 12 Byte
 	dl	0x00,0x00,0x00,0x00			;Dummy 16 Byte
 

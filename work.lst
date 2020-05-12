@@ -1,0 +1,68 @@
+(C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
+Sat May 09 20:43:58 2020
+TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  work.lst
+Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l work.asm
+
+Location  Object                           Ins        Line Source Statement
+
+                                 +0          1           1 ;*****************************************
+                                 +0          2           2 ;		WORK DEFINITION 
+                                 +0          3           3 ;*****************************************
+                                 +0          4           4 $MAXIMUM					;
+                                 +0          5           5 	module  game_work			;
+                                 +0          6           6 ;  ---------------------------------
+                                 +0          7           7 ;  ---------------------------------
+                                 +0          8           8 ;		EXTERNAL LOOKUP
+                                 +0          9           9 ;  ---------------------------------
+                                 +0         10          10 
+                                 +0         11          11 
+                                 +0         12          12 ;  ---------------------------------
+                                 +0         13          13 ;		EXTERNAL DEFINTION
+                                 +0         14          14 ;  ---------------------------------
+                                 +0         15          15 	public	start_work
+                                 +0         16          16 	public  test_var
+                                 +0         17          17 	public frame_cnt
+                                 +0         18          18 	public	stopper
+                                 +0         19          19 	public	rtc_work
+                                 +0         20          20 	public	time_work
+                                 +0         21          21 ;  ---------------------------------
+                                 +0         22          22 ;		INCLUDE
+                                 +0         23          23 ;  ---------------------------------
+                                 +0         24          24 
+                                 +0         25          25 
+                                 +0         26          26 ;-------------------------------------------------------
+                                 +0         27          27 WORK	section data medium				;
+                                 +0         28          28 ;-------------------------------------------------------
+00000000                         +0         29          29 start_work:
+                                 +0         30          30 ;-------------- WORK -----------------
+00000000                         +0         31          31 stopper	dsb	1				;
+00000001                         +0         32          32 test_var dsb 1
+00000002                         +0         33          33 	align   2
+00000002                         +0         34          34 frame_cnt dsb 2
+00000004                         +0         35          35 rtc_work	dsb	8
+0000000C                         +0         36          36 time_work	dsb	0x20
+0000002C                         +0         37          37 	align   2
+                                 +0         38          38 ;-------------------------------------------------------
+                                 +0         39          39         end						;
+                                 +0         40          40 ;-------------------------------------------------------
+
+Assembly complete, No error
+TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  work.lst
+
+Symbol table listing
+--------------------
+
+Symbol           Category         Value     Attribute
+
+WORK             D M     SEC      00000000  R 2C        
+frame_cnt        D M     VAR      00000002  R PUB       WORK
+game_work                MOD
+rtc_work         D M     VAR      00000004  R PUB       WORK
+start_work       D M     LAB      00000000  R PUB       WORK
+stopper          D M     VAR      00000000  R PUB       WORK
+test_var         D M     VAR      00000001  R PUB       WORK
+time_work        D M     VAR      0000000C  R PUB       WORK
+
+
+TOTAL
+    8 user defined symbol(s)

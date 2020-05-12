@@ -4,6 +4,7 @@ work.rel
 main.rel
 init.rel
 print.rel
+graphics.rel
 system.lib
 
 

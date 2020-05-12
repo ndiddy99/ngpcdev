@@ -1,0 +1,636 @@
+(C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
+
+Tue May 12 04:47:23 2020
+
+Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
+Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
+
+  Command file : sample.lcf
+    -ga -la -o sample.abs
+    vect.rel 
+    work.rel
+    main.rel
+    init.rel
+    print.rel
+    graphics.rel
+    system.lib
+    
+    
+    MEMORY {
+    	io(RW)		: org=0x0	len=0x100
+    	work(RW)	: org=0x4000	len=0x2c00
+    	z80(RW)		: org=0x7000	len=0x1000
+    	lcd(RW)		: org=0x8000	len=0x4000
+    	user(RX)	: org=0x200000	len=0x200000
+     	}
+    
+    
+    SECTIONS {
+    	HEADER
+    		org=0x200000 : {
+    		*(INT_TBL)
+    		} > user
+    
+    	PROGRAM
+    		org=0x200100 : {
+    		*(PROG)
+    		system.lib
+    		} > user
+    
+    	WORK
+    		org=0x4000 : {
+    		*(WORK)
+    		} > work
+    }
+    
+    
+
+  Input files (modules)
+    vect.rel (game_vect)
+    work.rel (game_work)
+    main.rel (game_main)
+    init.rel (init)
+    print.rel (print)
+    graphics.rel (print)
+    system.lib (vec_lib patch )
+
+  Link map
+    Memory     Out-sec    Attri   Base       Length     In-sec(In-file)        Information
+    ---------- ---------- ------- ---------- ---------- ---------------------- ---------------
+    io                                     0        100                        *** Gap ***
+    work       WORK       DATA          4000         2C WORK    (work.rel)     NORMAL
+    work                                402C       2BD4                        *** Gap ***
+    z80                                 7000       1000                        *** Gap ***
+    lcd                                 8000       4000                        *** Gap ***
+    user       HEADER     ROMDATA     200000         88 INT_TBL (vect.rel)     NORMAL
+    user                              200088         78                        *** Gap ***
+    user       PROGRAM    CODE        200100         AC PROG    (main.rel)     NORMAL
+    user       PROGRAM    CODE        2001AC         C2 PROG    (init.rel)     NORMAL
+    user       PROGRAM    CODE        20026E         EE PROG    (print.rel)    NORMAL
+    user       PROGRAM    CODE        20035C       17C6 PROG    (graphics.rel) NORMAL
+    user       PROGRAM    CODE        201B22         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        201B39         11 SYSLIB  (system.lib)   NORMAL
+    user                              201B4A     1FE4B6                        *** Gap ***
+
+  Symbol table for sample.abs
+      Symbol       Address  In-sec   Cross-reference
+      ------------ -------- -------- --------------------------------------
+    Input module : game_vect
+      Header_Data    200000 INT_TBL  
+      RAM_Vector     200040 INT_TBL  init     
+    Input module : game_work
+      frame_cnt        4002 WORK     
+      rtc_work         4004 WORK     
+      start_work       4000 WORK     init     
+      stopper          4000 WORK     game_main 
+      test_var         4001 WORK     
+      time_work        400C WORK     
+    Input module : game_main
+      __STARTUP      FF1800          
+      alarm_int      2001A8 PROG     game_vect 
+      dummy          2001AB PROG     game_vect 
+      h_int          2001A5 PROG     game_vect 
+      reset          200100 PROG     game_vect 
+      sound_int      2001AA PROG     game_vect 
+      timer1         2001A6 PROG     game_vect 
+      timer2         2001A7 PROG     game_vect 
+      v_int          20018C PROG     game_vect 
+      z80_int        2001A9 PROG     game_vect 
+      ALARM_BOOT_REQ
+                          7          
+      BAT_SHUTDOWN_REQ
+                          5          
+      BGCOL_CRAM       83E0          
+      BG_COLOR         8118          
+      Battery_Voltage
+                       6F80          
+      CHR_VRAM         A000          
+      DISP_CTL0        8000          
+      FrameStr       200180 PROG     
+      INT_CLR_BIT         7          
+      JoyStr         200174 PROG     
+      LCD_CTR_ADD      8012          
+      Language         6F87          
+      MP_SHUTDOWN_REQ
+                          7          
+      OS_Version       6F91          
+      PAL_SCR1_00      8111          
+      PAL_SCR1_01      8112          
+      PAL_SCR1_02      8113          
+      PAL_SCR1_10      8115          
+      PAL_SCR1_11      8116          
+      PAL_SCR1_12      8117          
+      PL_SCR0_00       8109          
+      PL_SCR0_01       810A          
+      PL_SCR0_02       810B          
+      PL_SCR0_10       810D          
+      PL_SCR0_11       810E          
+      PL_SCR0_12       810F          
+      PL_SPR_00        8101          
+      PL_SPR_01        8102          
+      PL_SPR_02        8103          
+      PL_SPR_10        8105          
+      PL_SPR_11        8106          
+      PL_SPR_12        8107          
+      POWER_BOOT_REQ
+                          6          
+      RESET_ADD        87E0          
+      RESUME_ANS          7          
+      RESUME_BOOT_REQ
+                          5          
+      SCRL1_VRAM       9000          
+      SCRL2_VRAM       9800          
+      SCRL_PRIO_ADR
+                       8030          
+      SCRL_X1_ADR      8032          
+      SCRL_X2_ADR      8034          
+      SCRL_Y1_ADR      8033          
+      SCRL_Y2_ADR      8035          
+      SCROLL1_CRAM     8280          
+      SCROLL2_CRAM     8300          
+      SPRITE_CRAM      8200          
+      SPR_OFFSET_X_ADR
+                       8020          
+      SPR_OFFSET_Y_ADR
+                       8021          
+      SPR_VRAM         8800          
+      STS_RG_ADD       8010          
+      SYS_FAILURE        FF          
+      SYS_SUCCESS         0          
+      String         200167 PROG     
+      Sys_lever        6F82          
+      TIMER_SHUTDOWN_ANS
+                          6          
+      TIME_SHUTDOWN_REQ
+                          6          
+      User_Answer      6F86          
+      User_Boot        6F84          
+      User_Shutdown
+                       6F85          
+      VECT_ALARMDOWNSET
+                          B          
+      VECT_ALARMSET
+                          9          
+      VECT_CLOCKGEARSET
+                          1          
+      VECT_FLASHALLERS
+                          7          
+      VECT_FLASHERS
+                          8          
+      VECT_FLASHPROTECT
+                          D          
+      VECT_FLASHWRITE
+                          6          
+      VECT_GEMODESET
+                          E          
+      VECT_INTLVSET
+                          4          
+      VECT_RTCGET         2          
+      VECT_SHUTDOWN
+                          0          
+      VECT_SYSFONTSET
+                          5          
+      VERSION_ADD      87FE          
+      WDCR               6F          
+      WD_CLR             4E          
+      WD_LCDST_HPOS
+                       8008          
+      WD_LCDST_VPOS
+                       8009          
+      WINDOW_CRAM      83F0          
+      WIN_WBAX_ADR     8002          
+      WIN_WBAY_ADR     8003          
+      WIN_WSIX_ADR     8004          
+      WIN_WSIY_ADR     8005          
+      _ALARM_BOOT_REQ
+                         80          
+      _BAT_SHUTDOWN_REQ
+                         20          
+      _INT_CLR_BIT       80          
+      _MP_SHUTDOWN_REQ
+                         80          
+      _POWER_BOOT_REQ
+                         40          
+      _RESUME_ANS        80          
+      _RESUME_BOOT_REQ
+                         20          
+      _TIMER_SHUTDOWN_ANS
+                         40          
+      _TIME_SHUTDOWN_REQ
+                         40          
+      disp_size_x        A0          
+      disp_size_y        98          
+      main           20014B PROG     
+      main_100       200160 PROG     
+      map_copy_x     200134 PROG     
+      map_copy_y     200132 PROG     
+      obj_max            40          
+    Input module : init
+      init_setting   2001AC PROG     game_main 
+      ALARM_BOOT_REQ
+                          7          
+      BAT_SHUTDOWN_REQ
+                          5          
+      BGCOL_CRAM       83E0          
+      BG_COLOR         8118          
+      Battery_Voltage
+                       6F80          
+      CHR_VRAM         A000          
+      DISP_CTL0        8000          
+      INT_CLR_BIT         7          
+      LCD_CTR_ADD      8012          
+      Language         6F87          
+      MP_SHUTDOWN_REQ
+                          7          
+      OS_Version       6F91          
+      PAL_SCR1_00      8111          
+      PAL_SCR1_01      8112          
+      PAL_SCR1_02      8113          
+      PAL_SCR1_10      8115          
+      PAL_SCR1_11      8116          
+      PAL_SCR1_12      8117          
+      PL_SCR0_00       8109          
+      PL_SCR0_01       810A          
+      PL_SCR0_02       810B          
+      PL_SCR0_10       810D          
+      PL_SCR0_11       810E          
+      PL_SCR0_12       810F          
+      PL_SPR_00        8101          
+      PL_SPR_01        8102          
+      PL_SPR_02        8103          
+      PL_SPR_10        8105          
+      PL_SPR_11        8106          
+      PL_SPR_12        8107          
+      POWER_BOOT_REQ
+                          6          
+      RESET_ADD        87E0          
+      RESUME_ANS          7          
+      RESUME_BOOT_REQ
+                          5          
+      SCRL1_VRAM       9000          
+      SCRL2_VRAM       9800          
+      SCRL_PRIO_ADR
+                       8030          
+      SCRL_X1_ADR      8032          
+      SCRL_X2_ADR      8034          
+      SCRL_Y1_ADR      8033          
+      SCRL_Y2_ADR      8035          
+      SCROLL1_CRAM     8280          
+      SCROLL2_CRAM     8300          
+      SPRITE_CRAM      8200          
+      SPR_OFFSET_X_ADR
+                       8020          
+      SPR_OFFSET_Y_ADR
+                       8021          
+      SPR_VRAM         8800          
+      STS_RG_ADD       8010          
+      SYS_FAILURE        FF          
+      SYS_SUCCESS         0          
+      Sys_lever        6F82          
+      TIMER_SHUTDOWN_ANS
+                          6          
+      TIME_SHUTDOWN_REQ
+                          6          
+      User_Answer      6F86          
+      User_Boot        6F84          
+      User_Shutdown
+                       6F85          
+      VECT_ALARMDOWNSET
+                          B          
+      VECT_ALARMSET
+                          9          
+      VECT_CLOCKGEARSET
+                          1          
+      VECT_FLASHALLERS
+                          7          
+      VECT_FLASHERS
+                          8          
+      VECT_FLASHPROTECT
+                          D          
+      VECT_FLASHWRITE
+                          6          
+      VECT_GEMODESET
+                          E          
+      VECT_INTLVSET
+                          4          
+      VECT_RTCGET         2          
+      VECT_SHUTDOWN
+                          0          
+      VECT_SYSFONTSET
+                          5          
+      VERSION_ADD      87FE          
+      WDCR               6F          
+      WD_CLR             4E          
+      WD_LCDST_HPOS
+                       8008          
+      WD_LCDST_VPOS
+                       8009          
+      WINDOW_CRAM      83F0          
+      WIN_WBAX_ADR     8002          
+      WIN_WBAY_ADR     8003          
+      WIN_WSIX_ADR     8004          
+      WIN_WSIY_ADR     8005          
+      _ALARM_BOOT_REQ
+                         80          
+      _BAT_SHUTDOWN_REQ
+                         20          
+      _INT_CLR_BIT       80          
+      _MP_SHUTDOWN_REQ
+                         80          
+      _POWER_BOOT_REQ
+                         40          
+      _RESUME_ANS        80          
+      _RESUME_BOOT_REQ
+                         20          
+      _TIMER_SHUTDOWN_ANS
+                         40          
+      _TIME_SHUTDOWN_REQ
+                         40          
+      disp_size_x        A0          
+      disp_size_y        98          
+      obj_max            40          
+      pal_data       20025C PROG     
+      palet_loop     20024B PROG     
+      plaet_seting   20023F PROG     
+      scroll_clr     200229 PROG     
+      scroll_loop    200231 PROG     
+      sprite_clr     200215 PROG     
+      sprite_loop    20021F PROG     
+      vect_copy      2001BB PROG     
+      work_init_loop
+                     200205 PROG     
+    Input module : print
+      print_byte     200298 PROG     
+      print_init     20026E PROG     
+      print_string   200279 PROG     
+      print_word     2002DE PROG     
+      ALARM_BOOT_REQ
+                          7          
+      BAT_SHUTDOWN_REQ
+                          5          
+      BGCOL_CRAM       83E0          
+      BG_COLOR         8118          
+      Battery_Voltage
+                       6F80          
+      CHR_VRAM         A000          
+      DISP_CTL0        8000          
+      INT_CLR_BIT         7          
+      LCD_CTR_ADD      8012          
+      Language         6F87          
+      MP_SHUTDOWN_REQ
+                          7          
+      OS_Version       6F91          
+      PAL_SCR1_00      8111          
+      PAL_SCR1_01      8112          
+      PAL_SCR1_02      8113          
+      PAL_SCR1_10      8115          
+      PAL_SCR1_11      8116          
+      PAL_SCR1_12      8117          
+      PL_SCR0_00       8109          
+      PL_SCR0_01       810A          
+      PL_SCR0_02       810B          
+      PL_SCR0_10       810D          
+      PL_SCR0_11       810E          
+      PL_SCR0_12       810F          
+      PL_SPR_00        8101          
+      PL_SPR_01        8102          
+      PL_SPR_02        8103          
+      PL_SPR_10        8105          
+      PL_SPR_11        8106          
+      PL_SPR_12        8107          
+      POWER_BOOT_REQ
+                          6          
+      RESET_ADD        87E0          
+      RESUME_ANS          7          
+      RESUME_BOOT_REQ
+                          5          
+      SCRL1_VRAM       9000          
+      SCRL2_VRAM       9800          
+      SCRL_PRIO_ADR
+                       8030          
+      SCRL_X1_ADR      8032          
+      SCRL_X2_ADR      8034          
+      SCRL_Y1_ADR      8033          
+      SCRL_Y2_ADR      8035          
+      SCROLL1_CRAM     8280          
+      SCROLL2_CRAM     8300          
+      SPRITE_CRAM      8200          
+      SPR_OFFSET_X_ADR
+                       8020          
+      SPR_OFFSET_Y_ADR
+                       8021          
+      SPR_VRAM         8800          
+      STS_RG_ADD       8010          
+      SYS_FAILURE        FF          
+      SYS_SUCCESS         0          
+      Sys_lever        6F82          
+      TIMER_SHUTDOWN_ANS
+                          6          
+      TIME_SHUTDOWN_REQ
+                          6          
+      User_Answer      6F86          
+      User_Boot        6F84          
+      User_Shutdown
+                       6F85          
+      VECT_ALARMDOWNSET
+                          B          
+      VECT_ALARMSET
+                          9          
+      VECT_CLOCKGEARSET
+                          1          
+      VECT_FLASHALLERS
+                          7          
+      VECT_FLASHERS
+                          8          
+      VECT_FLASHPROTECT
+                          D          
+      VECT_FLASHWRITE
+                          6          
+      VECT_GEMODESET
+                          E          
+      VECT_INTLVSET
+                          4          
+      VECT_RTCGET         2          
+      VECT_SHUTDOWN
+                          0          
+      VECT_SYSFONTSET
+                          5          
+      VERSION_ADD      87FE          
+      WDCR               6F          
+      WD_CLR             4E          
+      WD_LCDST_HPOS
+                       8008          
+      WD_LCDST_VPOS
+                       8009          
+      WINDOW_CRAM      83F0          
+      WIN_WBAX_ADR     8002          
+      WIN_WBAY_ADR     8003          
+      WIN_WSIX_ADR     8004          
+      WIN_WSIY_ADR     8005          
+      _ALARM_BOOT_REQ
+                         80          
+      _BAT_SHUTDOWN_REQ
+                         20          
+      _INT_CLR_BIT       80          
+      _MP_SHUTDOWN_REQ
+                         80          
+      _POWER_BOOT_REQ
+                         40          
+      _RESUME_ANS        80          
+      _RESUME_BOOT_REQ
+                         20          
+      _TIMER_SHUTDOWN_ANS
+                         40          
+      _TIME_SHUTDOWN_REQ
+                         40          
+      byte_atf0      2002BA PROG     
+      byte_atf1      2002D3 PROG     
+      byte_doneadd0
+                     2002BD PROG     
+      byte_doneadd1
+                     2002D6 PROG     
+      copy_text      200287 PROG     
+      done_copy_text
+                     200297 PROG     
+      word_atf0      200300 PROG     
+      word_atf1      200319 PROG     
+      word_atf2      200338 PROG     
+      word_atf3      200351 PROG     
+      word_doneadd0
+                     200303 PROG     
+      word_doneadd1
+                     20031C PROG     
+      word_doneadd2
+                     20033B PROG     
+      word_doneadd3
+                     200354 PROG     
+    Input module : print
+      palette        20035C PROG     game_main 
+      palette_end    200362 PROG     game_main 
+      tiles          200362 PROG     game_main 
+      tiles_end      201B22 PROG     game_main 
+      ALARM_BOOT_REQ
+                          7          
+      BAT_SHUTDOWN_REQ
+                          5          
+      BGCOL_CRAM       83E0          
+      BG_COLOR         8118          
+      Battery_Voltage
+                       6F80          
+      CHR_VRAM         A000          
+      DISP_CTL0        8000          
+      INT_CLR_BIT         7          
+      LCD_CTR_ADD      8012          
+      Language         6F87          
+      MP_SHUTDOWN_REQ
+                          7          
+      OS_Version       6F91          
+      PAL_SCR1_00      8111          
+      PAL_SCR1_01      8112          
+      PAL_SCR1_02      8113          
+      PAL_SCR1_10      8115          
+      PAL_SCR1_11      8116          
+      PAL_SCR1_12      8117          
+      PL_SCR0_00       8109          
+      PL_SCR0_01       810A          
+      PL_SCR0_02       810B          
+      PL_SCR0_10       810D          
+      PL_SCR0_11       810E          
+      PL_SCR0_12       810F          
+      PL_SPR_00        8101          
+      PL_SPR_01        8102          
+      PL_SPR_02        8103          
+      PL_SPR_10        8105          
+      PL_SPR_11        8106          
+      PL_SPR_12        8107          
+      POWER_BOOT_REQ
+                          6          
+      RESET_ADD        87E0          
+      RESUME_ANS          7          
+      RESUME_BOOT_REQ
+                          5          
+      SCRL1_VRAM       9000          
+      SCRL2_VRAM       9800          
+      SCRL_PRIO_ADR
+                       8030          
+      SCRL_X1_ADR      8032          
+      SCRL_X2_ADR      8034          
+      SCRL_Y1_ADR      8033          
+      SCRL_Y2_ADR      8035          
+      SCROLL1_CRAM     8280          
+      SCROLL2_CRAM     8300          
+      SPRITE_CRAM      8200          
+      SPR_OFFSET_X_ADR
+                       8020          
+      SPR_OFFSET_Y_ADR
+                       8021          
+      SPR_VRAM         8800          
+      STS_RG_ADD       8010          
+      SYS_FAILURE        FF          
+      SYS_SUCCESS         0          
+      Sys_lever        6F82          
+      TIMER_SHUTDOWN_ANS
+                          6          
+      TIME_SHUTDOWN_REQ
+                          6          
+      User_Answer      6F86          
+      User_Boot        6F84          
+      User_Shutdown
+                       6F85          
+      VECT_ALARMDOWNSET
+                          B          
+      VECT_ALARMSET
+                          9          
+      VECT_CLOCKGEARSET
+                          1          
+      VECT_FLASHALLERS
+                          7          
+      VECT_FLASHERS
+                          8          
+      VECT_FLASHPROTECT
+                          D          
+      VECT_FLASHWRITE
+                          6          
+      VECT_GEMODESET
+                          E          
+      VECT_INTLVSET
+                          4          
+      VECT_RTCGET         2          
+      VECT_SHUTDOWN
+                          0          
+      VECT_SYSFONTSET
+                          5          
+      VERSION_ADD      87FE          
+      WDCR               6F          
+      WD_CLR             4E          
+      WD_LCDST_HPOS
+                       8008          
+      WD_LCDST_VPOS
+                       8009          
+      WINDOW_CRAM      83F0          
+      WIN_WBAX_ADR     8002          
+      WIN_WBAY_ADR     8003          
+      WIN_WSIX_ADR     8004          
+      WIN_WSIY_ADR     8005          
+      _ALARM_BOOT_REQ
+                         80          
+      _BAT_SHUTDOWN_REQ
+                         20          
+      _INT_CLR_BIT       80          
+      _MP_SHUTDOWN_REQ
+                         80          
+      _POWER_BOOT_REQ
+                         40          
+      _RESUME_ANS        80          
+      _RESUME_BOOT_REQ
+                         20          
+      _TIMER_SHUTDOWN_ANS
+                         40          
+      _TIME_SHUTDOWN_REQ
+                         40          
+    Input module : vec_lib
+      SYSTEM_CALL    201B22 SYSLIB   print    game_main 
+    Input module : patch
+      SYS_PATCH      201B39 SYSLIB   game_main 
+
+Linker end,No error

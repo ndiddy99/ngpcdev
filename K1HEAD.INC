@@ -28,6 +28,15 @@ LCD_CTR_ADD		EQU	0x08012			;2D control register
 
 
 
+BG_COLOR		EQU 0X08118			;Background color register
+
+;D7`D6: BGON. D7 = 1, D6 = 0: Use specified BG color. Defaults to D7/D6 both 0
+
+;D2`D0: BG color code
+
+
+
+
 RESET_ADD		EQU	0X087E0			;2D software reset (WRITE)
 
 ;2D cicuit initialization with "52" write
@@ -175,6 +184,24 @@ PAL_SCR1_11		EQU	0x08116
 PAL_SCR1_12		EQU	0x08117
 
 
+;=======================================================
+
+;		COLOR PALETTE RAM EQU
 
 ;=======================================================
+
+SPRITE_CRAM		EQU 0x08200
+
+SCROLL1_CRAM	EQU 0x08280
+
+SCROLL2_CRAM	EQU 0x08300
+
+BGCOL_CRAM		EQU 0x083E0 ;for the background color
+
+WINDOW_CRAM		EQU 0x083F0
+
+
+;=======================================================
+
+
 
