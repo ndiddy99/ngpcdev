@@ -24,7 +24,7 @@ public class TileConverter {
     public TileConverter(File bmpFile) {
         tileData = new ArrayList<>();
         palettes = new Palette[NUM_PALETTES];
-        int palette_cursor = 0;
+        int paletteCursor = 0;
         try {
             image = ImageIO.read(bmpFile);
             if (image.getColorModel() instanceof IndexColorModel) {
@@ -53,10 +53,6 @@ public class TileConverter {
                     //validate tile
                     for (int k = 0; k < imageData.length; k++) {
                         if (imageData[k] != 0) { //if not the background color
-                            if (colorCursor == 3) {
-                                System.out.println("ERROR: Too many colors in tile at " + j + ", " + i);
-                                return;
-                            }
                             boolean colorExists = false;
                             for (int l = 0; l < colors.length; l++) {
                                 if (colors[l] == imageData[k]) {
@@ -64,6 +60,10 @@ public class TileConverter {
                                 }
                             }
                             if (!colorExists) {
+                                if (colorCursor == 3) {
+                                    System.out.println("ERROR: Too many colors in tile at " + j + ", " + i);
+                                    return;
+                                }
                                 colors[colorCursor++] = imageData[k];
                             }
                         }
@@ -71,7 +71,7 @@ public class TileConverter {
                     Arrays.sort(colors);
                     Palette colorPal = new Palette(colors);
                     boolean inArr = false;
-                    for (int k = 0; k < palette_cursor; k++) {
+                    for (int k = 0; k < paletteCursor; k++) {
                         if (palettes[k].superset(colorPal)) {
                             palettes[k].addTile((i / 8) * (width / 8) + (j / 8));
                             inArr = true;
@@ -89,12 +89,12 @@ public class TileConverter {
                         }
                     }
                     if (!inArr) {
-                        if (palette_cursor == 16) {
+                        if (paletteCursor == 16) {
                             System.out.println("ERROR: Too many palettes (Max 16)");
                             return;
                         }
                         colorPal.addTile((i / 8) * (width / 8) + (j / 8));
-                        palettes[palette_cursor++] = colorPal;
+                        palettes[paletteCursor++] = colorPal;
                     }
 
                     for (int k = 0; k < imageData.length; k++) {
@@ -116,7 +116,7 @@ public class TileConverter {
             for (int i = 0; i < palettes.length; i++) {
                 if (palettes[i] != null) {
                     int[] colors = palettes[i].getColors();
-                    writer.print("\tdb ");
+                    writer.print("\tdb 0x00,0x00,");
                     for (int j = 0; j < colors.length; j++) {
                         int currColor = indexToColor(colors[j]);
                         if (j == colors.length - 1) {
@@ -137,10 +137,15 @@ public class TileConverter {
             PrintWriter writer = new PrintWriter(filename, "UTF-8");
             for (int i = 0; i < palettes.length; i++) {
                 if (palettes[i] != null) {
-                    for (int j = 0; j < palettes[i].getTileList().length; j++) {
-                        writer.print(palettes[i].getTileList()[j] + " ");
+                    int[] tileList = palettes[i].getTileList();
+                    for (int j = 0; j < tileList.length; j++) {
+                        if (j == tileList.length - 1) {
+                            writer.println(tileList[j]);
+                        }
+                        else {
+                            writer.print(tileList[j] + " ");
+                        }
                     }
-                    writer.println();
                 }
             }
             writer.close();

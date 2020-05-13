@@ -11,8 +11,8 @@
 ;  ---------------------------------
 ;           EXTERNAL DEFINITION
 ;  ---------------------------------
-	public palette,tiles
-	public palette_end,tiles_end
+	public palette,tiles,map
+	public palette_end,tiles_end,map_end
 
 ;  ---------------------------------
 ;	INCLUDE
@@ -34,9 +34,9 @@ tiles:
 tiles_end:
 
 	align 2
-; map:
-	; $include "gfx\map.inc"
-; map_end:
+map:
+	$include "tools\mapconv\map.inc"
+map_end:
 
 ;-------------------------------------------------------
 	end

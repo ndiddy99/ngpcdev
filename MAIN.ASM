@@ -48,9 +48,12 @@ reset:
 	
 	
 	lda xiy,palette
-	lda xix,SCROLL1_CRAM+2
-	ldw bc,(palette_end-palette)
-	ldir (xix+),(xiy+)
+	lda xix,SCROLL1_CRAM
+	ldw bc,4*13
+palette_copy:
+	ldw wa,(xiy+)
+	ldw (xix+),wa
+	djnz bc,palette_copy
 	
 	
 	; lda xix,SCROLL1_CRAM
@@ -70,17 +73,17 @@ reset:
 	; ldir (xix+),(xiy+)
 	
 	lda xix,SCRL1_VRAM
-	ldw wa,0
-	ldb c,19
-map_copy_y:
-	ldb b,20
-map_copy_x:
-	ldw (xix+),wa
-	incw 1,wa
-	djnz b,map_copy_x
-	andl xix,0xffc0
-	addl xix,0x40
-	djnz c,map_copy_y
+	lda xiy,map
+	ldb d,19 ;19 rows
+map_copy:	
+	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
+copy_row:
+	ldir (xix+),(xiy+)
+	andw ix,0xffc0
+	addw ix,0x40
+	djnz d,map_copy
+	
+	
 	
 ;-------------------------------------------------------
 ; main loop

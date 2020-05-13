@@ -6,5 +6,5 @@
 	extern palette_end
 	extern tiles
 	extern tiles_end
-	; extern map
-	; extern map_end
+	extern map
+	extern map_end

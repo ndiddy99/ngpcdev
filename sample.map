@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Tue May 12 04:47:23 2020
+Tue May 12 21:45:37 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -64,13 +64,13 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     lcd                                 8000       4000                        *** Gap ***
     user       HEADER     ROMDATA     200000         88 INT_TBL (vect.rel)     NORMAL
     user                              200088         78                        *** Gap ***
-    user       PROGRAM    CODE        200100         AC PROG    (main.rel)     NORMAL
-    user       PROGRAM    CODE        2001AC         C2 PROG    (init.rel)     NORMAL
-    user       PROGRAM    CODE        20026E         EE PROG    (print.rel)    NORMAL
-    user       PROGRAM    CODE        20035C       17C6 PROG    (graphics.rel) NORMAL
-    user       PROGRAM    CODE        201B22         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        201B39         11 SYSLIB  (system.lib)   NORMAL
-    user                              201B4A     1FE4B6                        *** Gap ***
+    user       PROGRAM    CODE        200100         AA PROG    (main.rel)     NORMAL
+    user       PROGRAM    CODE        2001AA         C2 PROG    (init.rel)     NORMAL
+    user       PROGRAM    CODE        20026C         EE PROG    (print.rel)    NORMAL
+    user       PROGRAM    CODE        20035A       1C60 PROG    (graphics.rel) NORMAL
+    user       PROGRAM    CODE        201FBA         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        201FD1         11 SYSLIB  (system.lib)   NORMAL
+    user                              201FE2     1FE01E                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -87,15 +87,15 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       time_work        400C WORK     
     Input module : game_main
       __STARTUP      FF1800          
-      alarm_int      2001A8 PROG     game_vect 
-      dummy          2001AB PROG     game_vect 
-      h_int          2001A5 PROG     game_vect 
+      alarm_int      2001A6 PROG     game_vect 
+      dummy          2001A9 PROG     game_vect 
+      h_int          2001A3 PROG     game_vect 
       reset          200100 PROG     game_vect 
-      sound_int      2001AA PROG     game_vect 
-      timer1         2001A6 PROG     game_vect 
-      timer2         2001A7 PROG     game_vect 
-      v_int          20018C PROG     game_vect 
-      z80_int        2001A9 PROG     game_vect 
+      sound_int      2001A8 PROG     game_vect 
+      timer1         2001A4 PROG     game_vect 
+      timer2         2001A5 PROG     game_vect 
+      v_int          20018A PROG     game_vect 
+      z80_int        2001A7 PROG     game_vect 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -106,9 +106,9 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        6F80          
       CHR_VRAM         A000          
       DISP_CTL0        8000          
-      FrameStr       200180 PROG     
+      FrameStr       20017E PROG     
       INT_CLR_BIT         7          
-      JoyStr         200174 PROG     
+      JoyStr         200172 PROG     
       LCD_CTR_ADD      8012          
       Language         6F87          
       MP_SHUTDOWN_REQ
@@ -157,7 +157,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
       SYS_SUCCESS         0          
-      String         200167 PROG     
+      String         200166 PROG     
       Sys_lever        6F82          
       TIMER_SHUTDOWN_ANS
                           6          
@@ -218,15 +218,16 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
+      copy_row       20013D PROG     
       disp_size_x        A0          
       disp_size_y        98          
-      main           20014B PROG     
-      main_100       200160 PROG     
-      map_copy_x     200134 PROG     
-      map_copy_y     200132 PROG     
+      main           20014A PROG     
+      main_100       20015F PROG     
+      map_copy       20013A PROG     
       obj_max            40          
+      palette_copy   200116 PROG     
     Input module : init
-      init_setting   2001AC PROG     game_main 
+      init_setting   2001AA PROG     game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -349,21 +350,21 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       disp_size_x        A0          
       disp_size_y        98          
       obj_max            40          
-      pal_data       20025C PROG     
-      palet_loop     20024B PROG     
-      plaet_seting   20023F PROG     
-      scroll_clr     200229 PROG     
-      scroll_loop    200231 PROG     
-      sprite_clr     200215 PROG     
-      sprite_loop    20021F PROG     
-      vect_copy      2001BB PROG     
+      pal_data       20025A PROG     
+      palet_loop     200249 PROG     
+      plaet_seting   20023D PROG     
+      scroll_clr     200227 PROG     
+      scroll_loop    20022F PROG     
+      sprite_clr     200213 PROG     
+      sprite_loop    20021D PROG     
+      vect_copy      2001B9 PROG     
       work_init_loop
-                     200205 PROG     
+                     200203 PROG     
     Input module : print
-      print_byte     200298 PROG     
-      print_init     20026E PROG     
-      print_string   200279 PROG     
-      print_word     2002DE PROG     
+      print_byte     200296 PROG     
+      print_init     20026C PROG     
+      print_string   200277 PROG     
+      print_word     2002DC PROG     
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -483,32 +484,34 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      byte_atf0      2002BA PROG     
-      byte_atf1      2002D3 PROG     
+      byte_atf0      2002B8 PROG     
+      byte_atf1      2002D1 PROG     
       byte_doneadd0
-                     2002BD PROG     
+                     2002BB PROG     
       byte_doneadd1
-                     2002D6 PROG     
-      copy_text      200287 PROG     
+                     2002D4 PROG     
+      copy_text      200285 PROG     
       done_copy_text
-                     200297 PROG     
-      word_atf0      200300 PROG     
-      word_atf1      200319 PROG     
-      word_atf2      200338 PROG     
-      word_atf3      200351 PROG     
+                     200295 PROG     
+      word_atf0      2002FE PROG     
+      word_atf1      200317 PROG     
+      word_atf2      200336 PROG     
+      word_atf3      20034F PROG     
       word_doneadd0
-                     200303 PROG     
+                     200301 PROG     
       word_doneadd1
-                     20031C PROG     
+                     20031A PROG     
       word_doneadd2
-                     20033B PROG     
+                     200339 PROG     
       word_doneadd3
-                     200354 PROG     
+                     200352 PROG     
     Input module : print
-      palette        20035C PROG     game_main 
-      palette_end    200362 PROG     game_main 
-      tiles          200362 PROG     game_main 
-      tiles_end      201B22 PROG     game_main 
+      map            201CC2 PROG     game_main 
+      map_end        201FBA PROG     
+      palette        20035A PROG     game_main 
+      palette_end    2003C2 PROG     
+      tiles          2003C2 PROG     game_main 
+      tiles_end      201CC2 PROG     game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -629,8 +632,8 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       _TIME_SHUTDOWN_REQ
                          40          
     Input module : vec_lib
-      SYSTEM_CALL    201B22 SYSLIB   print    game_main 
+      SYSTEM_CALL    201FBA SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      201B39 SYSLIB   game_main 
+      SYS_PATCH      201FD1 SYSLIB   game_main 
 
 Linker end,No error
