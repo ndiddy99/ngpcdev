@@ -35,7 +35,7 @@ tiles_end:
 
 	align 2
 map:
-	$include "tools\mapconv\map.inc"
+	$include "tools\mapconv\map1.map"
 map_end:
 
 ;-------------------------------------------------------

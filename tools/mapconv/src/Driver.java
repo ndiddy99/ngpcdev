@@ -9,6 +9,6 @@ public class Driver {
         File mapFile = new File(args[0]);
         File infoFile = new File(args[1]);
         Map map = new Map(mapFile, infoFile);
-        map.outputMap("map.inc");
+        map.outputMap(args[0].substring(0, args[0].indexOf('.')) + ".map");
     }
 }

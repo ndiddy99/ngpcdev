@@ -80,6 +80,22 @@ WD_CLR			equ	0x04e		;watch dog clear code
 
 ;-----------------------------------------------------------------
 
+JOY_UP 		equ 0x1
+JOY_DOWN 	equ 0x2
+JOY_LEFT 	equ 0x4
+JOY_RIGHT 	equ 0x8
+JOY_A		equ 0x10
+JOY_B		equ 0x20
+JOY_OPTION	equ 0x40
+
+BIT_UP		equ 0
+BIT_DOWN	equ 1
+BIT_LEFT	equ 2
+BIT_RIGHT	equ 3
+BIT_A		equ 4
+BIT_B		equ 5
+BIT_OPTION	equ 6
+
 ;======================================================= 
 
 ;	USER START UP BIT

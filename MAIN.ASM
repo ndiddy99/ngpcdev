@@ -26,6 +26,7 @@
 	$include "game.inc"
 	$include "print.inc"
 	$include "graphics.inc"
+	$include "scroll.inc"
 
 
 ;-------------------------------------------------------
@@ -46,7 +47,7 @@ reset:
 	ei 0 ;allow interrupts with a priority >= 0
 	
 	
-	
+	;---copy palette---
 	lda xiy,palette
 	lda xix,SCROLL1_CRAM
 	ldw bc,4*13
@@ -55,22 +56,14 @@ palette_copy:
 	ldw (xix+),wa
 	djnz bc,palette_copy
 	
-	
-	; lda xix,SCROLL1_CRAM
-	; ldw (xix+),0xfff
-	; ldw (xix+),0x000
-	; ldw (xix+),0x000
-	; ldw (xix+),0x00f
+	;---copy tiles---
 	
 	lda xiy,tiles
 	lda xix,CHR_VRAM
 	ldw bc,(tiles_end-tiles)
 	ldir (xix+),(xiy+)
 	
-	; lda xiy,map
-	; lda xix,SCRL1_VRAM
-	; ldw bc,(map_end-map)
-	; ldir (xix+),(xiy+)
+	;---copy map---
 	
 	lda xix,SCRL1_VRAM
 	lda xiy,map
@@ -79,8 +72,8 @@ map_copy:
 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
 copy_row:
 	ldir (xix+),(xiy+)
-	andw ix,0xffc0
-	addw ix,0x40
+	addw ix,64-40
+	addw iy,128-40
 	djnz d,map_copy
 	
 	
@@ -99,31 +92,28 @@ main:
 	cal SYSTEM_CALL
 
 main_100:
-	; ldw wa,3 ;x pos
-	; ldw bc,4 ;y pos
-	; lda xix,String	
-	; cal print_string
 	
-	; ldw wa,0 ;x pos
-	; ldw bc,6 ;y pos
-	; lda xix,JoyStr	
-	; cal print_string
+	bit BIT_UP,(Sys_lever)
+	j z,not_up
+	subw (screen_y),1
+not_up:
+	bit BIT_DOWN,(Sys_lever)
+	j z,not_down
+	addw (screen_y),1
+not_down:
+	bit BIT_LEFT,(Sys_lever)
+	j z,not_left
+	subw (screen_x),1
+not_left:
+	bit BIT_RIGHT,(Sys_lever)
+	j z,not_right
+	addw (screen_x),1
+not_right:
+
+	ldw wa,(screen_x)
+	ldw bc,(screen_y)
+	cal scroll_set
 	
-	; ldw wa,8
-	; ldw bc,6
-	; lda xix,Sys_lever
-	; cal print_byte
-	
-	; ldw wa,0 ;x pos
-	; ldw bc,7 ;y pos
-	; lda xix,FrameStr	
-	; cal print_string	
-	
-	; incw 1,(frame_cnt)
-	; ldw wa,7
-	; ldw bc,7
-	; lda xix,frame_cnt
-	; cal print_word
 	
 	ldb (stopper),0
 	j main
@@ -153,6 +143,7 @@ v_int:
 ;	--------------------------------
 	ldb	(WDCR),WD_CLR ;watch dog clear
 	ldb	(stopper),0xff
+	cal scroll_copy
 ;	--------------------------------
     popw sr
 	popl xhl

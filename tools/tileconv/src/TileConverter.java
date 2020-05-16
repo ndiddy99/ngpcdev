@@ -52,7 +52,7 @@ public class TileConverter {
                     int colorCursor = 0;
                     //validate tile
                     for (int k = 0; k < imageData.length; k++) {
-                        if (imageData[k] != 0) { //if not the background color
+                        if ((imageData[k] & 0xff) != 0) { //if not the background color
                             boolean colorExists = false;
                             for (int l = 0; l < colors.length; l++) {
                                 if (colors[l] == imageData[k]) {
@@ -107,6 +107,7 @@ public class TileConverter {
     }
 
     private int indexToColor(int index) {
+//        System.out.println(index + ": " + (reds[index] & 0xff) + ", " + (greens[index] & 0xff) + ", " + (blues[index] & 0xff));
         return ((reds[index] & 0xff) >> 4) | (((greens[index] & 0xff) >> 4) << 4) | (((blues[index] & 0xff) >> 4) << 8);
     }
 
@@ -117,6 +118,7 @@ public class TileConverter {
                 if (palettes[i] != null) {
                     int[] colors = palettes[i].getColors();
                     writer.print("\tdb 0x00,0x00,");
+//                    System.out.println("Palette " + i);
                     for (int j = 0; j < colors.length; j++) {
                         int currColor = indexToColor(colors[j]);
                         if (j == colors.length - 1) {

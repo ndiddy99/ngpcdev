@@ -1,7 +1,7 @@
 ;*****************************************
 ;		WORK DEFINITION 
 ;*****************************************
-$MAXIMUM					;
+	$MAXIMUM					;
 	module  game_work			;
 ;  ---------------------------------
 ;  ---------------------------------
@@ -12,12 +12,14 @@ $MAXIMUM					;
 ;  ---------------------------------
 ;		EXTERNAL DEFINTION
 ;  ---------------------------------
-	public	start_work
-	public  test_var
+	public start_work
+	public stopper	
 	public frame_cnt
-	public	stopper
-	public	rtc_work
-	public	time_work
+	public screen_x
+	public screen_y
+	public scroll_x
+	public scroll_y
+	public scroll_mode
 ;  ---------------------------------
 ;		INCLUDE
 ;  ---------------------------------
@@ -29,12 +31,17 @@ WORK	section data medium				;
 start_work:
 ;-------------- WORK -----------------
 stopper	dsb	1				;
-test_var dsb 1
 	align   2
 frame_cnt dsb 2
-rtc_work	dsb	8
-time_work	dsb	0x20
+screen_x dsb 2
+screen_y dsb 2
+;---scroll.asm---
 	align   2
+scroll_x dsb 2
+scroll_y dsb 2
+scroll_mode dsb 1
+	
+	
 ;-------------------------------------------------------
         end						;
 ;-------------------------------------------------------
