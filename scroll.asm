@@ -191,8 +191,8 @@ copy_row:
 	addl xiy,xde
 	addl xiy,map ;source address in xiy
 ;get destination address
-	andl xwa,0x1f ;virtual screen is 32x32 tiles
-	slal 1,xwa
+	andb a,0x1f ;virtual screen is 32x32 tiles
+	slab 1,a ;row offset in a
 	andl xbc,0x1f
 	ldl xix,xbc
 	slal 6,xix ;tile # * 64 bytes per row
@@ -200,13 +200,11 @@ copy_row:
 
 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
 copy_row_loop:
-	andl xwa,0x3f ;keep offset within 1 row of scroll 1 vram
-	addl xix,xwa
+	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
 	andl xix,0x97ff ;keep destination within scroll 1 vram
 	ldw bc,(xiy+)
-	ldw (xix),bc
-	addl xwa,2
-	andb ixl,0xc0 ;reset column #
+	ldw (xix+a),bc
+	addb a,2
 	djnz l,copy_row_loop
 	ret
 	

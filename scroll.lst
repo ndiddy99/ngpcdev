@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Sun May 17 04:49:29 2020
+Sun May 17 17:57:16 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  scroll.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l scroll.asm
 
@@ -56,7 +56,7 @@ Location  Object                           Ins        Line Source Statement
                                  +1         28          49 
                                  +1         29          50 
                                  +1         30          51 
-  00008118                       +1         31          52 BG_COLOR		EQU 0X08118			;Background color register
+  00008118                       +1         31          52 BG_COLOR		EQU 0x08118			;Background color register
                                  +1         32          53 
                                  +1         33          54 ;D7`D6: BGON. D7 = 1, D6 = 0: Use specified BG color. Defaults to D7/D6 both 0
                                  +1         34          55 
@@ -607,31 +607,29 @@ Location  Object                           Ins        Line Source Statement
 0000013B  EA85                   +0        191         600 	addl xiy,xde
 0000013D  EDC800000000         R +0        192         601 	addl xiy,map ;source address in xiy
                                  +0        193         602 ;get destination address
-00000143  E8CC1F000000           +0        194         603 	andl xwa,0x1f ;virtual screen is 32x32 tiles
-00000149  E8EC01                 +0        195         604 	slal 1,xwa
-0000014C  E9CC1F000000           +0        196         605 	andl xbc,0x1f
-00000152  E98C                   +0        197         606 	ldl xix,xbc
-00000154  ECEC06                 +0        198         607 	slal 6,xix ;tile # * 64 bytes per row
-00000157  ECC800900000           +0        199         608 	addl xix,SCRL1_VRAM ;destination address in xix
+00000143  C9CC1F                 +0        194         603 	andb a,0x1f ;virtual screen is 32x32 tiles
+00000146  C9EC01                 +0        195         604 	slab 1,a ;row offset in a
+00000149  E9CC1F000000           +0        196         605 	andl xbc,0x1f
+0000014F  E98C                   +0        197         606 	ldl xix,xbc
+00000151  ECEC06                 +0        198         607 	slal 6,xix ;tile # * 64 bytes per row
+00000154  ECC800900000           +0        199         608 	addl xix,SCRL1_VRAM ;destination address in xix
                                  +0        200         609 
-0000015D  2716                   +0        201         610 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
-0000015F                         +0        202         611 copy_row_loop:
-0000015F  E8CC3F000000           +0        203         612 	andl xwa,0x3f ;keep offset within 1 row of scroll 1 vram
-00000165  E884                   +0        204         613 	addl xix,xwa
-00000167  ECCCFF970000           +0        205         614 	andl xix,0x97ff ;keep destination within scroll 1 vram
-0000016D  D5F521                 +0        206         615 	ldw bc,(xiy+)
-00000170  B451                   +0        207         616 	ldw (xix),bc
-00000172  E8C802000000           +0        208         617 	addl xwa,2
-00000178  C7F0CCC0               +0        209         618 	andb ixl,0xc0 ;reset column #
-0000017C  CF1CE0                 +0        210         619 	djnz l,copy_row_loop
-0000017F  0E                     +0        211         620 	ret
-                                 +0        212         621 	
-                                 +0        213         622 
-                                 +0        214         623 
-                                 +0        215         624 	
+0000015A  2716                   +0        201         610 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
+0000015C                         +0        202         611 copy_row_loop:
+0000015C  C9CC3F                 +0        203         612 	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
+0000015F  ECCCFF970000           +0        204         613 	andl xix,0x97ff ;keep destination within scroll 1 vram
+00000165  D5F521                 +0        205         614 	ldw bc,(xiy+)
+00000168  F303F0E051             +0        206         615 	ldw (xix+a),bc
+0000016D  C9C802                 +0        207         616 	addb a,2
+00000170  CF1CE9                 +0        208         617 	djnz l,copy_row_loop
+00000173  0E                     +0        209         618 	ret
+                                 +0        210         619 	
+                                 +0        211         620 
+                                 +0        212         621 
+                                 +0        213         622 	
+                                 +0        214         623 ;-------------------------------------------------------
+                                 +0        215         624 	end
                                  +0        216         625 ;-------------------------------------------------------
-                                 +0        217         626 	end
-                                 +0        218         627 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  scroll.lst
@@ -691,7 +689,7 @@ PL_SPR_10                NUM      00008105  A
 PL_SPR_11                NUM      00008106  A           
 PL_SPR_12                NUM      00008107  A           
 POWER_BOOT_REQ           NUM      00000006  A           
-PROG             C L     SEC      00000000  R 180       
+PROG             C L     SEC      00000000  R 174       
 RESET_ADD                NUM      000087E0  A           
 RESUME_ANS               NUM      00000007  A           
 RESUME_BOOT_REQ          NUM      00000005  A           
@@ -766,7 +764,7 @@ _TIME_SHUTDOWN_REQ
 copy_col_loop    C L     LAB      00000109  R           PROG
 copy_column      C L     LAB      000000DA  R           PROG
 copy_row         C L     LAB      00000131  R           PROG
-copy_row_loop    C L     LAB      0000015F  R           PROG
+copy_row_loop    C L     LAB      0000015C  R           PROG
 done_x           C L     LAB      00000012  R           PROG
 done_y           C L     LAB      00000028  R           PROG
 down_y           C L     LAB      00000023  R           PROG

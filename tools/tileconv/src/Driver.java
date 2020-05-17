@@ -14,15 +14,12 @@ public class Driver {
             reader = new BufferedReader(new FileReader(listFile));
             String line = reader.readLine();
             while (line != null) {
-                if (line.charAt(0) == 't') {
-                    File tileFile = new File(line.substring(2));
-                    TileConverter converter = new TileConverter(tileFile);
-                    System.out.println("done constructor");
-                    converter.writeTiles("tiles.inc");
-                    System.out.println("tiles");
-                    converter.writeInfo("info.txt");
-                    converter.writePal("palette.inc");
-                }
+                File tileFile = new File(line);
+                TileConverter converter = new TileConverter(tileFile);
+                String filename = line.substring(0, line.indexOf("."));
+                converter.writeTiles(filename + "_tle.inc");
+                converter.writeInfo(filename + "_info.txt");
+                converter.writePal(filename + "_pal.inc");
                 line = reader.readLine();
             }
         } catch (Exception e) { e.printStackTrace(); }

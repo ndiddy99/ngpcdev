@@ -28,7 +28,7 @@ LCD_CTR_ADD		EQU	0x08012			;2D control register
 
 
 
-BG_COLOR		EQU 0X08118			;Background color register
+BG_COLOR		EQU 0x08118			;Background color register
 
 ;D7`D6: BGON. D7 = 1, D6 = 0: Use specified BG color. Defaults to D7/D6 both 0
 

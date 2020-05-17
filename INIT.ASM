@@ -44,7 +44,7 @@ vect_copy:
 ;  ---- INITIALIZATION OF VRAM ----
 	calr	sprite_clr
 	calr	scroll_clr
-	calr	plaet_seting
+	; calr	plaet_seting
 
 	ldl	xwa,0
 
@@ -101,8 +101,8 @@ scroll_clr:
 	ldl	xix,SCRL1_VRAM
 
 scroll_loop:
-	ldw	(xix+),0x0020
-	ldw	(xix+),0x0020
+	ldw	(xix+),0x0000
+	ldw	(xix+),0x0000
 	djnz    bc,scroll_loop
 
 	ret

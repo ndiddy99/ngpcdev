@@ -45,8 +45,7 @@ reset:
 	cal init_setting ;VRAM, work initialization
 	; cal print_init ;load system font
 	ei 0 ;allow interrupts with a priority >= 0
-	
-	
+
 	;---copy palette---
 	lda xiy,palette
 	lda xix,SCROLL1_CRAM
@@ -54,16 +53,29 @@ reset:
 palette_copy:
 	ldw wa,(xiy+)
 	ldw (xix+),wa
-	djnz bc,palette_copy
+	djnz bc,palette_copy	
+	;---clear scroll plane 2 palette---
+	ldw wa,0
+	lda xix,SCROLL2_CRAM
+	ldw bc,4*16
+palette2_copy:
+	ldw (xix+),wa
+	djnz bc,palette2_copy
+
+	; ;---set bg color---	
+	ldw wa,0xf85
+	ldw (0x83e0),wa
+	ldb a,0x80 ;bg color on, first color in cram
+	ldb (0x8118),a	
 	
 	;---copy tiles---
 	
 	lda xiy,tiles
 	lda xix,CHR_VRAM
-	ldw bc,(tiles_end-tiles)
+	ldw bc,0x2000
 	ldir (xix+),(xiy+)
 	
-	;---copy map---
+	; ;---copy map---
 	
 	lda xix,SCRL1_VRAM
 	lda xiy,map
