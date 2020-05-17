@@ -189,26 +189,25 @@ copy_row:
 	ldl xiy,xbc
 	slal 7,xiy ;tile # * 128 bytes per row
 	addl xiy,xde
-	andl xiy,0x1fff ;make sure source address is within bounds (64*64*2)
-	addl xiy,map ;source address now in xix
+	addl xiy,map ;source address in xiy
 ;get destination address
 	andl xwa,0x1f ;virtual screen is 32x32 tiles
 	slal 1,xwa
 	andl xbc,0x1f
 	ldl xix,xbc
 	slal 6,xix ;tile # * 64 bytes per row
-	addl xix,xwa
-	addl xix,SCRL1_VRAM
+	addl xix,SCRL1_VRAM ;destination address in xix
 
-	ldb a,TILES_X+2 ;1 tile before the screen to 1 tile after
+	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
 copy_row_loop:
-	andl xiy,0x1fff ;keep source offset within tilemap (64*64*2)
-	andl xix,0x97ff ;keep destination within scroll 1 vram	
-	ldl xde,xiy
-	addl xde,map
-	ldw bc,(xde+)
-	ldw (xix+),bc
-	djnz a,copy_row_loop
+	andl xwa,0x3f ;keep offset within 1 row of scroll 1 vram
+	addl xix,xwa
+	andl xix,0x97ff ;keep destination within scroll 1 vram
+	ldw bc,(xiy+)
+	ldw (xix),bc
+	addl xwa,2
+	andb ixl,0xc0 ;reset column #
+	djnz l,copy_row_loop
 	ret
 	
 

@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Fri May 15 22:29:36 2020
+Sun May 17 04:49:29 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -70,10 +70,10 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     user       PROGRAM    CODE        2001EA         C2 PROG    (init.rel)     NORMAL
     user       PROGRAM    CODE        2002AC         EE PROG    (print.rel)    NORMAL
     user       PROGRAM    CODE        20039A       3968 PROG    (graphics.rel) NORMAL
-    user       PROGRAM    CODE        203D02        185 PROG    (scroll.rel)   NORMAL
-    user       PROGRAM    CODE        203E87         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        203E9E         11 SYSLIB  (system.lib)   NORMAL
-    user                              203EAF     1FC151                        *** Gap ***
+    user       PROGRAM    CODE        203D02        180 PROG    (scroll.rel)   NORMAL
+    user       PROGRAM    CODE        203E82         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        203E99         11 SYSLIB  (system.lib)   NORMAL
+    user                              203EAA     1FC156                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -801,7 +801,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       copy_column    203DDC PROG     
       copy_row       203E33 PROG     
       copy_row_loop
-                     203E69 PROG     
+                     203E61 PROG     
       done_x         203D14 PROG     
       done_y         203D2A PROG     
       down_y         203D25 PROG     
@@ -814,8 +814,8 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       right_x        203D0E PROG     
       up_y           203D20 PROG     
     Input module : vec_lib
-      SYSTEM_CALL    203E87 SYSLIB   print    game_main 
+      SYSTEM_CALL    203E82 SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      203E9E SYSLIB   game_main 
+      SYS_PATCH      203E99 SYSLIB   game_main 
 
 Linker end,No error
