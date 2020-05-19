@@ -49,8 +49,8 @@ reset:
 	;---copy palette---
 	lda xiy,palette
 	lda xix,SCROLL1_CRAM
-	ldw bc,4*13
-palette_copy:
+	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
+palette_copy:                   ;to appease the assembler
 	ldw wa,(xiy+)
 	ldw (xix+),wa
 	djnz bc,palette_copy	
@@ -72,10 +72,10 @@ palette2_copy:
 	
 	lda xiy,tiles
 	lda xix,CHR_VRAM
-	ldw bc,0x2000
+	ldl xbc,tiles_end-tiles
 	ldir (xix+),(xiy+)
 	
-	; ;---copy map---
+	;---copy map---
 	
 	lda xix,SCRL1_VRAM
 	lda xiy,map
@@ -87,7 +87,63 @@ copy_row:
 	addw ix,64-40
 	addw iy,128-40
 	djnz d,map_copy
+	;---copy guy sprite---
+	lda xiy,guy
+	lda xix,CHR_VRAM+tiles_end-tiles
+	ldl xbc,guy_end-guy
+	ldir (xix+),(xiy+)
+	;---copy guy palette---
+	lda xiy,guy_pal
+	lda xix,SPRITE_CRAM
+	ldl xbc,guy_pal_end-guy_pal ;should be a ldw but needs to be an ldl
+guy_pal_copy:                   ;to appease the assembler
+	ldw wa,(xiy+)
+	ldw (xix+),wa
+	djnz bc,guy_pal_copy	
 	
+	ldb a,200
+	ldb (0x8800),a
+	ldb a,0y00011000
+	ldb (0x8801),a
+	ldb a,40
+	ldb (0x8802),a
+	ldb (0x8803),a
+	ldb a,0
+	ldb (0x8c00),a	
+	
+	ldb a,201
+	ldb (0x8804),a
+	ldb a,0y00011110 ;turn on h/v chain
+	ldb (0x8805),a
+	ldb a,8 ;offset 8 px from prev sprite on x axis
+	ldb (0x8806),a
+	ldb a,0
+	ldb (0x8807),a
+	ldb a,0
+	ldb (0x8c01),a
+	
+	ldb a,202
+	ldb (0x8808),a
+	ldb a,0y00011110 ;turn on h/v chain
+	ldb (0x8809),a
+	ldb a,248 ;offset -8 px from prev sprite on x axis
+	ldb (0x880a),a
+	ldb a,8 ;offset 8 px on y axis
+	ldb (0x880b),a
+	ldb a,0
+	ldb (0x8c02),a		
+	
+	
+	ldb a,203
+	ldb (0x880c),a
+	ldb a,0y00011110 ;turn on h/v chain
+	ldb (0x880d),a
+	ldb a,8 ;offset 8 px from prev sprite on x axis
+	ldb (0x880e),a
+	ldb a,0 ;offset 0 px on y axis
+	ldb (0x880f),a
+	ldb a,0
+	ldb (0x8c03),a		
 	
 	
 ;-------------------------------------------------------

@@ -11,8 +11,8 @@
 ;  ---------------------------------
 ;           EXTERNAL DEFINITION
 ;  ---------------------------------
-	public palette,tiles,map
-	public palette_end,tiles_end,map_end
+	public palette,tiles,map,guy,guy_pal
+	public palette_end,tiles_end,map_end,guy_end,guy_pal_end
 
 ;  ---------------------------------
 ;	INCLUDE
@@ -25,18 +25,28 @@ PROG section code large
 ;-------------------------------------------------------
 	align 2
 palette:
-	$include "tools\tileconv\palette.inc"
+	$include "gfx\bg_pal.inc"
 palette_end:	
 	
 	align 2
 tiles:
-	$include "tools\tileconv\tiles.inc"
+	$include "gfx\bg_tle.inc"
 tiles_end:
 
 	align 2
 map:
-	$include "tools\mapconv\map1.map"
+	$include "gfx\map1.map"
 map_end:
+
+	align 2
+guy:
+	$include "gfx\guy_tle.inc"
+guy_end:
+
+	align 2
+guy_pal:
+	$include "gfx\guy_pal.inc"
+guy_pal_end:
 
 ;-------------------------------------------------------
 	end

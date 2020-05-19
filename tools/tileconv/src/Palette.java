@@ -29,6 +29,9 @@ public class Palette {
         int[] otherColors = otherPalette.getColors();
         for (int i = 0; i < otherColors.length; i++) {
             int j;
+            if (otherColors[i] == 0) { //background color isn't shown anyway
+                continue;
+            }
             for (j = 0; j < colors.length; j++) {
                 if (otherColors[i] == colors[j]) {
                     break;

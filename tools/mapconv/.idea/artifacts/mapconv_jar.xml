@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="mapconv:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/mapconv_jar</output-path>
+    <root id="archive" name="mapconv.jar">
+      <element id="module-output" name="mapconv" />
+    </root>
+  </artifact>
+</component>
