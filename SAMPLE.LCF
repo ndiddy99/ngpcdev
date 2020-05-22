@@ -6,6 +6,7 @@ init.rel
 print.rel
 graphics.rel
 scroll.rel
+player.rel
 system.lib
 
 

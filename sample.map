@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Tue May 19 01:12:56 2020
+Thu May 21 22:56:40 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -14,6 +14,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     print.rel
     graphics.rel
     scroll.rel
+    player.rel
     system.lib
     
     
@@ -54,26 +55,28 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     print.rel (print)
     graphics.rel (print)
     scroll.rel (scroll)
+    player.rel (player)
     system.lib (vec_lib patch )
 
   Link map
     Memory     Out-sec    Attri   Base       Length     In-sec(In-file)        Information
     ---------- ---------- ------- ---------- ---------- ---------------------- ---------------
     io                                     0        100                        *** Gap ***
-    work       WORK       DATA          4000          D WORK    (work.rel)     NORMAL
-    work                                400D       2BF3                        *** Gap ***
+    work       WORK       DATA          4000         1E WORK    (work.rel)     NORMAL
+    work                                401E       2BE2                        *** Gap ***
     z80                                 7000       1000                        *** Gap ***
     lcd                                 8000       4000                        *** Gap ***
     user       HEADER     ROMDATA     200000         88 INT_TBL (vect.rel)     NORMAL
     user                              200088         78                        *** Gap ***
-    user       PROGRAM    CODE        200100        1A6 PROG    (main.rel)     NORMAL
-    user       PROGRAM    CODE        2002A6         C0 PROG    (init.rel)     NORMAL
-    user       PROGRAM    CODE        200366         EE PROG    (print.rel)    NORMAL
-    user       PROGRAM    CODE        200454       2D18 PROG    (graphics.rel) NORMAL
-    user       PROGRAM    CODE        20316C        174 PROG    (scroll.rel)   NORMAL
-    user       PROGRAM    CODE        2032E0         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        2032F7         11 SYSLIB  (system.lib)   NORMAL
-    user                              203308     1FCCF8                        *** Gap ***
+    user       PROGRAM    CODE        200100         D4 PROG    (main.rel)     NORMAL
+    user       PROGRAM    CODE        2001D4         C0 PROG    (init.rel)     NORMAL
+    user       PROGRAM    CODE        200294         EE PROG    (print.rel)    NORMAL
+    user       PROGRAM    CODE        200382       2A98 PROG    (graphics.rel) NORMAL
+    user       PROGRAM    CODE        202E1A        174 PROG    (scroll.rel)   NORMAL
+    user       PROGRAM    CODE        202F8E        13F PROG    (player.rel)   NORMAL
+    user       PROGRAM    CODE        2030CD         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        2030E4         11 SYSLIB  (system.lib)   NORMAL
+    user                              2030F5     1FCF0B                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -83,8 +86,12 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       RAM_Vector     200040 INT_TBL  init     
     Input module : game_work
       frame_cnt        4002 WORK     
-      screen_x         4004 WORK     game_main 
-      screen_y         4006 WORK     game_main 
+      player_dx        4016 WORK     player   
+      player_dy        401A WORK     
+      player_x         400E WORK     player   
+      player_y         4012 WORK     player   
+      screen_x         4004 WORK     
+      screen_y         4006 WORK     
       scroll_mode      400C WORK     scroll   
       scroll_x         4008 WORK     scroll   
       scroll_y         400A WORK     scroll   
@@ -92,15 +99,15 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       stopper          4000 WORK     game_main 
     Input module : game_main
       __STARTUP      FF1800          
-      alarm_int      2002A2 PROG     game_vect 
-      dummy          2002A5 PROG     game_vect 
-      h_int          20029F PROG     game_vect 
+      alarm_int      2001D0 PROG     game_vect 
+      dummy          2001D3 PROG     game_vect 
+      h_int          2001CD PROG     game_vect 
       reset          200100 PROG     game_vect 
-      sound_int      2002A4 PROG     game_vect 
-      timer1         2002A0 PROG     game_vect 
-      timer2         2002A1 PROG     game_vect 
-      v_int          200282 PROG     game_vect 
-      z80_int        2002A3 PROG     game_vect 
+      sound_int      2001D2 PROG     game_vect 
+      timer1         2001CE PROG     game_vect 
+      timer2         2001CF PROG     game_vect 
+      v_int          2001B0 PROG     game_vect 
+      z80_int        2001D1 PROG     game_vect 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -118,7 +125,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        6F80          
       CHR_VRAM         A000          
       DISP_CTL0        8000          
-      FrameStr       200276 PROG     
+      FrameStr       2001A4 PROG     
       INT_CLR_BIT         7          
       JOY_A              10          
       JOY_B              20          
@@ -127,7 +134,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       JOY_OPTION         40          
       JOY_RIGHT           8          
       JOY_UP              1          
-      JoyStr         20026A PROG     
+      JoyStr         200198 PROG     
       LCD_CTR_ADD      8012          
       Language         6F87          
       MP_SHUTDOWN_REQ
@@ -172,11 +179,12 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8020          
       SPR_OFFSET_Y_ADR
                        8021          
+      SPR_PALCODE      8C00          
       SPR_VRAM         8800          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
       SYS_SUCCESS         0          
-      String         20025E PROG     
+      String         20018C PROG     
       Sys_lever        6F82          
       TIMER_SHUTDOWN_ANS
                           6          
@@ -240,20 +248,15 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       copy_row       20015B PROG     
       disp_size_x        A0          
       disp_size_y        98          
-      guy_pal_copy   200187 PROG     
-      main           200206 PROG     
-      main_100       20021B PROG     
+      main           20016C PROG     
+      main_100       200181 PROG     
       map_copy       200158 PROG     
-      not_down       200233 PROG     
-      not_left       20023F PROG     
-      not_right      20024B PROG     
-      not_up         200227 PROG     
       obj_max            40          
       palette2_copy
                      20012A PROG     
       palette_copy   200118 PROG     
     Input module : init
-      init_setting   2002A6 PROG     game_main 
+      init_setting   2001D4 PROG     game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -323,6 +326,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8020          
       SPR_OFFSET_Y_ADR
                        8021          
+      SPR_PALCODE      8C00          
       SPR_VRAM         8800          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
@@ -390,21 +394,21 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       disp_size_x        A0          
       disp_size_y        98          
       obj_max            40          
-      pal_data       200353 PROG     
-      palet_loop     200342 PROG     
-      plaet_seting   200336 PROG     
-      scroll_clr     200320 PROG     
-      scroll_loop    200328 PROG     
-      sprite_clr     20030C PROG     
-      sprite_loop    200316 PROG     
-      vect_copy      2002B5 PROG     
+      pal_data       200281 PROG     
+      palet_loop     200270 PROG     
+      plaet_seting   200264 PROG     
+      scroll_clr     20024E PROG     
+      scroll_loop    200256 PROG     
+      sprite_clr     20023A PROG     
+      sprite_loop    200244 PROG     
+      vect_copy      2001E3 PROG     
       work_init_loop
-                     2002FC PROG     
+                     20022A PROG     
     Input module : print
-      print_byte     200390 PROG     
-      print_init     200366 PROG     
-      print_string   200371 PROG     
-      print_word     2003D6 PROG     
+      print_byte     2002BE PROG     
+      print_init     200294 PROG     
+      print_string   20029F PROG     
+      print_word     200304 PROG     
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -474,6 +478,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8020          
       SPR_OFFSET_Y_ADR
                        8021          
+      SPR_PALCODE      8C00          
       SPR_VRAM         8800          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
@@ -538,38 +543,38 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      byte_atf0      2003B2 PROG     
-      byte_atf1      2003CB PROG     
+      byte_atf0      2002E0 PROG     
+      byte_atf1      2002F9 PROG     
       byte_doneadd0
-                     2003B5 PROG     
+                     2002E3 PROG     
       byte_doneadd1
-                     2003CE PROG     
-      copy_text      20037F PROG     
+                     2002FC PROG     
+      copy_text      2002AD PROG     
       done_copy_text
-                     20038F PROG     
-      word_atf0      2003F8 PROG     
-      word_atf1      200411 PROG     
-      word_atf2      200430 PROG     
-      word_atf3      200449 PROG     
+                     2002BD PROG     
+      word_atf0      200326 PROG     
+      word_atf1      20033F PROG     
+      word_atf2      20035E PROG     
+      word_atf3      200377 PROG     
       word_doneadd0
-                     2003FB PROG     
+                     200329 PROG     
       word_doneadd1
-                     200414 PROG     
+                     200342 PROG     
       word_doneadd2
-                     200433 PROG     
+                     200361 PROG     
       word_doneadd3
-                     20044C PROG     
+                     20037A PROG     
     Input module : print
-      guy            203124 PROG     game_main 
-      guy_end        203164 PROG     game_main 
-      guy_pal        203164 PROG     game_main 
-      guy_pal_end    20316C PROG     game_main 
-      map            201124 PROG     scroll   game_main 
-      map_end        203124 PROG     
-      palette        200454 PROG     game_main 
-      palette_end    2004A4 PROG     game_main 
-      tiles          2004A4 PROG     game_main 
-      tiles_end      201124 PROG     game_main 
+      guy            202DD2 PROG     player   
+      guy_end        202E12 PROG     player   
+      guy_pal        202E12 PROG     player   
+      guy_pal_end    202E1A PROG     player   
+      map            200DD2 PROG     scroll   game_main 
+      map_end        202DD2 PROG     
+      palette        200382 PROG     game_main 
+      palette_end    2003D2 PROG     game_main 
+      tiles          2003D2 PROG     player   game_main 
+      tiles_end      200DD2 PROG     player   game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -639,6 +644,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8020          
       SPR_OFFSET_Y_ADR
                        8021          
+      SPR_PALCODE      8C00          
       SPR_VRAM         8800          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
@@ -704,8 +710,8 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       _TIME_SHUTDOWN_REQ
                          40          
     Input module : scroll
-      scroll_copy    20319D PROG     game_main 
-      scroll_set     20316C PROG     game_main 
+      scroll_copy    202E4B PROG     game_main 
+      scroll_set     202E1A PROG     player   
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -779,6 +785,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8020          
       SPR_OFFSET_Y_ADR
                        8021          
+      SPR_PALCODE      8C00          
       SPR_VRAM         8800          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
@@ -846,25 +853,172 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       _TIME_SHUTDOWN_REQ
                          40          
       copy_col_loop
-                     203275 PROG     
-      copy_column    203246 PROG     
-      copy_row       20329D PROG     
+                     202F23 PROG     
+      copy_column    202EF4 PROG     
+      copy_row       202F4B PROG     
       copy_row_loop
-                     2032C8 PROG     
-      done_x         20317E PROG     
-      done_y         203194 PROG     
-      down_y         20318F PROG     
-      left_x         203174 PROG     
-      no_down        203245 PROG     
-      no_left        2031D1 PROG     
-      no_right       2031F9 PROG     
-      no_up          20321D PROG     
-      no_x           20317C PROG     
-      right_x        203178 PROG     
-      up_y           20318A PROG     
+                     202F76 PROG     
+      done_x         202E2C PROG     
+      done_y         202E42 PROG     
+      down_y         202E3D PROG     
+      left_x         202E22 PROG     
+      no_down        202EF3 PROG     
+      no_left        202E7F PROG     
+      no_right       202EA7 PROG     
+      no_up          202ECB PROG     
+      no_x           202E2A PROG     
+      right_x        202E26 PROG     
+      up_y           202E38 PROG     
+    Input module : player
+      player_init    202F8E PROG     game_main 
+      player_move    203045 PROG     game_main 
+      ALARM_BOOT_REQ
+                          7          
+      BAT_SHUTDOWN_REQ
+                          5          
+      BGCOL_CRAM       83E0          
+      BG_COLOR         8118          
+      BIT_A               4          
+      BIT_B               5          
+      BIT_DOWN            1          
+      BIT_LEFT            2          
+      BIT_OPTION          6          
+      BIT_RIGHT           3          
+      BIT_UP              0          
+      Battery_Voltage
+                       6F80          
+      CHR_VRAM         A000          
+      DISP_CTL0        8000          
+      INT_CLR_BIT         7          
+      JOY_A              10          
+      JOY_B              20          
+      JOY_DOWN            2          
+      JOY_LEFT            4          
+      JOY_OPTION         40          
+      JOY_RIGHT           8          
+      JOY_UP              1          
+      LCD_CTR_ADD      8012          
+      Language         6F87          
+      MAX_SPEED       40000          
+      MP_SHUTDOWN_REQ
+                          7          
+      OS_Version       6F91          
+      PAL_SCR1_00      8111          
+      PAL_SCR1_01      8112          
+      PAL_SCR1_02      8113          
+      PAL_SCR1_10      8115          
+      PAL_SCR1_11      8116          
+      PAL_SCR1_12      8117          
+      PLAYER_ACCEL     8000          
+      PL_SCR0_00       8109          
+      PL_SCR0_01       810A          
+      PL_SCR0_02       810B          
+      PL_SCR0_10       810D          
+      PL_SCR0_11       810E          
+      PL_SCR0_12       810F          
+      PL_SPR_00        8101          
+      PL_SPR_01        8102          
+      PL_SPR_02        8103          
+      PL_SPR_10        8105          
+      PL_SPR_11        8106          
+      PL_SPR_12        8107          
+      POWER_BOOT_REQ
+                          6          
+      RESET_ADD        87E0          
+      RESUME_ANS          7          
+      RESUME_BOOT_REQ
+                          5          
+      SCRL1_VRAM       9000          
+      SCRL2_VRAM       9800          
+      SCRL_PRIO_ADR
+                       8030          
+      SCRL_X1_ADR      8032          
+      SCRL_X2_ADR      8034          
+      SCRL_Y1_ADR      8033          
+      SCRL_Y2_ADR      8035          
+      SCROLL1_CRAM     8280          
+      SCROLL2_CRAM     8300          
+      SPRITE_CRAM      8200          
+      SPRITE_X           48          
+      SPRITE_Y           48          
+      SPR_OFFSET_X_ADR
+                       8020          
+      SPR_OFFSET_Y_ADR
+                       8021          
+      SPR_PALCODE      8C00          
+      SPR_VRAM         8800          
+      STS_RG_ADD       8010          
+      SYS_FAILURE        FF          
+      SYS_SUCCESS         0          
+      Sys_lever        6F82          
+      TIMER_SHUTDOWN_ANS
+                          6          
+      TIME_SHUTDOWN_REQ
+                          6          
+      User_Answer      6F86          
+      User_Boot        6F84          
+      User_Shutdown
+                       6F85          
+      VECT_ALARMDOWNSET
+                          B          
+      VECT_ALARMSET
+                          9          
+      VECT_CLOCKGEARSET
+                          1          
+      VECT_FLASHALLERS
+                          7          
+      VECT_FLASHERS
+                          8          
+      VECT_FLASHPROTECT
+                          D          
+      VECT_FLASHWRITE
+                          6          
+      VECT_GEMODESET
+                          E          
+      VECT_INTLVSET
+                          4          
+      VECT_RTCGET         2          
+      VECT_SHUTDOWN
+                          0          
+      VECT_SYSFONTSET
+                          5          
+      VERSION_ADD      87FE          
+      WDCR               6F          
+      WD_CLR             4E          
+      WD_LCDST_HPOS
+                       8008          
+      WD_LCDST_VPOS
+                       8009          
+      WINDOW_CRAM      83F0          
+      WIN_WBAX_ADR     8002          
+      WIN_WBAY_ADR     8003          
+      WIN_WSIX_ADR     8004          
+      WIN_WSIY_ADR     8005          
+      _ALARM_BOOT_REQ
+                         80          
+      _BAT_SHUTDOWN_REQ
+                         20          
+      _INT_CLR_BIT       80          
+      _MP_SHUTDOWN_REQ
+                         80          
+      _POWER_BOOT_REQ
+                         40          
+      _RESUME_ANS        80          
+      _RESUME_BOOT_REQ
+                         20          
+      _TIMER_SHUTDOWN_ANS
+                         40          
+      _TIME_SHUTDOWN_REQ
+                         40          
+      decel_left     20309A PROG     
+      decel_right    203088 PROG     
+      guy_pal_copy   202FC3 PROG     
+      no_decel       2030AA PROG     
+      not_left       203060 PROG     
+      not_right      203073 PROG     
     Input module : vec_lib
-      SYSTEM_CALL    2032E0 SYSLIB   print    game_main 
+      SYSTEM_CALL    2030CD SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      2032F7 SYSLIB   game_main 
+      SYS_PATCH      2030E4 SYSLIB   game_main 
 
 Linker end,No error

@@ -22,7 +22,7 @@ clean:
 	$(ASM) $(AFLAGS) $<
 
 
-sample.ngp: vect.rel work.rel main.rel print.rel init.rel graphics.rel scroll.rel
+sample.ngp: vect.rel work.rel main.rel print.rel init.rel graphics.rel scroll.rel player.rel
 	$(LNK) sample.lcf
 	$(CONV) sample.abs
 	$(TRANS) sample.s24

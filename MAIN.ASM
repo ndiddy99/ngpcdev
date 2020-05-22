@@ -27,6 +27,7 @@
 	$include "print.inc"
 	$include "graphics.inc"
 	$include "scroll.inc"
+	$include "player.inc"
 
 
 ;-------------------------------------------------------
@@ -86,65 +87,9 @@ copy_row:
 	ldir (xix+),(xiy+)
 	addw ix,64-40
 	addw iy,128-40
-	djnz d,map_copy
-	;---copy guy sprite---
-	lda xiy,guy
-	lda xix,CHR_VRAM+tiles_end-tiles
-	ldl xbc,guy_end-guy
-	ldir (xix+),(xiy+)
-	;---copy guy palette---
-	lda xiy,guy_pal
-	lda xix,SPRITE_CRAM
-	ldl xbc,guy_pal_end-guy_pal ;should be a ldw but needs to be an ldl
-guy_pal_copy:                   ;to appease the assembler
-	ldw wa,(xiy+)
-	ldw (xix+),wa
-	djnz bc,guy_pal_copy	
+	djnz d,map_copy	
 	
-	ldb a,200
-	ldb (0x8800),a
-	ldb a,0y00011000
-	ldb (0x8801),a
-	ldb a,40
-	ldb (0x8802),a
-	ldb (0x8803),a
-	ldb a,0
-	ldb (0x8c00),a	
-	
-	ldb a,201
-	ldb (0x8804),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (0x8805),a
-	ldb a,8 ;offset 8 px from prev sprite on x axis
-	ldb (0x8806),a
-	ldb a,0
-	ldb (0x8807),a
-	ldb a,0
-	ldb (0x8c01),a
-	
-	ldb a,202
-	ldb (0x8808),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (0x8809),a
-	ldb a,248 ;offset -8 px from prev sprite on x axis
-	ldb (0x880a),a
-	ldb a,8 ;offset 8 px on y axis
-	ldb (0x880b),a
-	ldb a,0
-	ldb (0x8c02),a		
-	
-	
-	ldb a,203
-	ldb (0x880c),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (0x880d),a
-	ldb a,8 ;offset 8 px from prev sprite on x axis
-	ldb (0x880e),a
-	ldb a,0 ;offset 0 px on y axis
-	ldb (0x880f),a
-	ldb a,0
-	ldb (0x8c03),a		
-	
+	cal player_init
 	
 ;-------------------------------------------------------
 ; main loop
@@ -161,27 +106,27 @@ main:
 
 main_100:
 	
-	bit BIT_UP,(Sys_lever)
-	j z,not_up
-	subw (screen_y),1
-not_up:
-	bit BIT_DOWN,(Sys_lever)
-	j z,not_down
-	addw (screen_y),1
-not_down:
-	bit BIT_LEFT,(Sys_lever)
-	j z,not_left
-	subw (screen_x),1
-not_left:
-	bit BIT_RIGHT,(Sys_lever)
-	j z,not_right
-	addw (screen_x),1
-not_right:
+	; bit BIT_UP,(Sys_lever)
+	; j z,not_up
+	; subw (screen_y),1
+; not_up:
+	; bit BIT_DOWN,(Sys_lever)
+	; j z,not_down
+	; addw (screen_y),1
+; not_down:
+	; bit BIT_LEFT,(Sys_lever)
+	; j z,not_left
+	; subw (screen_x),1
+; not_left:
+	; bit BIT_RIGHT,(Sys_lever)
+	; j z,not_right
+	; addw (screen_x),1
+; not_right:
 
-	ldw wa,(screen_x)
-	ldw bc,(screen_y)
-	cal scroll_set
-	
+	; ldw wa,(screen_x)
+	; ldw bc,(screen_y)
+	; cal scroll_set
+	cal player_move
 	
 	ldb (stopper),0
 	j main

@@ -20,6 +20,10 @@
 	public scroll_x
 	public scroll_y
 	public scroll_mode
+	public player_x
+	public player_y
+	public player_dx
+	public player_dy
 ;  ---------------------------------
 ;		INCLUDE
 ;  ---------------------------------
@@ -40,6 +44,12 @@ screen_y dsb 2
 scroll_x dsb 2
 scroll_y dsb 2
 scroll_mode dsb 1
+;---player.asm---
+	align 2
+player_x dsb 4
+player_y dsb 4
+player_dx dsb 4
+player_dy dsb 4
 	
 	
 ;-------------------------------------------------------

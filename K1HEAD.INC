@@ -101,6 +101,7 @@ SPR_OFFSET_X_ADR	EQU	0x08020			;sprite offset H
 
 SPR_OFFSET_Y_ADR	EQU	0x08021			;sprite offset V
 
+SPR_PALCODE EQU 0x8C00 ;what palette # to use for each sprite 
 
 
 
