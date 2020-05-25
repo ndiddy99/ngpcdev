@@ -13,6 +13,7 @@
 ;   EXTERNAL DEFINITION
 ;  ---------------------------------
 	public scroll_set
+	public scroll_get_tile
 	public scroll_copy
 
 ;  ---------------------------------
@@ -69,6 +70,26 @@ done_y: ;if values are the same
 	ldb (scroll_mode),d
 	ldw (scroll_y),bc
 	ret
+
+
+;-------------------------------------------------------
+; scroll_get_tile: returns tile # at given coordinates in wa
+;-------------------------------------------------------
+; wa: x pos
+; bc: y pos
+;-------------------------------------------------------
+scroll_get_tile:
+	srlw 3,wa ;change pixels to 8x8 tiles
+	srlw 3,bc
+	slaw 6,bc ;64 tiles per row
+	addw bc,wa
+	slaw 1,bc ;bytes->words
+	ldw qbc,0
+	addl xbc,map
+	ldw wa,(xbc)
+	; andw wa,0x1ff ;tile number is low 9 bits of map word
+	ret
+	
 	
 ;-------------------------------------------------------
 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)

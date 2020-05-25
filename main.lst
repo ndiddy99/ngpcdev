@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Thu May 21 22:54:14 2020
+Sun May 24 22:01:53 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  main.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l main.asm
 
@@ -520,189 +520,197 @@ Location  Object                           Ins        Line Source Statement
                                  +1          7         513 extern scroll_set
                                  +1          8         514 
                                  +1          9         515 ;-------------------------------------------------------
-                                 +1         10         516 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +1         10         516 ; scroll_get_tile: returns tile # at given coordinates in wa
                                  +1         11         517 ;-------------------------------------------------------
-                                 +1         12         518 extern scroll_copy
-                                 +0         30         519 	$include "player.inc"
-                                 +1          1         520 ;-------------------------------------------------------
-                                 +1          2         521 ; player_init: initialize player sprite
-                                 +1          3         522 ;-------------------------------------------------------	
-                                 +1          4         523 extern player_init
-                                 +1          5         524 ;-------------------------------------------------------
-                                 +1          6         525 ; player_move: handle player movement
-                                 +1          7         526 ;-------------------------------------------------------
-                                 +1          8         527 extern player_move
-                                 +0         31         528 
-                                 +0         32         529 
-                                 +0         33         530 ;-------------------------------------------------------
-                                 +0         34         531 PROG section code large
-                                 +0         35         532 ;-------------------------------------------------------
-                                 +0         36         533 
-                                 +0         37         534 		public	__STARTUP
-  00FF1800                       +0         38         535 __STARTUP	equ	0xff1800
-                                 +0         39         536 ;-------------------------------------------------------
-                                 +0         40         537 ; entry point			
-                                 +0         41         538 ;-------------------------------------------------------
-00000000                         +0         42         539 reset:
-00000000  1D000000             R +0         43         540 	cal	SYS_PATCH ;called during init to assist with power functionality
-                                 +0         44         541 
-                                 +0         45         542 ;------------------- INITIALIZATION --------------------
-00000004  1D000000             R +0         46         543 	cal init_setting ;VRAM, work initialization
-                                 +0         47         544 	; cal print_init ;load system font
-00000008  0600                   +0         48         545 	ei 0 ;allow interrupts with a priority >= 0
-                                 +0         49         546 
-                                 +0         50         547 	;---copy palette---
-0000000A  F200000035           R +0         51         548 	lda xiy,palette
-0000000F  F1808234               +0         52         549 	lda xix,SCROLL1_CRAM
-00000013  4100000000           R +0         53         550 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
-00000018                         +0         54         551 palette_copy:                   ;to appease the assembler
-00000018  D5F520                 +0         55         552 	ldw wa,(xiy+)
-0000001B  F5F150                 +0         56         553 	ldw (xix+),wa
-0000001E  D91CF7                 +0         57         554 	djnz bc,palette_copy	
-                                 +0         58         555 	;---clear scroll plane 2 palette---
-00000021  D8A8                   +0         59         556 	ldw wa,0
-00000023  F1008334               +0         60         557 	lda xix,SCROLL2_CRAM
-00000027  314000                 +0         61         558 	ldw bc,4*16
-0000002A                         +0         62         559 palette2_copy:
-0000002A  F5F150                 +0         63         560 	ldw (xix+),wa
-0000002D  D91CFA                 +0         64         561 	djnz bc,palette2_copy
-                                 +0         65         562 
-                                 +0         66         563 	; ;---set bg color---	
-00000030  30850F                 +0         67         564 	ldw wa,0xf85
-00000033  F1E08350               +0         68         565 	ldw (0x83e0),wa
-00000037  2180                   +0         69         566 	ldb a,0x80 ;bg color on, first color in cram
-00000039  F1188141               +0         70         567 	ldb (0x8118),a	
-                                 +0         71         568 	
-                                 +0         72         569 	;---copy tiles---
-                                 +0         73         570 	
-0000003D  F200000035           R +0         74         571 	lda xiy,tiles
-00000042  F100A034               +0         75         572 	lda xix,CHR_VRAM
-00000046  4100000000           R +0         76         573 	ldl xbc,tiles_end-tiles
-0000004B  8511                   +0         77         574 	ldir (xix+),(xiy+)
-                                 +0         78         575 	
-                                 +0         79         576 	;---copy map---
-                                 +0         80         577 	
-0000004D  F1009034               +0         81         578 	lda xix,SCRL1_VRAM
-00000051  F200000035           R +0         82         579 	lda xiy,map
-00000056  2413                   +0         83         580 	ldb d,19 ;19 rows
-00000058                         +0         84         581 map_copy:	
-00000058  312800                 +0         85         582 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
-0000005B                         +0         86         583 copy_row:
-0000005B  8511                   +0         87         584 	ldir (xix+),(xiy+)
-0000005D  DCC81800               +0         88         585 	addw ix,64-40
-00000061  DDC85800               +0         89         586 	addw iy,128-40
-00000065  CC1CF0                 +0         90         587 	djnz d,map_copy	
-                                 +0         91         588 	
-00000068  1D000000             R +0         92         589 	cal player_init
-                                 +0         93         590 	
-                                 +0         94         591 ;-------------------------------------------------------
-                                 +0         95         592 ; main loop
-                                 +0         96         593 ;-------------------------------------------------------
-0000006C                         +0         97         594 main:
-0000006C  C100003F00           R +0         98         595 	cpb (stopper),0 ;spin until vblank resets var
-00000071  66F9                   +0         99         596 	j z,main
-                                 +0        100         597 
-00000073  C1856F3F00             +0        101         598 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
-00000078  6607                   +0        102         599 	j eq,main_100
-                                 +0        103         600 
-0000007A  C731A8                 +0        104         601 	ldb rw3,VECT_SHUTDOWN
-0000007D  1D000000             R +0        105         602 	cal SYSTEM_CALL
-                                 +0        106         603 
-00000081                         +0        107         604 main_100:
-                                 +0        108         605 	
-                                 +0        109         606 	; bit BIT_UP,(Sys_lever)
-                                 +0        110         607 	; j z,not_up
-                                 +0        111         608 	; subw (screen_y),1
-                                 +0        112         609 ; not_up:
-                                 +0        113         610 	; bit BIT_DOWN,(Sys_lever)
-                                 +0        114         611 	; j z,not_down
-                                 +0        115         612 	; addw (screen_y),1
-                                 +0        116         613 ; not_down:
-                                 +0        117         614 	; bit BIT_LEFT,(Sys_lever)
-                                 +0        118         615 	; j z,not_left
-                                 +0        119         616 	; subw (screen_x),1
-                                 +0        120         617 ; not_left:
-                                 +0        121         618 	; bit BIT_RIGHT,(Sys_lever)
-                                 +0        122         619 	; j z,not_right
-                                 +0        123         620 	; addw (screen_x),1
-                                 +0        124         621 ; not_right:
-                                 +0        125         622 
-                                 +0        126         623 	; ldw wa,(screen_x)
-                                 +0        127         624 	; ldw bc,(screen_y)
-                                 +0        128         625 	; cal scroll_set
-00000081  1D000000             R +0        129         626 	cal player_move
-                                 +0        130         627 	
-00000085  F100000000           R +0        131         628 	ldb (stopper),0
-0000008A  68E0                   +0        132         629 	j main
-                                 +0        133         630 	
-0000008C                         +0        134         631 String:
-0000008C  68656C6C6F20776F726C   +0        135         632 	db "hello world",0
+                                 +1         12         518 ; wa: x pos
+                                 +1         13         519 ; bc: y pos
+                                 +1         14         520 ;-------------------------------------------------------
+                                 +1         15         521 extern scroll_get_tile
+                                 +1         16         522 
+                                 +1         17         523 ;-------------------------------------------------------
+                                 +1         18         524 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +1         19         525 ;-------------------------------------------------------
+                                 +1         20         526 extern scroll_copy
+                                 +0         30         527 	$include "player.inc"
+                                 +1          1         528 ;-------------------------------------------------------
+                                 +1          2         529 ; player_init: initialize player sprite
+                                 +1          3         530 ;-------------------------------------------------------	
+                                 +1          4         531 extern player_init
+                                 +1          5         532 ;-------------------------------------------------------
+                                 +1          6         533 ; player_move: handle player movement
+                                 +1          7         534 ;-------------------------------------------------------
+                                 +1          8         535 extern player_move
+                                 +0         31         536 
+                                 +0         32         537 
+                                 +0         33         538 ;-------------------------------------------------------
+                                 +0         34         539 PROG section code large
+                                 +0         35         540 ;-------------------------------------------------------
+                                 +0         36         541 
+                                 +0         37         542 		public	__STARTUP
+  00FF1800                       +0         38         543 __STARTUP	equ	0xff1800
+                                 +0         39         544 ;-------------------------------------------------------
+                                 +0         40         545 ; entry point			
+                                 +0         41         546 ;-------------------------------------------------------
+00000000                         +0         42         547 reset:
+00000000  1D000000             R +0         43         548 	cal	SYS_PATCH ;called during init to assist with power functionality
+                                 +0         44         549 
+                                 +0         45         550 ;------------------- INITIALIZATION --------------------
+00000004  1D000000             R +0         46         551 	cal init_setting ;VRAM, work initialization
+                                 +0         47         552 	; cal print_init ;load system font
+00000008  0600                   +0         48         553 	ei 0 ;allow interrupts with a priority >= 0
+                                 +0         49         554 
+                                 +0         50         555 	;---copy palette---
+0000000A  F200000035           R +0         51         556 	lda xiy,palette
+0000000F  F1808234               +0         52         557 	lda xix,SCROLL1_CRAM
+00000013  4100000000           R +0         53         558 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
+00000018                         +0         54         559 palette_copy:                   ;to appease the assembler
+00000018  D5F520                 +0         55         560 	ldw wa,(xiy+)
+0000001B  F5F150                 +0         56         561 	ldw (xix+),wa
+0000001E  D91CF7                 +0         57         562 	djnz bc,palette_copy	
+                                 +0         58         563 	;---clear scroll plane 2 palette---
+00000021  D8A8                   +0         59         564 	ldw wa,0
+00000023  F1008334               +0         60         565 	lda xix,SCROLL2_CRAM
+00000027  314000                 +0         61         566 	ldw bc,4*16
+0000002A                         +0         62         567 palette2_copy:
+0000002A  F5F150                 +0         63         568 	ldw (xix+),wa
+0000002D  D91CFA                 +0         64         569 	djnz bc,palette2_copy
+                                 +0         65         570 
+                                 +0         66         571 	; ;---set bg color---	
+00000030  30850F                 +0         67         572 	ldw wa,0xf85
+00000033  F1E08350               +0         68         573 	ldw (0x83e0),wa
+00000037  2180                   +0         69         574 	ldb a,0x80 ;bg color on, first color in cram
+00000039  F1188141               +0         70         575 	ldb (0x8118),a	
+                                 +0         71         576 	
+                                 +0         72         577 	;---copy tiles---
+                                 +0         73         578 	
+0000003D  F200000035           R +0         74         579 	lda xiy,tiles
+00000042  F100A034               +0         75         580 	lda xix,CHR_VRAM
+00000046  4100000000           R +0         76         581 	ldl xbc,tiles_end-tiles
+0000004B  8511                   +0         77         582 	ldir (xix+),(xiy+)
+                                 +0         78         583 	
+                                 +0         79         584 	;---copy map---
+                                 +0         80         585 	
+0000004D  F1009034               +0         81         586 	lda xix,SCRL1_VRAM
+00000051  F200000035           R +0         82         587 	lda xiy,map
+00000056  2413                   +0         83         588 	ldb d,19 ;19 rows
+00000058                         +0         84         589 map_copy:	
+00000058  312800                 +0         85         590 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
+0000005B                         +0         86         591 copy_row:
+0000005B  8511                   +0         87         592 	ldir (xix+),(xiy+)
+0000005D  DCC81800               +0         88         593 	addw ix,64-40
+00000061  DDC85800               +0         89         594 	addw iy,128-40
+00000065  CC1CF0                 +0         90         595 	djnz d,map_copy	
+                                 +0         91         596 	
+00000068  1D000000             R +0         92         597 	cal player_init
+                                 +0         93         598 	
+                                 +0         94         599 ;-------------------------------------------------------
+                                 +0         95         600 ; main loop
+                                 +0         96         601 ;-------------------------------------------------------
+0000006C                         +0         97         602 main:
+0000006C  C100003F00           R +0         98         603 	cpb (stopper),0 ;spin until vblank resets var
+00000071  66F9                   +0         99         604 	j z,main
+                                 +0        100         605 
+00000073  C1856F3F00             +0        101         606 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
+00000078  6607                   +0        102         607 	j eq,main_100
+                                 +0        103         608 
+0000007A  C731A8                 +0        104         609 	ldb rw3,VECT_SHUTDOWN
+0000007D  1D000000             R +0        105         610 	cal SYSTEM_CALL
+                                 +0        106         611 
+00000081                         +0        107         612 main_100:
+                                 +0        108         613 	
+                                 +0        109         614 	; bit BIT_UP,(Sys_lever)
+                                 +0        110         615 	; j z,not_up
+                                 +0        111         616 	; subw (screen_y),1
+                                 +0        112         617 ; not_up:
+                                 +0        113         618 	; bit BIT_DOWN,(Sys_lever)
+                                 +0        114         619 	; j z,not_down
+                                 +0        115         620 	; addw (screen_y),1
+                                 +0        116         621 ; not_down:
+                                 +0        117         622 	; bit BIT_LEFT,(Sys_lever)
+                                 +0        118         623 	; j z,not_left
+                                 +0        119         624 	; subw (screen_x),1
+                                 +0        120         625 ; not_left:
+                                 +0        121         626 	; bit BIT_RIGHT,(Sys_lever)
+                                 +0        122         627 	; j z,not_right
+                                 +0        123         628 	; addw (screen_x),1
+                                 +0        124         629 ; not_right:
+                                 +0        125         630 
+                                 +0        126         631 	; ldw wa,(screen_x)
+                                 +0        127         632 	; ldw bc,(screen_y)
+                                 +0        128         633 	; cal scroll_set
+00000081  1D000000             R +0        129         634 	cal player_move
+                                 +0        130         635 	
+00000085  F100000000           R +0        131         636 	ldb (stopper),0
+0000008A  68E0                   +0        132         637 	j main
+                                 +0        133         638 	
+0000008C                         +0        134         639 String:
+0000008C  68656C6C6F20776F726C   +0        135         640 	db "hello world",0
           6400                                             
-00000098                         +0        136         633 	align 2
-00000098                         +0        137         634 JoyStr:
-00000098  6A6F797061643A207878   +0        138         635 	db "joypad: xx",0
+00000098                         +0        136         641 	align 2
+00000098                         +0        137         642 JoyStr:
+00000098  6A6F797061643A207878   +0        138         643 	db "joypad: xx",0
           00                                               
-000000A3                         +0        139         636 	align 2
-000000A4                         +0        140         637 FrameStr:
-000000A4  6672616D653A20787878   +0        141         638 	db "frame: xxxx",0
+000000A3                         +0        139         644 	align 2
+000000A4                         +0        140         645 FrameStr:
+000000A4  6672616D653A20787878   +0        141         646 	db "frame: xxxx",0
           7800                                             
-000000B0                         +0        142         639 	align 2
-                                 +0        143         640 	
-                                 +0        144         641 ;-------------------------------------------------------
-                                 +0        145         642 ; v-blank interrupt
-                                 +0        146         643 ;-------------------------------------------------------
-000000B0                         +0        147         644 v_int:
-000000B0  3C                     +0        148         645 	pushl xix
-000000B1  3D                     +0        149         646 	pushl xiy
-000000B2  3E                     +0        150         647 	pushl xiz
-000000B3  38                     +0        151         648 	pushl xwa
-000000B4  39                     +0        152         649 	pushl xbc
-000000B5  3A                     +0        153         650 	pushl xde
-000000B6  3B                     +0        154         651 	pushl xhl
-000000B7  02                     +0        155         652 	pushw sr
-                                 +0        156         653 ;	--------------------------------
-000000B8  086F4E                 +0        157         654 	ldb	(WDCR),WD_CLR ;watch dog clear
-000000BB  F1000000FF           R +0        158         655 	ldb	(stopper),0xff
-000000C0  1D000000             R +0        159         656 	cal scroll_copy
-                                 +0        160         657 ;	--------------------------------
-000000C4  03                     +0        161         658     popw sr
-000000C5  5B                     +0        162         659 	popl xhl
-000000C6  5A                     +0        163         660 	popl xde
-000000C7  59                     +0        164         661 	popl xbc
-000000C8  58                     +0        165         662 	popl xwa
-000000C9  5E                     +0        166         663 	popl xiz
-000000CA  5D                     +0        167         664 	popl xiy
-000000CB  5C                     +0        168         665 	popl xix
-                                 +0        169         666 
-000000CC  07                     +0        170         667 	reti
-                                 +0        171         668 
-                                 +0        172         669 ;-------------------------------------------------------
-                                 +0        173         670 ; other interrupts
-                                 +0        174         671 ;-------------------------------------------------------
-000000CD                         +0        175         672 h_int:
-000000CD  07                     +0        176         673 	reti
-                                 +0        177         674 
-000000CE                         +0        178         675 timer1:
-000000CE  07                     +0        179         676 	reti
-                                 +0        180         677 
-000000CF                         +0        181         678 timer2:
-000000CF  07                     +0        182         679 	reti
-                                 +0        183         680 
-000000D0                         +0        184         681 alarm_int:
-000000D0  07                     +0        185         682 	reti
-                                 +0        186         683 
-000000D1                         +0        187         684 z80_int:
-000000D1  07                     +0        188         685 	reti
-                                 +0        189         686 
-000000D2                         +0        190         687 sound_int:
-000000D2  07                     +0        191         688 	reti
-                                 +0        192         689 
-000000D3                         +0        193         690 dummy:
-000000D3  07                     +0        194         691 	reti
-                                 +0        195         692 
-                                 +0        196         693 ;-------------------------------------------------------
-                                 +0        197         694 	end
-                                 +0        198         695 ;-------------------------------------------------------
+000000B0                         +0        142         647 	align 2
+                                 +0        143         648 	
+                                 +0        144         649 ;-------------------------------------------------------
+                                 +0        145         650 ; v-blank interrupt
+                                 +0        146         651 ;-------------------------------------------------------
+000000B0                         +0        147         652 v_int:
+000000B0  3C                     +0        148         653 	pushl xix
+000000B1  3D                     +0        149         654 	pushl xiy
+000000B2  3E                     +0        150         655 	pushl xiz
+000000B3  38                     +0        151         656 	pushl xwa
+000000B4  39                     +0        152         657 	pushl xbc
+000000B5  3A                     +0        153         658 	pushl xde
+000000B6  3B                     +0        154         659 	pushl xhl
+000000B7  02                     +0        155         660 	pushw sr
+                                 +0        156         661 ;	--------------------------------
+000000B8  086F4E                 +0        157         662 	ldb	(WDCR),WD_CLR ;watch dog clear
+000000BB  F1000000FF           R +0        158         663 	ldb	(stopper),0xff
+000000C0  1D000000             R +0        159         664 	cal scroll_copy
+                                 +0        160         665 ;	--------------------------------
+000000C4  03                     +0        161         666     popw sr
+000000C5  5B                     +0        162         667 	popl xhl
+000000C6  5A                     +0        163         668 	popl xde
+000000C7  59                     +0        164         669 	popl xbc
+000000C8  58                     +0        165         670 	popl xwa
+000000C9  5E                     +0        166         671 	popl xiz
+000000CA  5D                     +0        167         672 	popl xiy
+000000CB  5C                     +0        168         673 	popl xix
+                                 +0        169         674 
+000000CC  07                     +0        170         675 	reti
+                                 +0        171         676 
+                                 +0        172         677 ;-------------------------------------------------------
+                                 +0        173         678 ; other interrupts
+                                 +0        174         679 ;-------------------------------------------------------
+000000CD                         +0        175         680 h_int:
+000000CD  07                     +0        176         681 	reti
+                                 +0        177         682 
+000000CE                         +0        178         683 timer1:
+000000CE  07                     +0        179         684 	reti
+                                 +0        180         685 
+000000CF                         +0        181         686 timer2:
+000000CF  07                     +0        182         687 	reti
+                                 +0        183         688 
+000000D0                         +0        184         689 alarm_int:
+000000D0  07                     +0        185         690 	reti
+                                 +0        186         691 
+000000D1                         +0        187         692 z80_int:
+000000D1  07                     +0        188         693 	reti
+                                 +0        189         694 
+000000D2                         +0        190         695 sound_int:
+000000D2  07                     +0        191         696 	reti
+                                 +0        192         697 
+000000D3                         +0        193         698 dummy:
+000000D3  07                     +0        194         699 	reti
+                                 +0        195         700 
+                                 +0        196         701 ;-------------------------------------------------------
+                                 +0        197         702 	end
+                                 +0        198         703 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  main.lst
@@ -868,4 +876,4 @@ z80_int          C L     LAB      000000D1  R PUB       PROG
 
 TOTAL
   138 user defined symbol(s)
-   18 unreferenced external symbol(s)
+   19 unreferenced external symbol(s)
