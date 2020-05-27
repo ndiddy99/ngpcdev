@@ -29,6 +29,8 @@ SPRITE_X equ 72
 SPRITE_Y equ 72
 PLAYER_WIDTH equ 16
 PLAYER_HEIGHT equ 16
+TSENSOR_HEIGHT equ 4
+BSENSOR_HEIGHT equ 12
 PLAYER_ACCEL equ 0x8000
 MAX_SPEED equ 0x38000
 
@@ -152,17 +154,68 @@ no_decel:
 	ldl xwa,(player_x)
 	ldl (player_dx),xbc
 	addl xwa,xbc
-	ldl (player_x),xwa	
-	;---collision detection---
+	ldl (player_x),xwa
+	;---horizontal collision detection---
+	;top left
+	ldw wa,(player_x+2)
+	ldw bc,(player_y+2)
+	addw bc,TSENSOR_HEIGHT
+	cal get_height
+	cpb a,16
+	j z,hcollision_left
+	;bottom left
+	ldw wa,(player_x+2)
+	ldw bc,(player_y+2)
+	addw bc,BSENSOR_HEIGHT
+	cal get_height
+	cpb a,16
+	j z,hcollision_left
+	;top right
+	ldw wa,(player_x+2)
+	addw wa,PLAYER_WIDTH-1
+	ldw bc,(player_y+2)
+	addw bc,TSENSOR_HEIGHT
+	cal get_height
+	cpb a,16
+	j z,hcollision_right
+	;bottom right
+	ldw wa,(player_x+2)
+	addw wa,PLAYER_WIDTH-1
+	ldw bc,(player_y+2)
+	addw bc,BSENSOR_HEIGHT
+	cal get_height
+	cpb a,16
+	j z,hcollision_right
+	j done_hcollision
+hcollision_left:
+	;reset dx and subpixel position
+	ldl xwa,0
+	ldl (player_dx),xwa
+	ldl xwa,(player_x)
+	andl xwa,0xfff00000 ;reset to start of tile you're colliding with
+	addl xwa,0x100000 ;eject into next tile
+	ldl (player_x),xwa
+	j done_hcollision
+hcollision_right:
+	;reset dx and subpixel position
+	ldl xwa,0
+	ldl (player_dx),xwa
+	ldl xwa,(player_x)
+	andl xwa,0xfff00000 ;reset to start of tile you're colliding with
+	ldw wa,0xffff ;subpixel portion- almost into next tile
+	ldl (player_x),xwa
+done_hcollision:	
+	;---vertical collision detection---
 	;left foot
 	ldw wa,(player_x+2)
+	; addw wa,4
 	ldw bc,(player_y+2)
 	addw bc,PLAYER_HEIGHT
 	cal get_sensor
 	pushb a
 	; ;right foot
 	ldw wa,(player_x+2)
-	addw wa,PLAYER_WIDTH
+	addw wa,PLAYER_WIDTH-1
 	ldw bc,(player_y+2)
 	addw bc,PLAYER_HEIGHT
 	cal get_sensor ;right sensor height in a
@@ -281,6 +334,10 @@ Height2252:
 ;what angle each 16x16 block is
 block_types:
 	db TYPE_EMPTY,TYPE_FULL,TYPE_45,TYPE_2251,TYPE_2252,TYPE_FULL,TYPE_FULL,TYPE_FULL
+	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL

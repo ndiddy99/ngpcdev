@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Sun May 24 22:51:30 2020
+Tue May 26 21:09:37 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -73,10 +73,10 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     user       PROGRAM    CODE        200294         EE PROG    (print.rel)    NORMAL
     user       PROGRAM    CODE        200382       2A98 PROG    (graphics.rel) NORMAL
     user       PROGRAM    CODE        202E1A        18E PROG    (scroll.rel)   NORMAL
-    user       PROGRAM    CODE        202FA8        265 PROG    (player.rel)   NORMAL
-    user       PROGRAM    CODE        20320D         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        203224         11 SYSLIB  (system.lib)   NORMAL
-    user                              203235     1FCDCB                        *** Gap ***
+    user       PROGRAM    CODE        202FA8        312 PROG    (player.rel)   NORMAL
+    user       PROGRAM    CODE        2032BA         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        2032D1         11 SYSLIB  (system.lib)   NORMAL
+    user                              2032E2     1FCD1E                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -872,7 +872,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       right_x        202E26 PROG     
       up_y           202E38 PROG     
     Input module : player
-      get_sensor     20312E PROG     
+      get_sensor     2031BB PROG     
       player_init    202FA8 PROG     game_main 
       player_move    20305F PROG     game_main 
       ALARM_BOOT_REQ
@@ -888,15 +888,17 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       BIT_OPTION          6          
       BIT_RIGHT           3          
       BIT_UP              0          
+      BSENSOR_HEIGHT
+                          C          
       Battery_Voltage
                        6F80          
       CHR_VRAM         A000          
       DISP_CTL0        8000          
-      Height2251     2031CD PROG     
-      Height2252     2031DD PROG     
-      Height45       2031BD PROG     
-      HeightEmpty    20319D PROG     
-      HeightFull     2031AD PROG     
+      Height2251     20325A PROG     
+      Height2252     20326A PROG     
+      Height45       20324A PROG     
+      HeightEmpty    20322A PROG     
+      HeightFull     20323A PROG     
       INT_CLR_BIT         7          
       JOY_A              10          
       JOY_B              20          
@@ -966,6 +968,8 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                           6          
       TIME_SHUTDOWN_REQ
                           6          
+      TSENSOR_HEIGHT
+                          4          
       TYPE_2251           3          
       TYPE_2252           4          
       TYPE_45             2          
@@ -1026,24 +1030,30 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      block_arrs     20319D PROG     
-      block_types    2031ED PROG     
-      check_above    203154 PROG     
-      check_below    203142 PROG     
+      block_arrs     20322A PROG     
+      block_types    20327A PROG     
+      check_above    2031E1 PROG     
+      check_below    2031CF PROG     
       decel_left     2030B4 PROG     
       decel_right    2030A2 PROG     
-      get_height     203165 PROG     
+      done_hcollision
+                     20315F PROG     
+      get_height     2031F2 PROG     
       get_sensor_end
-                     203164 PROG     
+                     2031F1 PROG     
       guy_pal_copy   202FDD PROG     
-      left_higher    2030FD PROG     
+      hcollision_left
+                     20312C PROG     
+      hcollision_right
+                     203148 PROG     
+      left_higher    20318A PROG     
       no_decel       2030C4 PROG     
-      no_mirror      20317C PROG     
+      no_mirror      203209 PROG     
       not_left       20307A PROG     
       not_right      20308D PROG     
     Input module : vec_lib
-      SYSTEM_CALL    20320D SYSLIB   print    game_main 
+      SYSTEM_CALL    2032BA SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      203224 SYSLIB   game_main 
+      SYS_PATCH      2032D1 SYSLIB   game_main 
 
 Linker end,No error
