@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Tue May 26 20:49:24 2020
+Fri May 29 18:29:51 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  main.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l main.asm
 
@@ -435,282 +435,271 @@ Location  Object                           Ins        Line Source Statement
                                  +1          3         428 ;================================================================
                                  +1          4         429 
                                  +1          5         430 	extern medium start_work
-                                 +1          6         431 	extern medium stopper
-                                 +1          7         432 	extern medium frame_cnt
-                                 +1          8         433 	extern medium screen_x
-                                 +1          9         434 	extern medium screen_y
-                                 +1         10         435 	
-                                 +1         11         436 	extern medium player_x
-                                 +1         12         437 	extern medium player_y
-                                 +1         13         438 	extern medium player_dx
-                                 +1         14         439 	extern medium player_dy
-                                 +1         15         440 ;================================================================
-                                 +1         16         441 
-                                 +0         26         442 	$include "game.inc"
-                                 +1          1         443 ;================================================================
-                                 +1          2         444 ; GAME EQU
-                                 +1          3         445 ;================================================================
-                                 +1          4         446 
-  000000A0                       +1          5         447 disp_size_x		EQU	160		; X screen size
-                                 +1          6         448 
-  00000098                       +1          7         449 disp_size_y		EQU	152		; Y screen size
-                                 +1          8         450 
-  00000040                       +1          9         451 obj_max		EQU	64		; number of maximum sprites
-                                 +1         10         452 
-                                 +1         11         453 ;================================================================
-                                 +1         12         454 
-                                 +0         27         455 	$include "print.inc"
-                                 +1          1         456 ;*****************************************
-                                 +1          2         457 ;	Print functions 
-                                 +1          3         458 ;*****************************************
-                                 +1          4         459 
-                                 +1          5         460 ;-------------------------------------------------------
-                                 +1          6         461 ; print_init: loads system font into first half of vram
-                                 +1          7         462 ;-------------------------------------------------------
-                                 +1          8         463 	extern print_init
-                                 +1          9         464 
-                                 +1         10         465 ;-------------------------------------------------------
-                                 +1         11         466 ; print_string
-                                 +1         12         467 ;-------------------------------------------------------
-                                 +1         13         468 ; xix: pointer to null terminated text
-                                 +1         14         469 ; wa: x pos
-                                 +1         15         470 ; bc: y pos
-                                 +1         16         471 ;-------------------------------------------------------
-                                 +1         17         472 	extern print_string
-                                 +1         18         473 	
-                                 +1         19         474 ;-------------------------------------------------------
-                                 +1         20         475 ; print_byte
-                                 +1         21         476 ;-------------------------------------------------------
-                                 +1         22         477 ; xix: pointer to byte to print
-                                 +1         23         478 ; wa: x pos
-                                 +1         24         479 ; bc: y pos
-                                 +1         25         480 ;-------------------------------------------------------
-                                 +1         26         481 	extern print_byte
-                                 +1         27         482 	
-                                 +1         28         483 ;-------------------------------------------------------
-                                 +1         29         484 ; print_word	
-                                 +1         30         485 ;-------------------------------------------------------
-                                 +1         31         486 ; xix: pointer to word to print
-                                 +1         32         487 ; wa: x pos
-                                 +1         33         488 ; bc: y pos
-                                 +1         34         489 ;-------------------------------------------------------
-                                 +1         35         490 	extern print_word
-                                 +0         28         491 	$include "graphics.inc"
-                                 +1          1         492 ;*****************************************
-                                 +1          2         493 ;	Graphics data 
-                                 +1          3         494 ;*****************************************
-                                 +1          4         495 
-                                 +1          5         496 	extern palette
-                                 +1          6         497 	extern palette_end
-                                 +1          7         498 	extern tiles
-                                 +1          8         499 	extern tiles_end
-                                 +1          9         500 	extern map
-                                 +1         10         501 	extern map_end
-                                 +1         11         502 	extern guy
-                                 +1         12         503 	extern guy_end
-                                 +1         13         504 	extern guy_pal
-                                 +1         14         505 	extern guy_pal_end
-                                 +0         29         506 	$include "scroll.inc"
-                                 +1          1         507 ;-------------------------------------------------------
-                                 +1          2         508 ; scroll_set: set scroll to specified coords
-                                 +1          3         509 ;-------------------------------------------------------
-                                 +1          4         510 ; wa: x pos
-                                 +1          5         511 ; bc: y pos
-                                 +1          6         512 ;-------------------------------------------------------
-                                 +1          7         513 extern scroll_set
-                                 +1          8         514 
-                                 +1          9         515 ;-------------------------------------------------------
-                                 +1         10         516 ; scroll_get_tile: returns tile # at given coordinates in wa
-                                 +1         11         517 ;-------------------------------------------------------
-                                 +1         12         518 ; wa: x pos
-                                 +1         13         519 ; bc: y pos
-                                 +1         14         520 ;-------------------------------------------------------
-                                 +1         15         521 extern scroll_get_tile
-                                 +1         16         522 
-                                 +1         17         523 ;-------------------------------------------------------
-                                 +1         18         524 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
-                                 +1         19         525 ;-------------------------------------------------------
-                                 +1         20         526 extern scroll_copy
-                                 +0         30         527 	$include "player.inc"
-                                 +1          1         528 ;-------------------------------------------------------
-                                 +1          2         529 ; player_init: initialize player sprite
-                                 +1          3         530 ;-------------------------------------------------------	
-                                 +1          4         531 extern player_init
-                                 +1          5         532 ;-------------------------------------------------------
-                                 +1          6         533 ; player_move: handle player movement
-                                 +1          7         534 ;-------------------------------------------------------
-                                 +1          8         535 extern player_move
-                                 +0         31         536 
-                                 +0         32         537 
-                                 +0         33         538 ;-------------------------------------------------------
-                                 +0         34         539 PROG section code large
-                                 +0         35         540 ;-------------------------------------------------------
-                                 +0         36         541 
-                                 +0         37         542 		public	__STARTUP
-  00FF1800                       +0         38         543 __STARTUP	equ	0xff1800
-                                 +0         39         544 ;-------------------------------------------------------
-                                 +0         40         545 ; entry point			
-                                 +0         41         546 ;-------------------------------------------------------
-00000000                         +0         42         547 reset:
-00000000  1D000000             R +0         43         548 	cal	SYS_PATCH ;called during init to assist with power functionality
-                                 +0         44         549 
-                                 +0         45         550 ;------------------- INITIALIZATION --------------------
-00000004  1D000000             R +0         46         551 	cal init_setting ;VRAM, work initialization
-                                 +0         47         552 	; cal print_init ;load system font
-00000008  0600                   +0         48         553 	ei 0 ;allow interrupts with a priority >= 0
-                                 +0         49         554 
-                                 +0         50         555 	;---copy palette---
-0000000A  F200000035           R +0         51         556 	lda xiy,palette
-0000000F  F1808234               +0         52         557 	lda xix,SCROLL1_CRAM
-00000013  4100000000           R +0         53         558 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
-00000018                         +0         54         559 palette_copy:                   ;to appease the assembler
-00000018  D5F520                 +0         55         560 	ldw wa,(xiy+)
-0000001B  F5F150                 +0         56         561 	ldw (xix+),wa
-0000001E  D91CF7                 +0         57         562 	djnz bc,palette_copy	
-                                 +0         58         563 	;---clear scroll plane 2 palette---
-00000021  D8A8                   +0         59         564 	ldw wa,0
-00000023  F1008334               +0         60         565 	lda xix,SCROLL2_CRAM
-00000027  314000                 +0         61         566 	ldw bc,4*16
-0000002A                         +0         62         567 palette2_copy:
-0000002A  F5F150                 +0         63         568 	ldw (xix+),wa
-0000002D  D91CFA                 +0         64         569 	djnz bc,palette2_copy
-                                 +0         65         570 
-                                 +0         66         571 	; ;---set bg color---	
-00000030  30850F                 +0         67         572 	ldw wa,0xf85
-00000033  F1E08350               +0         68         573 	ldw (0x83e0),wa
-00000037  2180                   +0         69         574 	ldb a,0x80 ;bg color on, first color in cram
-00000039  F1188141               +0         70         575 	ldb (0x8118),a	
-                                 +0         71         576 	
-                                 +0         72         577 	;---copy tiles---
-                                 +0         73         578 	
-0000003D  F200000035           R +0         74         579 	lda xiy,tiles
-00000042  F100A034               +0         75         580 	lda xix,CHR_VRAM
-00000046  4100000000           R +0         76         581 	ldl xbc,tiles_end-tiles
-0000004B  8511                   +0         77         582 	ldir (xix+),(xiy+)
-                                 +0         78         583 	
-                                 +0         79         584 	;---copy map---
-                                 +0         80         585 	
-0000004D  F1009034               +0         81         586 	lda xix,SCRL1_VRAM
-00000051  F200000035           R +0         82         587 	lda xiy,map
-00000056  2413                   +0         83         588 	ldb d,19 ;19 rows
-00000058                         +0         84         589 map_copy:	
-00000058  312800                 +0         85         590 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
-0000005B                         +0         86         591 copy_row:
-0000005B  8511                   +0         87         592 	ldir (xix+),(xiy+)
-0000005D  DCC81800               +0         88         593 	addw ix,64-40
-00000061  DDC85800               +0         89         594 	addw iy,128-40
-00000065  CC1CF0                 +0         90         595 	djnz d,map_copy	
-                                 +0         91         596 	
-00000068  1D000000             R +0         92         597 	cal player_init
-                                 +0         93         598 	
-                                 +0         94         599 ;-------------------------------------------------------
-                                 +0         95         600 ; main loop
-                                 +0         96         601 ;-------------------------------------------------------
-0000006C                         +0         97         602 main:
-0000006C  C100003F00           R +0         98         603 	cpb (stopper),0 ;spin until vblank resets var
-00000071  66F9                   +0         99         604 	j z,main
-                                 +0        100         605 
-00000073  C1856F3F00             +0        101         606 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
-00000078  6607                   +0        102         607 	j eq,main_100
-                                 +0        103         608 
-0000007A  C731A8                 +0        104         609 	ldb rw3,VECT_SHUTDOWN
-0000007D  1D000000             R +0        105         610 	cal SYSTEM_CALL
-                                 +0        106         611 
-00000081                         +0        107         612 main_100:
-                                 +0        108         613 	
-                                 +0        109         614 	; bit BIT_UP,(Sys_lever)
-                                 +0        110         615 	; j z,not_up
-                                 +0        111         616 	; subw (screen_y),1
-                                 +0        112         617 ; not_up:
-                                 +0        113         618 	; bit BIT_DOWN,(Sys_lever)
-                                 +0        114         619 	; j z,not_down
-                                 +0        115         620 	; addw (screen_y),1
-                                 +0        116         621 ; not_down:
-                                 +0        117         622 	; bit BIT_LEFT,(Sys_lever)
-                                 +0        118         623 	; j z,not_left
-                                 +0        119         624 	; subw (screen_x),1
-                                 +0        120         625 ; not_left:
-                                 +0        121         626 	; bit BIT_RIGHT,(Sys_lever)
-                                 +0        122         627 	; j z,not_right
-                                 +0        123         628 	; addw (screen_x),1
-                                 +0        124         629 ; not_right:
-                                 +0        125         630 
-                                 +0        126         631 	; ldw wa,(screen_x)
-                                 +0        127         632 	; ldw bc,(screen_y)
-                                 +0        128         633 	; cal scroll_set
-00000081  1D000000             R +0        129         634 	cal player_move
-                                 +0        130         635 	
-00000085  F100000000           R +0        131         636 	ldb (stopper),0
-0000008A  68E0                   +0        132         637 	j main
-                                 +0        133         638 	
-0000008C                         +0        134         639 String:
-0000008C  68656C6C6F20776F726C   +0        135         640 	db "hello world",0
+                                 +1          6         431 	extern medium stopper ; keeps main loop spinning until vblank (byte)
+                                 +1          7         432 	extern medium joypad ;joypad bitmask (byte)
+                                 +1          8         433 	extern medium joylast ;last frame's joypad bitmask (byte)
+                                 +1          9         434 	extern medium joyedge ;what buttons were pressed this frame (byte)	
+                                 +1         10         435 	extern medium frame_cnt ; counts number of frames (word)
+                                 +1         11         436 	
+                                 +1         12         437 	extern medium player_x ;player x pos (long)
+                                 +1         13         438 	extern medium player_y ;player y pos (long)
+                                 +1         14         439 	extern medium player_dx ;long
+                                 +1         15         440 	extern medium player_dy ;long
+                                 +1         16         441 ;================================================================
+                                 +1         17         442 
+                                 +0         26         443 	$include "game.inc"
+                                 +1          1         444 ;================================================================
+                                 +1          2         445 ; GAME EQU
+                                 +1          3         446 ;================================================================
+                                 +1          4         447 
+  000000A0                       +1          5         448 disp_size_x		EQU	160		; X screen size
+                                 +1          6         449 
+  00000098                       +1          7         450 disp_size_y		EQU	152		; Y screen size
+                                 +1          8         451 
+  00000040                       +1          9         452 obj_max		EQU	64		; number of maximum sprites
+                                 +1         10         453 
+                                 +1         11         454 ;================================================================
+                                 +1         12         455 
+                                 +0         27         456 	$include "print.inc"
+                                 +1          1         457 ;*****************************************
+                                 +1          2         458 ;	Print functions 
+                                 +1          3         459 ;*****************************************
+                                 +1          4         460 
+                                 +1          5         461 ;-------------------------------------------------------
+                                 +1          6         462 ; print_init: loads system font into first half of vram
+                                 +1          7         463 ;-------------------------------------------------------
+                                 +1          8         464 	extern print_init
+                                 +1          9         465 
+                                 +1         10         466 ;-------------------------------------------------------
+                                 +1         11         467 ; print_string
+                                 +1         12         468 ;-------------------------------------------------------
+                                 +1         13         469 ; xix: pointer to null terminated text
+                                 +1         14         470 ; wa: x pos
+                                 +1         15         471 ; bc: y pos
+                                 +1         16         472 ;-------------------------------------------------------
+                                 +1         17         473 	extern print_string
+                                 +1         18         474 	
+                                 +1         19         475 ;-------------------------------------------------------
+                                 +1         20         476 ; print_byte
+                                 +1         21         477 ;-------------------------------------------------------
+                                 +1         22         478 ; xix: pointer to byte to print
+                                 +1         23         479 ; wa: x pos
+                                 +1         24         480 ; bc: y pos
+                                 +1         25         481 ;-------------------------------------------------------
+                                 +1         26         482 	extern print_byte
+                                 +1         27         483 	
+                                 +1         28         484 ;-------------------------------------------------------
+                                 +1         29         485 ; print_word	
+                                 +1         30         486 ;-------------------------------------------------------
+                                 +1         31         487 ; xix: pointer to word to print
+                                 +1         32         488 ; wa: x pos
+                                 +1         33         489 ; bc: y pos
+                                 +1         34         490 ;-------------------------------------------------------
+                                 +1         35         491 	extern print_word
+                                 +0         28         492 	$include "graphics.inc"
+                                 +1          1         493 ;*****************************************
+                                 +1          2         494 ;	Graphics data 
+                                 +1          3         495 ;*****************************************
+                                 +1          4         496 
+                                 +1          5         497 	extern palette
+                                 +1          6         498 	extern palette_end
+                                 +1          7         499 	extern tiles
+                                 +1          8         500 	extern tiles_end
+                                 +1          9         501 	extern map
+                                 +1         10         502 	extern map_end
+                                 +1         11         503 	extern guy
+                                 +1         12         504 	extern guy_end
+                                 +1         13         505 	extern guy_pal
+                                 +1         14         506 	extern guy_pal_end
+                                 +0         29         507 	$include "scroll.inc"
+                                 +1          1         508 ;-------------------------------------------------------
+                                 +1          2         509 ; scroll_set: set scroll to specified coords
+                                 +1          3         510 ;-------------------------------------------------------
+                                 +1          4         511 ; wa: x pos
+                                 +1          5         512 ; bc: y pos
+                                 +1          6         513 ;-------------------------------------------------------
+                                 +1          7         514 extern scroll_set
+                                 +1          8         515 
+                                 +1          9         516 ;-------------------------------------------------------
+                                 +1         10         517 ; scroll_get_tile: returns tile # at given coordinates in wa
+                                 +1         11         518 ;-------------------------------------------------------
+                                 +1         12         519 ; wa: x pos
+                                 +1         13         520 ; bc: y pos
+                                 +1         14         521 ;-------------------------------------------------------
+                                 +1         15         522 extern scroll_get_tile
+                                 +1         16         523 
+                                 +1         17         524 ;-------------------------------------------------------
+                                 +1         18         525 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +1         19         526 ;-------------------------------------------------------
+                                 +1         20         527 extern scroll_copy
+                                 +0         30         528 	$include "player.inc"
+                                 +1          1         529 ;-------------------------------------------------------
+                                 +1          2         530 ; player_init: initialize player sprite
+                                 +1          3         531 ;-------------------------------------------------------	
+                                 +1          4         532 extern player_init
+                                 +1          5         533 ;-------------------------------------------------------
+                                 +1          6         534 ; player_move: handle player movement
+                                 +1          7         535 ;-------------------------------------------------------
+                                 +1          8         536 extern player_move
+                                 +0         31         537 
+                                 +0         32         538 
+                                 +0         33         539 ;-------------------------------------------------------
+                                 +0         34         540 PROG section code large
+                                 +0         35         541 ;-------------------------------------------------------
+                                 +0         36         542 
+                                 +0         37         543 		public	__STARTUP
+  00FF1800                       +0         38         544 __STARTUP	equ	0xff1800
+                                 +0         39         545 ;-------------------------------------------------------
+                                 +0         40         546 ; entry point			
+                                 +0         41         547 ;-------------------------------------------------------
+00000000                         +0         42         548 reset:
+00000000  1D000000             R +0         43         549 	cal	SYS_PATCH ;called during init to assist with power functionality
+                                 +0         44         550 
+                                 +0         45         551 ;------------------- INITIALIZATION --------------------
+00000004  1D000000             R +0         46         552 	cal init_setting ;VRAM, work initialization
+                                 +0         47         553 	; cal print_init ;load system font
+00000008  0600                   +0         48         554 	ei 0 ;allow interrupts with a priority >= 0
+                                 +0         49         555 
+                                 +0         50         556 	;---copy palette---
+0000000A  F200000035           R +0         51         557 	lda xiy,palette
+0000000F  F1808234               +0         52         558 	lda xix,SCROLL1_CRAM
+00000013  4100000000           R +0         53         559 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
+00000018                         +0         54         560 palette_copy:                   ;to appease the assembler
+00000018  D5F520                 +0         55         561 	ldw wa,(xiy+)
+0000001B  F5F150                 +0         56         562 	ldw (xix+),wa
+0000001E  D91CF7                 +0         57         563 	djnz bc,palette_copy	
+                                 +0         58         564 	;---clear scroll plane 2 palette---
+00000021  D8A8                   +0         59         565 	ldw wa,0
+00000023  F1008334               +0         60         566 	lda xix,SCROLL2_CRAM
+00000027  314000                 +0         61         567 	ldw bc,4*16
+0000002A                         +0         62         568 palette2_copy:
+0000002A  F5F150                 +0         63         569 	ldw (xix+),wa
+0000002D  D91CFA                 +0         64         570 	djnz bc,palette2_copy
+                                 +0         65         571 
+                                 +0         66         572 	; ;---set bg color---	
+00000030  30850F                 +0         67         573 	ldw wa,0xf85
+00000033  F1E08350               +0         68         574 	ldw (0x83e0),wa
+00000037  2180                   +0         69         575 	ldb a,0x80 ;bg color on, first color in cram
+00000039  F1188141               +0         70         576 	ldb (0x8118),a	
+                                 +0         71         577 	
+                                 +0         72         578 	;---copy tiles---
+                                 +0         73         579 	
+0000003D  F200000035           R +0         74         580 	lda xiy,tiles
+00000042  F100A034               +0         75         581 	lda xix,CHR_VRAM
+00000046  4100000000           R +0         76         582 	ldl xbc,tiles_end-tiles
+0000004B  8511                   +0         77         583 	ldir (xix+),(xiy+)
+                                 +0         78         584 	
+                                 +0         79         585 	;---copy map---
+                                 +0         80         586 	
+0000004D  F1009034               +0         81         587 	lda xix,SCRL1_VRAM
+00000051  F200000035           R +0         82         588 	lda xiy,map
+00000056  2413                   +0         83         589 	ldb d,19 ;19 rows
+00000058                         +0         84         590 map_copy:	
+00000058  312800                 +0         85         591 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
+0000005B                         +0         86         592 copy_row:
+0000005B  8511                   +0         87         593 	ldir (xix+),(xiy+)
+0000005D  DCC81800               +0         88         594 	addw ix,64-40
+00000061  DDC85800               +0         89         595 	addw iy,128-40
+00000065  CC1CF0                 +0         90         596 	djnz d,map_copy	
+                                 +0         91         597 	
+00000068  1D000000             R +0         92         598 	cal player_init
+                                 +0         93         599 	
+                                 +0         94         600 ;-------------------------------------------------------
+                                 +0         95         601 ; main loop
+                                 +0         96         602 ;-------------------------------------------------------
+0000006C                         +0         97         603 main:
+0000006C  C100003F00           R +0         98         604 	cpb (stopper),0 ;spin until vblank resets var
+00000071  66F9                   +0         99         605 	j z,main
+                                 +0        100         606 
+00000073  C1856F3F00             +0        101         607 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
+00000078  6607                   +0        102         608 	j eq,main_100
+                                 +0        103         609 
+0000007A  C731A8                 +0        104         610 	ldb rw3,VECT_SHUTDOWN
+0000007D  1D000000             R +0        105         611 	cal SYSTEM_CALL
+                                 +0        106         612 
+00000081                         +0        107         613 main_100:
+00000081  1D000000             R +0        108         614 	cal player_move
+                                 +0        109         615 	
+00000085  F100000000           R +0        110         616 	ldb (stopper),0
+0000008A  68E0                   +0        111         617 	j main
+                                 +0        112         618 	
+0000008C                         +0        113         619 String:
+0000008C  68656C6C6F20776F726C   +0        114         620 	db "hello world",0
           6400                                             
-00000098                         +0        136         641 	align 2
-00000098                         +0        137         642 JoyStr:
-00000098  6A6F797061643A207878   +0        138         643 	db "joypad: xx",0
+00000098                         +0        115         621 	align 2
+00000098                         +0        116         622 JoyStr:
+00000098  6A6F797061643A207878   +0        117         623 	db "joypad: xx",0
           00                                               
-000000A3                         +0        139         644 	align 2
-000000A4                         +0        140         645 FrameStr:
-000000A4  6672616D653A20787878   +0        141         646 	db "frame: xxxx",0
+000000A3                         +0        118         624 	align 2
+000000A4                         +0        119         625 FrameStr:
+000000A4  6672616D653A20787878   +0        120         626 	db "frame: xxxx",0
           7800                                             
-000000B0                         +0        142         647 	align 2
-                                 +0        143         648 	
-                                 +0        144         649 ;-------------------------------------------------------
-                                 +0        145         650 ; v-blank interrupt
-                                 +0        146         651 ;-------------------------------------------------------
-000000B0                         +0        147         652 v_int:
-000000B0  3C                     +0        148         653 	pushl xix
-000000B1  3D                     +0        149         654 	pushl xiy
-000000B2  3E                     +0        150         655 	pushl xiz
-000000B3  38                     +0        151         656 	pushl xwa
-000000B4  39                     +0        152         657 	pushl xbc
-000000B5  3A                     +0        153         658 	pushl xde
-000000B6  3B                     +0        154         659 	pushl xhl
-000000B7  02                     +0        155         660 	pushw sr
-                                 +0        156         661 ;	--------------------------------
-000000B8  086F4E                 +0        157         662 	ldb	(WDCR),WD_CLR ;watch dog clear
-000000BB  F1000000FF           R +0        158         663 	ldb	(stopper),0xff
-000000C0  1D000000             R +0        159         664 	cal scroll_copy
-                                 +0        160         665 ;	--------------------------------
-000000C4  03                     +0        161         666     popw sr
-000000C5  5B                     +0        162         667 	popl xhl
-000000C6  5A                     +0        163         668 	popl xde
-000000C7  59                     +0        164         669 	popl xbc
-000000C8  58                     +0        165         670 	popl xwa
-000000C9  5E                     +0        166         671 	popl xiz
-000000CA  5D                     +0        167         672 	popl xiy
-000000CB  5C                     +0        168         673 	popl xix
-                                 +0        169         674 
-000000CC  07                     +0        170         675 	reti
-                                 +0        171         676 
-                                 +0        172         677 ;-------------------------------------------------------
-                                 +0        173         678 ; other interrupts
-                                 +0        174         679 ;-------------------------------------------------------
-000000CD                         +0        175         680 h_int:
-000000CD  07                     +0        176         681 	reti
-                                 +0        177         682 
-000000CE                         +0        178         683 timer1:
-000000CE  07                     +0        179         684 	reti
-                                 +0        180         685 
-000000CF                         +0        181         686 timer2:
-000000CF  07                     +0        182         687 	reti
-                                 +0        183         688 
-000000D0                         +0        184         689 alarm_int:
-000000D0  07                     +0        185         690 	reti
-                                 +0        186         691 
-000000D1                         +0        187         692 z80_int:
-000000D1  07                     +0        188         693 	reti
-                                 +0        189         694 
-000000D2                         +0        190         695 sound_int:
-000000D2  07                     +0        191         696 	reti
-                                 +0        192         697 
-000000D3                         +0        193         698 dummy:
-000000D3  07                     +0        194         699 	reti
-                                 +0        195         700 
-                                 +0        196         701 ;-------------------------------------------------------
-                                 +0        197         702 	end
-                                 +0        198         703 ;-------------------------------------------------------
+000000B0                         +0        121         627 	align 2
+                                 +0        122         628 	
+                                 +0        123         629 ;-------------------------------------------------------
+                                 +0        124         630 ; v-blank interrupt
+                                 +0        125         631 ;-------------------------------------------------------
+000000B0                         +0        126         632 v_int:
+000000B0  3C                     +0        127         633 	pushl xix
+000000B1  3D                     +0        128         634 	pushl xiy
+000000B2  3E                     +0        129         635 	pushl xiz
+000000B3  38                     +0        130         636 	pushl xwa
+000000B4  39                     +0        131         637 	pushl xbc
+000000B5  3A                     +0        132         638 	pushl xde
+000000B6  3B                     +0        133         639 	pushl xhl
+000000B7  02                     +0        134         640 	pushw sr
+                                 +0        135         641 ;	--------------------------------
+000000B8  086F4E                 +0        136         642 	ldb	(WDCR),WD_CLR ;watch dog clear
+000000BB  F1000000FF           R +0        137         643 	ldb	(stopper),0xff
+000000C0  1D000000             R +0        138         644 	cal scroll_copy
+                                 +0        139         645 	;set up joypad variables
+000000C4  C1000021             R +0        140         646 	ldb a,(joypad)
+000000C8  F1000041             R +0        141         647 	ldb (joylast),a
+000000CC  C1826F20               +0        142         648 	ldb w,(Sys_lever)
+000000D0  F1000040             R +0        143         649 	ldb (joypad),w
+000000D4  C9CDFF                 +0        144         650 	xorb a,0xff ;flip the bits
+000000D7  C8C1                   +0        145         651 	andb a,w ;check if there's any overlap between what was pressed this frame
+000000D9  F1000041             R +0        146         652 	ldb (joyedge),a ;and what wasn't pressed last frame
+                                 +0        147         653 	
+                                 +0        148         654 ;	--------------------------------
+000000DD  03                     +0        149         655     popw sr
+000000DE  5B                     +0        150         656 	popl xhl
+000000DF  5A                     +0        151         657 	popl xde
+000000E0  59                     +0        152         658 	popl xbc
+000000E1  58                     +0        153         659 	popl xwa
+000000E2  5E                     +0        154         660 	popl xiz
+000000E3  5D                     +0        155         661 	popl xiy
+000000E4  5C                     +0        156         662 	popl xix
+                                 +0        157         663 
+000000E5  07                     +0        158         664 	reti
+                                 +0        159         665 
+                                 +0        160         666 ;-------------------------------------------------------
+                                 +0        161         667 ; other interrupts
+                                 +0        162         668 ;-------------------------------------------------------
+000000E6                         +0        163         669 h_int:
+000000E6  07                     +0        164         670 	reti
+                                 +0        165         671 
+000000E7                         +0        166         672 timer1:
+000000E7  07                     +0        167         673 	reti
+                                 +0        168         674 
+000000E8                         +0        169         675 timer2:
+000000E8  07                     +0        170         676 	reti
+                                 +0        171         677 
+000000E9                         +0        172         678 alarm_int:
+000000E9  07                     +0        173         679 	reti
+                                 +0        174         680 
+000000EA                         +0        175         681 z80_int:
+000000EA  07                     +0        176         682 	reti
+                                 +0        177         683 
+000000EB                         +0        178         684 sound_int:
+000000EB  07                     +0        179         685 	reti
+                                 +0        180         686 
+000000EC                         +0        181         687 dummy:
+000000EC  07                     +0        182         688 	reti
+                                 +0        183         689 
+                                 +0        184         690 ;-------------------------------------------------------
+                                 +0        185         691 	end
+                                 +0        186         692 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  main.lst
@@ -768,7 +757,7 @@ PL_SPR_10                NUM      00008105  A
 PL_SPR_11                NUM      00008106  A           
 PL_SPR_12                NUM      00008107  A           
 POWER_BOOT_REQ           NUM      00000006  A           
-PROG             C L     SEC      00000000  R D4        
+PROG             C L     SEC      00000000  R ED        
 RESET_ADD                NUM      000087E0  A           
 RESUME_ANS               NUM      00000007  A           
 RESUME_BOOT_REQ          NUM      00000005  A           
@@ -843,14 +832,17 @@ _TIMER_SHUTDOWN_ANS
 _TIME_SHUTDOWN_REQ
                          NUM      00000040  A           
 __STARTUP                NUM      00FF1800  A PUB       
-alarm_int        C L     LAB      000000D0  R PUB       PROG
+alarm_int        C L     LAB      000000E9  R PUB       PROG
 copy_row         C L     LAB      0000005B  R           PROG
 disp_size_x              NUM      000000A0  A           
 disp_size_y              NUM      00000098  A           
-dummy            C L     LAB      000000D3  R PUB       PROG
+dummy            C L     LAB      000000EC  R PUB       PROG
 game_main                MOD
-h_int            C L     LAB      000000CD  R PUB       PROG
+h_int            C L     LAB      000000E6  R PUB       PROG
 init_setting                      00000000  R EXT       
+joyedge                           00000000  R EXT       
+joylast                           00000000  R EXT       
+joypad                            00000000  R EXT       
 main             C L     LAB      0000006C  R           PROG
 main_100         C L     LAB      00000081  R           PROG
 map                               00000000  R EXT       
@@ -864,16 +856,16 @@ player_init                       00000000  R EXT
 player_move                       00000000  R EXT       
 reset            C L     LAB      00000000  R PUB       PROG
 scroll_copy                       00000000  R EXT       
-sound_int        C L     LAB      000000D2  R PUB       PROG
+sound_int        C L     LAB      000000EB  R PUB       PROG
 stopper                           00000000  R EXT       
 tiles                             00000000  R EXT       
 tiles_end                         00000000  R EXT       
-timer1           C L     LAB      000000CE  R PUB       PROG
-timer2           C L     LAB      000000CF  R PUB       PROG
+timer1           C L     LAB      000000E7  R PUB       PROG
+timer2           C L     LAB      000000E8  R PUB       PROG
 v_int            C L     LAB      000000B0  R PUB       PROG
-z80_int          C L     LAB      000000D1  R PUB       PROG
+z80_int          C L     LAB      000000EA  R PUB       PROG
 
 
 TOTAL
-  138 user defined symbol(s)
-   19 unreferenced external symbol(s)
+  141 user defined symbol(s)
+   17 unreferenced external symbol(s)

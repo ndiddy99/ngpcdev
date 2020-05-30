@@ -7,7 +7,7 @@
 ;  ---------------------------------
 ;	EXTERNAL LOOK UP
 ;  ---------------------------------
-	; extern medium
+	extern medium player_mode ;if player is on ground, in air, etc (byte)
 	
 ;  ---------------------------------
 ;   EXTERNAL DEFINITION
@@ -33,6 +33,11 @@ TSENSOR_HEIGHT equ 4
 BSENSOR_HEIGHT equ 12
 PLAYER_ACCEL equ 0x8000
 MAX_SPEED equ 0x38000
+MODE_GROUND equ 0
+MODE_AIR equ 1
+GRAVITY equ 0xa000
+JUMP_GRAVITY equ 0x7000
+MAX_GRAVITY equ 0x70000
 
 ;-------------------------------------------------------
 PROG section code large
@@ -43,6 +48,7 @@ PROG section code large
 ;-------------------------------------------------------	
 player_init:
 	ldw wa,0
+	ldb (player_mode),a	
 	ldw qwa,SPRITE_X
 	ldl (player_x),xwa
 	
@@ -115,7 +121,7 @@ guy_pal_copy:                   ;to appease the assembler
 ;-------------------------------------------------------
 player_move:
 	;---horizontal movement---
-	ldb a,(Sys_lever)
+	ldb a,(joypad)
 	ldl xbc,(player_dx)
 	bit BIT_LEFT,a
 	j z,not_left
@@ -129,8 +135,8 @@ not_left:
 	j pl,not_right
 	addl xbc,PLAYER_ACCEL
 not_right:
-	;---if we're not pressing left or right, decelerate---
-	ldb a,(Sys_lever)
+	;if we're not pressing left or right, decelerate
+	ldb a,(joypad)
 	andb a,JOY_LEFT | JOY_RIGHT
 	j nz,no_decel
 	cpl xbc,0
@@ -155,6 +161,7 @@ no_decel:
 	ldl (player_dx),xbc
 	addl xwa,xbc
 	ldl (player_x),xwa
+	
 	;---horizontal collision detection---
 	;top left
 	ldw wa,(player_x+2)
@@ -192,8 +199,8 @@ hcollision_left:
 	ldl xwa,0
 	ldl (player_dx),xwa
 	ldl xwa,(player_x)
-	andl xwa,0xfff00000 ;reset to start of tile you're colliding with
-	addl xwa,0x100000 ;eject into next tile
+	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
+	addl xwa,0x80000 ;eject into next tile
 	ldl (player_x),xwa
 	j done_hcollision
 hcollision_right:
@@ -201,11 +208,52 @@ hcollision_right:
 	ldl xwa,0
 	ldl (player_dx),xwa
 	ldl xwa,(player_x)
-	andl xwa,0xfff00000 ;reset to start of tile you're colliding with
+	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
 	ldw wa,0xffff ;subpixel portion- almost into next tile
 	ldl (player_x),xwa
-done_hcollision:	
+done_hcollision:
+
+	;---jumping and falling---
+	; ldb a,(joyedge)
+	bit BIT_B,(joyedge)
+	j z,not_start_jump
+	ldb a,(player_mode)
+	cpb a,MODE_AIR ;don't start jumping if you press the button in air
+	j z,not_start_jump
+	ldl xwa,-0x90000
+	ldl (player_dy),xwa
+	ldb (player_mode),MODE_AIR
+not_start_jump:
+	;gravity
+	ldb a,(player_mode)
+	cpb a,MODE_AIR
+	j nz,done_air
+	ldl xwa,(player_dy)
+	cpl xwa,MAX_GRAVITY
+	j pl,done_add_gravity
+	;if holding down the jump button, jump higher
+	bit BIT_B,(joypad)
+	j z,normal_add_gravity
+	cpl xwa,0 ;don't use low gravity when falling
+	j pl,normal_add_gravity
+	addl xwa,JUMP_GRAVITY
+	j done_add_gravity
+normal_add_gravity:	
+	addl xwa,GRAVITY
+done_add_gravity:	
+	ldl (player_dy),xwa
+	ldl xbc,(player_y)
+	addl xbc,xwa
+	ldl (player_y),xbc
+done_air:
+	
 	;---vertical collision detection---
+	cpl xwa,0
+	j pl,floor_collision
+	j z,floor_collision
+	j done_vcollision
+
+floor_collision:	
 	;left foot
 	ldw wa,(player_x+2)
 	; addw wa,4
@@ -213,7 +261,7 @@ done_hcollision:
 	addw bc,PLAYER_HEIGHT
 	cal get_sensor
 	pushb a
-	; ;right foot
+	;right foot
 	ldw wa,(player_x+2)
 	addw wa,PLAYER_WIDTH-1
 	ldw bc,(player_y+2)
@@ -224,6 +272,12 @@ done_hcollision:
 	j mi,left_higher
 	ldb a,b
 left_higher:
+	cpb a,0xf0 ;value returned if no floor found
+	j nz,on_ground
+	ldb (player_mode),MODE_AIR
+	j done_vcollision
+on_ground:
+	ldb (player_mode),MODE_GROUND
 	ldw bc,(player_y+2)
 	addw bc,PLAYER_HEIGHT ;foot pos in bc
 	andw bc,0xfff0 ;place feet at bottom of block
@@ -232,6 +286,8 @@ left_higher:
 	subw bc,wa
 	subw bc,PLAYER_HEIGHT ;foot pos to regular pos
 	ldw (player_y+2),bc
+	
+done_vcollision:
 	
 	ldw wa,(player_x+2) ;move pixel portion of x coord into wa
 	subw wa,SPRITE_X

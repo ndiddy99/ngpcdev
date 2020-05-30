@@ -105,27 +105,6 @@ main:
 	cal SYSTEM_CALL
 
 main_100:
-	
-	; bit BIT_UP,(Sys_lever)
-	; j z,not_up
-	; subw (screen_y),1
-; not_up:
-	; bit BIT_DOWN,(Sys_lever)
-	; j z,not_down
-	; addw (screen_y),1
-; not_down:
-	; bit BIT_LEFT,(Sys_lever)
-	; j z,not_left
-	; subw (screen_x),1
-; not_left:
-	; bit BIT_RIGHT,(Sys_lever)
-	; j z,not_right
-	; addw (screen_x),1
-; not_right:
-
-	; ldw wa,(screen_x)
-	; ldw bc,(screen_y)
-	; cal scroll_set
 	cal player_move
 	
 	ldb (stopper),0
@@ -157,6 +136,15 @@ v_int:
 	ldb	(WDCR),WD_CLR ;watch dog clear
 	ldb	(stopper),0xff
 	cal scroll_copy
+	;set up joypad variables
+	ldb a,(joypad)
+	ldb (joylast),a
+	ldb w,(Sys_lever)
+	ldb (joypad),w
+	xorb a,0xff ;flip the bits
+	andb a,w ;check if there's any overlap between what was pressed this frame
+	ldb (joyedge),a ;and what wasn't pressed last frame
+	
 ;	--------------------------------
     popw sr
 	popl xhl
