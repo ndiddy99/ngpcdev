@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Fri May 29 23:40:53 2020
+Sun May 31 11:05:12 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -73,10 +73,10 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     user       PROGRAM    CODE        2002AD         EE PROG    (print.rel)    NORMAL
     user       PROGRAM    CODE        20039B       2A98 PROG    (graphics.rel) NORMAL
     user       PROGRAM    CODE        202E33        18E PROG    (scroll.rel)   NORMAL
-    user       PROGRAM    CODE        202FC1        38D PROG    (player.rel)   NORMAL
-    user       PROGRAM    CODE        20334E         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        203365         11 SYSLIB  (system.lib)   NORMAL
-    user                              203376     1FCC8A                        *** Gap ***
+    user       PROGRAM    CODE        202FC1        3D8 PROG    (player.rel)   NORMAL
+    user       PROGRAM    CODE        203399         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        2033B0         11 SYSLIB  (system.lib)   NORMAL
+    user                              2033C1     1FCC3F                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -876,7 +876,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       right_x        202E3F PROG     
       up_y           202E51 PROG     
     Input module : player
-      get_sensor     20324F PROG     
+      get_sensor     20329A PROG     
       player_init    202FC1 PROG     game_main 
       player_move    20307C PROG     game_main 
       ALARM_BOOT_REQ
@@ -899,11 +899,11 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       CHR_VRAM         A000          
       DISP_CTL0        8000          
       GRAVITY          A000          
-      Height2251     2032EE PROG     
-      Height2252     2032FE PROG     
-      Height45       2032DE PROG     
-      HeightEmpty    2032BE PROG     
-      HeightFull     2032CE PROG     
+      Height2251     203339 PROG     
+      Height2252     203349 PROG     
+      Height45       203329 PROG     
+      HeightEmpty    203309 PROG     
+      HeightFull     203319 PROG     
       INT_CLR_BIT         7          
       JOY_A              10          
       JOY_B              20          
@@ -1039,10 +1039,13 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      block_arrs     2032BE PROG     
-      block_types    20330E PROG     
-      check_above    203275 PROG     
-      check_below    203263 PROG     
+      block_arrs     203309 PROG     
+      block_types    203359 PROG     
+      ceil_rebound   203203 PROG     
+      ceiling_collision
+                     2031E0 PROG     
+      check_above    2032C0 PROG     
+      check_below    2032AE PROG     
       decel_left     2030D1 PROG     
       decel_right    2030BF PROG     
       done_add_gravity
@@ -1051,30 +1054,32 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       done_hcollision
                      20317C PROG     
       done_vcollision
-                     20323A PROG     
-      floor_collision
-                     2031E2 PROG     
-      get_height     203286 PROG     
-      get_sensor_end
                      203285 PROG     
+      floor_collision
+                     20321E PROG     
+      get_height     2032D1 PROG     
+      get_sensor_end
+                     2032D0 PROG     
       guy_pal_copy   202FFA PROG     
       hcollision_left
                      203149 PROG     
       hcollision_right
                      203165 PROG     
-      left_higher    20320D PROG     
+      left_higher    203249 PROG     
       no_decel       2030E1 PROG     
-      no_mirror      20329D PROG     
+      no_mirror      2032E8 PROG     
       normal_add_gravity
                      2031C2 PROG     
+      normal_ground
+                     20327F PROG     
       not_left       203097 PROG     
       not_right      2030AA PROG     
       not_start_jump
                      203198 PROG     
-      on_ground      203219 PROG     
+      on_ground      203255 PROG     
     Input module : vec_lib
-      SYSTEM_CALL    20334E SYSLIB   print    game_main 
+      SYSTEM_CALL    203399 SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      203365 SYSLIB   game_main 
+      SYS_PATCH      2033B0 SYSLIB   game_main 
 
 Linker end,No error

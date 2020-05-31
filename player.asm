@@ -251,6 +251,27 @@ done_air:
 	cpl xwa,0
 	j pl,floor_collision
 	j z,floor_collision
+ceiling_collision:
+	;top left
+	ldw wa,(player_x+2)
+	ldw bc,(player_y+2)
+	cal get_height
+	andb a,a
+	j nz,ceil_rebound
+	;top right
+	ldw wa,(player_x+2)
+	addw wa,PLAYER_WIDTH-1
+	ldw bc,(player_y+2)
+	cal get_height
+	andb a,a
+	j z,done_vcollision
+ceil_rebound:
+	ldl xwa,0
+	ldl (player_dy),xwa
+	ldl xwa,(player_y)
+	andl xwa,0xfff00000 ;top of tile you're in
+	addw qwa,0x10 ;move to bottom
+	ldl (player_y),xwa
 	j done_vcollision
 
 floor_collision:	
@@ -277,15 +298,25 @@ left_higher:
 	ldb (player_mode),MODE_AIR
 	j done_vcollision
 on_ground:
-	ldb (player_mode),MODE_GROUND
 	ldw bc,(player_y+2)
+	ldw de,bc ;player_y in de for later "if in air" comparison
 	addw bc,PLAYER_HEIGHT ;foot pos in bc
 	andw bc,0xfff0 ;place feet at bottom of block
 	addw bc,16
 	extsw wa
 	subw bc,wa
 	subw bc,PLAYER_HEIGHT ;foot pos to regular pos
+	cpb (player_mode),MODE_AIR
+	j nz,normal_ground
+	;when in air, compare original and transformed y positions. if original moves character
+	;0 or more pixels upwards, then do it. otherwise don't mess with y position
+	cpw de,bc
+	j mi,done_vcollision
+	ldb (player_mode),MODE_GROUND
+normal_ground:	
 	ldw (player_y+2),bc
+	j done_vcollision
+	
 	
 done_vcollision:
 	
