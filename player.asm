@@ -52,7 +52,6 @@ player_init:
 	ldw qwa,SPRITE_X
 	ldl (player_x),xwa
 	
-	ldw wa,0
 	ldw qwa,SPRITE_Y
 	ldl (player_y),xwa
 	
@@ -322,8 +321,41 @@ done_vcollision:
 	
 	ldw wa,(player_x+2) ;move pixel portion of x coord into wa
 	subw wa,SPRITE_X
+	j pl,right_checkx
+	;when scroll pos is less than 0, set scroll pos to 0 and instead move sprite
+	ldb a,(player_x+2)
+	ldb (SPR_VRAM+2),a
+	ldw wa,0
+	j done_sprx
+right_checkx:
+	cpw wa,512-160 ;map is 64x64 8x8 tiles, ngpc is 160x152
+	j mi,normal_x
+	ldw wa,(player_x+2)
+	subw wa,512-160
+	ldb (SPR_VRAM+2),a
+	ldw wa,512-160
+	j done_sprx
+normal_x:	
+	ldb (SPR_VRAM+2),SPRITE_X
+done_sprx:	
 	ldw bc,(player_y+2)
 	subw bc,SPRITE_Y
+	j pl,down_checky
+	ldb c,(player_y+2)
+	ldb (SPR_VRAM+3),c
+	ldw bc,0
+	j done_spry
+down_checky:
+	cpw bc,512-152 ;map is 64x64 8x8 tiles, ngpc is 160x152
+	j mi,normal_y
+	ldw bc,(player_y+2)
+	subw bc,512-152
+	ldb (SPR_VRAM+3),c
+	ldw bc,512-152
+	j done_spry
+normal_y:
+	ldb (SPR_VRAM+3),SPRITE_Y
+done_spry:
 	cal scroll_set
 	ret
 
