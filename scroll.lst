@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Sun May 31 20:45:52 2020
+Wed Jun 03 22:50:58 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  scroll.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l scroll.asm
 
@@ -439,223 +439,229 @@ Location  Object                           Ins        Line Source Statement
                                  +1          8         432 	extern tiles_end
                                  +1          9         433 	extern map
                                  +1         10         434 	extern map_end
-                                 +1         11         435 	extern guy
-                                 +1         12         436 	extern guy_end
-                                 +1         13         437 	extern guy_pal
-                                 +1         14         438 	extern guy_pal_end
-                                 +0         25         439 	
-  00000014                       +0         26         440 TILES_X equ 20
-  00000013                       +0         27         441 TILES_Y equ 19
-  00000001                       +0         28         442 COPY_LEFT equ 1
-  00000002                       +0         29         443 COPY_RIGHT equ 2
-  00000004                       +0         30         444 COPY_UP equ 4
-  00000008                       +0         31         445 COPY_DOWN equ 8
-                                 +0         32         446 
-                                 +0         33         447 ;-------------------------------------------------------
-                                 +0         34         448 PROG section code large
-                                 +0         35         449 ;-------------------------------------------------------
-                                 +0         36         450 	
-                                 +0         37         451 ;-------------------------------------------------------
-                                 +0         38         452 ; scroll_set: set scroll to specified coords
-                                 +0         39         453 ;-------------------------------------------------------
-                                 +0         40         454 ; wa: x pos
-                                 +0         41         455 ; bc: y pos
-                                 +0         42         456 ;-------------------------------------------------------
-00000000                         +0         43         457 scroll_set:
-00000000  D10000F0             R +0         44         458 	cpw wa,(scroll_x)
-00000004  660A                   +0         45         459 	j z,no_x
-00000006  6D04                   +0         46         460 	j p,right_x
-                                 +0         47         461 	
-00000008                         +0         48         462 left_x: ;if scrolling to the left
-00000008  2401                   +0         49         463 	ldb d,COPY_LEFT
-0000000A  6806                   +0         50         464 	j done_x	
-0000000C                         +0         51         465 right_x: ;if scrolling to the right
-0000000C  2402                   +0         52         466 	ldb d,COPY_RIGHT
-0000000E  6802                   +0         53         467 	j done_x
-00000010                         +0         54         468 no_x: ;if values are the same
-00000010  2400                   +0         55         469 	ldb d,0
-00000012                         +0         56         470 done_x:
-00000012  F1000050             R +0         57         471 	ldw (scroll_x),wa
-                                 +0         58         472 	
-00000016  D10000F1             R +0         59         473 	cpw bc,(scroll_y)
-0000001A  660C                   +0         60         474 	j z,done_y
-0000001C  6D05                   +0         61         475 	j p,down_y
-                                 +0         62         476 
-0000001E                         +0         63         477 up_y: ;if scrolling up
-0000001E  CCCE04                 +0         64         478 	orb d,COPY_UP
-00000021  6805                   +0         65         479 	j done_y
-00000023                         +0         66         480 down_y: ;if scrolling down
-00000023  CCCE08                 +0         67         481 	orb d,COPY_DOWN
-00000026  6800                   +0         68         482 	j done_y
-00000028                         +0         69         483 done_y: ;if values are the same
-00000028  F1000044             R +0         70         484 	ldb (scroll_mode),d
-0000002C  F1000051             R +0         71         485 	ldw (scroll_y),bc
-00000030  0E                     +0         72         486 	ret
-                                 +0         73         487 
-                                 +0         74         488 
-                                 +0         75         489 ;-------------------------------------------------------
-                                 +0         76         490 ; scroll_get_tile: returns tile # at given coordinates in wa
-                                 +0         77         491 ;-------------------------------------------------------
-                                 +0         78         492 ; wa: x pos
-                                 +0         79         493 ; bc: y pos
-                                 +0         80         494 ;-------------------------------------------------------
-00000031                         +0         81         495 scroll_get_tile:
-00000031  D8EF03                 +0         82         496 	srlw 3,wa ;change pixels to 8x8 tiles
-00000034  D9EF03                 +0         83         497 	srlw 3,bc
-00000037  D9EC06                 +0         84         498 	slaw 6,bc ;64 tiles per row
-0000003A  D881                   +0         85         499 	addw bc,wa
-0000003C  D9EC01                 +0         86         500 	slaw 1,bc ;bytes->words
-0000003F  D7E6A8                 +0         87         501 	ldw qbc,0
-00000042  E9C800000000         R +0         88         502 	addl xbc,map
-00000048  9120                   +0         89         503 	ldw wa,(xbc)
-                                 +0         90         504 	; andw wa,0x1ff ;tile number is low 9 bits of map word
-0000004A  0E                     +0         91         505 	ret
-                                 +0         92         506 	
-                                 +0         93         507 	
-                                 +0         94         508 ;-------------------------------------------------------
-                                 +0         95         509 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
-                                 +0         96         510 ;-------------------------------------------------------	
-0000004B                         +0         97         511 scroll_copy:
-0000004B  C1000021             R +0         98         512 	ldb a,(scroll_x)
-0000004F  C1000023             R +0         99         513 	ldb c,(scroll_y)
-00000053  F1328041               +0        100         514 	ldb (SCRL_X1_ADR),a
-00000057  F1338043               +0        101         515 	ldb (SCRL_Y1_ADR),c
-                                 +0        102         516 	
-0000005B  C1000021             R +0        103         517 	ldb a,(scroll_mode)
-0000005F  C9CC01                 +0        104         518 	andb a,COPY_LEFT
-00000062  661B                   +0        105         519 	j z,no_left
-                                 +0        106         520 	;scrolling left
-00000064  D7E2A8                 +0        107         521 	ldw qwa,0
-00000067  D1000020             R +0        108         522 	ldw wa,(scroll_x)
-0000006B  E8EF03                 +0        109         523 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-0000006E  E869                   +0        110         524 	decl 1,xwa ;start copying 1 tile before the screen
-00000070  D7E6A8                 +0        111         525 	ldw qbc,0
-00000073  D1000021             R +0        112         526 	ldw bc,(scroll_y)
-00000077  E9EF03                 +0        113         527 	srll 3,xbc
-0000007A  E969                   +0        114         528 	decl 1,xbc ;start copying 1 tile higher than the screen
-0000007C  1E7500                 +0        115         529 	cal copy_column
-                                 +0        116         530 	
-0000007F                         +0        117         531 no_left:
-0000007F  C1000021             R +0        118         532 	ldb a,(scroll_mode)
-00000083  C9CC02                 +0        119         533 	andb a,COPY_RIGHT
-00000086  661F                   +0        120         534 	j z,no_right
-                                 +0        121         535 	;scrolling right
-00000088  D7E2A8                 +0        122         536 	ldw qwa,0
-0000008B  D1000020             R +0        123         537 	ldw wa,(scroll_x)
-0000008F  E8EF03                 +0        124         538 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-00000092  E8C814000000           +0        125         539 	addl xwa,TILES_X ;start copying 1 tile after the screen
-00000098  D7E6A8                 +0        126         540 	ldw qbc,0
-0000009B  D1000021             R +0        127         541 	ldw bc,(scroll_y)
-0000009F  E9EF03                 +0        128         542 	srll 3,xbc
-000000A2  E969                   +0        129         543 	decl 1,xbc ;start copying 1 tile higher than the screen
-000000A4  1E4D00                 +0        130         544 	cal copy_column
-                                 +0        131         545 	
-000000A7                         +0        132         546 no_right:
-000000A7  C1000021             R +0        133         547 	ldb a,(scroll_mode)
-000000AB  C9CC04                 +0        134         548 	andb a,COPY_UP
-000000AE  661B                   +0        135         549 	j z,no_up
-                                 +0        136         550 	;scrolling up
-000000B0  D7E2A8                 +0        137         551 	ldw qwa,0
-000000B3  D1000020             R +0        138         552 	ldw wa,(scroll_x)
-000000B7  E8EF03                 +0        139         553 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-000000BA  E869                   +0        140         554 	decl 1,xwa ;start copying 1 tile before the screen
-000000BC  D7E6A8                 +0        141         555 	ldw qbc,0
-000000BF  D1000021             R +0        142         556 	ldw bc,(scroll_y)
-000000C3  E9EF03                 +0        143         557 	srll 3,xbc
-000000C6  E969                   +0        144         558 	decl 1,xbc ;start copying 1 tile higher than the screen
-000000C8  1E8000                 +0        145         559 	cal copy_row
-                                 +0        146         560 	
-000000CB                         +0        147         561 no_up:
-000000CB  C1000021             R +0        148         562 	ldb a,(scroll_mode)
-000000CF  C9CC08                 +0        149         563 	andb a,COPY_DOWN
-000000D2  661F                   +0        150         564 	j z,no_down
-                                 +0        151         565 	;scrolling down
-000000D4  D7E2A8                 +0        152         566 	ldw qwa,0
-000000D7  D1000020             R +0        153         567 	ldw wa,(scroll_x)
-000000DB  E8EF03                 +0        154         568 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-000000DE  E869                   +0        155         569 	decl 1,xwa ;start copying 1 tile before the screen
-000000E0  D7E6A8                 +0        156         570 	ldw qbc,0
-000000E3  D1000021             R +0        157         571 	ldw bc,(scroll_y)
-000000E7  E9EF03                 +0        158         572 	srll 3,xbc
-000000EA  E9C813000000           +0        159         573 	addl xbc,TILES_Y ;start copying 1 tile lower than the screen
-000000F0  1E5800                 +0        160         574 	cal copy_row	
-000000F3                         +0        161         575 no_down:
-000000F3  0E                     +0        162         576 	ret
-                                 +0        163         577 	
-                                 +0        164         578 ;-------------------------------------------------------
-                                 +0        165         579 ; copy_column: copy a column of scroll data into vram
-                                 +0        166         580 ;-------------------------------------------------------
-                                 +0        167         581 ; xwa: tile x
-                                 +0        168         582 ; xbc: tile y
-                                 +0        169         583 ;-------------------------------------------------------	
-000000F4                         +0        170         584 copy_column:
-                                 +0        171         585 ;get source address
-000000F4  E88A                   +0        172         586 	ldl xde,xwa
-000000F6  EAEC01                 +0        173         587 	slal 1,xde ;tile # to word #
-000000F9  E98D                   +0        174         588 	ldl xiy,xbc
-000000FB  EDEC07                 +0        175         589 	slal 7,xiy ;tile # * 128 bytes per row
-000000FE  EA85                   +0        176         590 	addl xiy,xde ;source offset now in xiy
-00000100  F200000032           R +0        177         591 	lda xde,map
-                                 +0        178         592 ;get destination address
-00000105  E8CC1F000000           +0        179         593 	andl xwa,0x1f ;virtual screen is 32x32 tiles
-0000010B  E8EC01                 +0        180         594 	slal 1,xwa
-0000010E  E9CC1F000000           +0        181         595 	andl xbc,0x1f
-00000114  E98C                   +0        182         596 	ldl xix,xbc
-00000116  ECEC06                 +0        183         597 	slal 6,xix ;tile # * 64 bytes per row
-00000119  E884                   +0        184         598 	addl xix,xwa
-0000011B  ECC800900000           +0        185         599 	addl xix,SCRL1_VRAM
-                                 +0        186         600 	
-00000121  2115                   +0        187         601 	ldb a,TILES_Y+2 ;want to go from 1 tile before the screen to 1 tile after
-00000123                         +0        188         602 copy_col_loop:
-00000123  EDCCFF1F0000           +0        189         603 	andl xiy,0x1fff ;keep source offset within tilemap (64*64*2)
-00000129  ECCCFF970000           +0        190         604 	andl xix,0x97ff ;keep destination within scroll 1 vram	
-0000012F  ED8A                   +0        191         605 	ldl xde,xiy
-00000131  EAC800000000         R +0        192         606 	addl xde,map ;get absolute source address
-00000137  9221                   +0        193         607 	ldw bc,(xde)
-00000139  B451                   +0        194         608 	ldw (xix),bc
-0000013B  EDC880000000           +0        195         609 	addl xiy,128 ;map is 64x64, so 128 bytes per row	
-00000141  ECC840000000           +0        196         610 	addl xix,64 ;vram is 32x32, so 64 bytes per row
-00000147  C91CD9                 +0        197         611 	djnz a,copy_col_loop
-0000014A  0E                     +0        198         612 	ret
-                                 +0        199         613 
-                                 +0        200         614 ;-------------------------------------------------------
-                                 +0        201         615 ; copy_row: copy a row of scroll data into vram
-                                 +0        202         616 ;-------------------------------------------------------
-                                 +0        203         617 ; xwa: tile x
-                                 +0        204         618 ; xbc: tile y
-                                 +0        205         619 ;-------------------------------------------------------	
-0000014B                         +0        206         620 copy_row:	
-                                 +0        207         621 ;get source address
-0000014B  E88A                   +0        208         622 	ldl xde,xwa
-0000014D  EAEC01                 +0        209         623 	slal 1,xde ;tile # to word #
-00000150  E98D                   +0        210         624 	ldl xiy,xbc
-00000152  EDEC07                 +0        211         625 	slal 7,xiy ;tile # * 128 bytes per row
-00000155  EA85                   +0        212         626 	addl xiy,xde
-00000157  EDC800000000         R +0        213         627 	addl xiy,map ;source address in xiy
-                                 +0        214         628 ;get destination address
-0000015D  C9CC1F                 +0        215         629 	andb a,0x1f ;virtual screen is 32x32 tiles
-00000160  C9EC01                 +0        216         630 	slab 1,a ;row offset in a
-00000163  E9CC1F000000           +0        217         631 	andl xbc,0x1f
-00000169  E98C                   +0        218         632 	ldl xix,xbc
-0000016B  ECEC06                 +0        219         633 	slal 6,xix ;tile # * 64 bytes per row
-0000016E  ECC800900000           +0        220         634 	addl xix,SCRL1_VRAM ;destination address in xix
-                                 +0        221         635 
-00000174  2716                   +0        222         636 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
-00000176                         +0        223         637 copy_row_loop:
-00000176  C9CC3F                 +0        224         638 	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
-00000179  ECCCFF970000           +0        225         639 	andl xix,0x97ff ;keep destination within scroll 1 vram
-0000017F  D5F521                 +0        226         640 	ldw bc,(xiy+)
-00000182  F303F0E051             +0        227         641 	ldw (xix+a),bc
-00000187  C9C802                 +0        228         642 	addb a,2
-0000018A  CF1CE9                 +0        229         643 	djnz l,copy_row_loop
-0000018D  0E                     +0        230         644 	ret
-                                 +0        231         645 	
-                                 +0        232         646 
-                                 +0        233         647 
-                                 +0        234         648 	
-                                 +0        235         649 ;-------------------------------------------------------
-                                 +0        236         650 	end
-                                 +0        237         651 ;-------------------------------------------------------
+                                 +1         11         435 	extern hills
+                                 +1         12         436 	extern hills_end
+                                 +1         13         437 	extern hills_map
+                                 +1         14         438 	extern hills_map_end
+                                 +1         15         439 	extern hills_pal
+                                 +1         16         440 	extern hills_pal_end
+                                 +1         17         441 	extern guy
+                                 +1         18         442 	extern guy_end
+                                 +1         19         443 	extern guy_pal
+                                 +1         20         444 	extern guy_pal_end
+                                 +0         25         445 	
+  00000014                       +0         26         446 TILES_X equ 20
+  00000013                       +0         27         447 TILES_Y equ 19
+  00000001                       +0         28         448 COPY_LEFT equ 1
+  00000002                       +0         29         449 COPY_RIGHT equ 2
+  00000004                       +0         30         450 COPY_UP equ 4
+  00000008                       +0         31         451 COPY_DOWN equ 8
+                                 +0         32         452 
+                                 +0         33         453 ;-------------------------------------------------------
+                                 +0         34         454 PROG section code large
+                                 +0         35         455 ;-------------------------------------------------------
+                                 +0         36         456 	
+                                 +0         37         457 ;-------------------------------------------------------
+                                 +0         38         458 ; scroll_set: set scroll to specified coords
+                                 +0         39         459 ;-------------------------------------------------------
+                                 +0         40         460 ; wa: x pos
+                                 +0         41         461 ; bc: y pos
+                                 +0         42         462 ;-------------------------------------------------------
+00000000                         +0         43         463 scroll_set:
+00000000  D10000F0             R +0         44         464 	cpw wa,(scroll_x)
+00000004  660A                   +0         45         465 	j z,no_x
+00000006  6D04                   +0         46         466 	j p,right_x
+                                 +0         47         467 	
+00000008                         +0         48         468 left_x: ;if scrolling to the left
+00000008  2401                   +0         49         469 	ldb d,COPY_LEFT
+0000000A  6806                   +0         50         470 	j done_x	
+0000000C                         +0         51         471 right_x: ;if scrolling to the right
+0000000C  2402                   +0         52         472 	ldb d,COPY_RIGHT
+0000000E  6802                   +0         53         473 	j done_x
+00000010                         +0         54         474 no_x: ;if values are the same
+00000010  2400                   +0         55         475 	ldb d,0
+00000012                         +0         56         476 done_x:
+00000012  F1000050             R +0         57         477 	ldw (scroll_x),wa
+                                 +0         58         478 	
+00000016  D10000F1             R +0         59         479 	cpw bc,(scroll_y)
+0000001A  660C                   +0         60         480 	j z,done_y
+0000001C  6D05                   +0         61         481 	j p,down_y
+                                 +0         62         482 
+0000001E                         +0         63         483 up_y: ;if scrolling up
+0000001E  CCCE04                 +0         64         484 	orb d,COPY_UP
+00000021  6805                   +0         65         485 	j done_y
+00000023                         +0         66         486 down_y: ;if scrolling down
+00000023  CCCE08                 +0         67         487 	orb d,COPY_DOWN
+00000026  6800                   +0         68         488 	j done_y
+00000028                         +0         69         489 done_y: ;if values are the same
+00000028  F1000044             R +0         70         490 	ldb (scroll_mode),d
+0000002C  F1000051             R +0         71         491 	ldw (scroll_y),bc
+00000030  0E                     +0         72         492 	ret
+                                 +0         73         493 
+                                 +0         74         494 
+                                 +0         75         495 ;-------------------------------------------------------
+                                 +0         76         496 ; scroll_get_tile: returns tile # at given coordinates in wa
+                                 +0         77         497 ;-------------------------------------------------------
+                                 +0         78         498 ; wa: x pos
+                                 +0         79         499 ; bc: y pos
+                                 +0         80         500 ;-------------------------------------------------------
+00000031                         +0         81         501 scroll_get_tile:
+00000031  D8EF03                 +0         82         502 	srlw 3,wa ;change pixels to 8x8 tiles
+00000034  D9EF03                 +0         83         503 	srlw 3,bc
+00000037  D9EC06                 +0         84         504 	slaw 6,bc ;64 tiles per row
+0000003A  D881                   +0         85         505 	addw bc,wa
+0000003C  D9EC01                 +0         86         506 	slaw 1,bc ;bytes->words
+0000003F  D7E6A8                 +0         87         507 	ldw qbc,0
+00000042  E9C800000000         R +0         88         508 	addl xbc,map
+00000048  9120                   +0         89         509 	ldw wa,(xbc)
+                                 +0         90         510 	; andw wa,0x1ff ;tile number is low 9 bits of map word
+0000004A  0E                     +0         91         511 	ret
+                                 +0         92         512 	
+                                 +0         93         513 	
+                                 +0         94         514 ;-------------------------------------------------------
+                                 +0         95         515 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +0         96         516 ;-------------------------------------------------------	
+0000004B                         +0         97         517 scroll_copy:
+0000004B  C1000021             R +0         98         518 	ldb a,(scroll_x)
+0000004F  C1000023             R +0         99         519 	ldb c,(scroll_y)
+00000053  F1328041               +0        100         520 	ldb (SCRL_X1_ADR),a
+00000057  F1338043               +0        101         521 	ldb (SCRL_Y1_ADR),c
+                                 +0        102         522 	
+0000005B  C1000021             R +0        103         523 	ldb a,(scroll_mode)
+0000005F  C9CC01                 +0        104         524 	andb a,COPY_LEFT
+00000062  661B                   +0        105         525 	j z,no_left
+                                 +0        106         526 	;scrolling left
+00000064  D7E2A8                 +0        107         527 	ldw qwa,0
+00000067  D1000020             R +0        108         528 	ldw wa,(scroll_x)
+0000006B  E8EF03                 +0        109         529 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+0000006E  E869                   +0        110         530 	decl 1,xwa ;start copying 1 tile before the screen
+00000070  D7E6A8                 +0        111         531 	ldw qbc,0
+00000073  D1000021             R +0        112         532 	ldw bc,(scroll_y)
+00000077  E9EF03                 +0        113         533 	srll 3,xbc
+0000007A  E969                   +0        114         534 	decl 1,xbc ;start copying 1 tile higher than the screen
+0000007C  1E7500                 +0        115         535 	cal copy_column
+                                 +0        116         536 	
+0000007F                         +0        117         537 no_left:
+0000007F  C1000021             R +0        118         538 	ldb a,(scroll_mode)
+00000083  C9CC02                 +0        119         539 	andb a,COPY_RIGHT
+00000086  661F                   +0        120         540 	j z,no_right
+                                 +0        121         541 	;scrolling right
+00000088  D7E2A8                 +0        122         542 	ldw qwa,0
+0000008B  D1000020             R +0        123         543 	ldw wa,(scroll_x)
+0000008F  E8EF03                 +0        124         544 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+00000092  E8C814000000           +0        125         545 	addl xwa,TILES_X ;start copying 1 tile after the screen
+00000098  D7E6A8                 +0        126         546 	ldw qbc,0
+0000009B  D1000021             R +0        127         547 	ldw bc,(scroll_y)
+0000009F  E9EF03                 +0        128         548 	srll 3,xbc
+000000A2  E969                   +0        129         549 	decl 1,xbc ;start copying 1 tile higher than the screen
+000000A4  1E4D00                 +0        130         550 	cal copy_column
+                                 +0        131         551 	
+000000A7                         +0        132         552 no_right:
+000000A7  C1000021             R +0        133         553 	ldb a,(scroll_mode)
+000000AB  C9CC04                 +0        134         554 	andb a,COPY_UP
+000000AE  661B                   +0        135         555 	j z,no_up
+                                 +0        136         556 	;scrolling up
+000000B0  D7E2A8                 +0        137         557 	ldw qwa,0
+000000B3  D1000020             R +0        138         558 	ldw wa,(scroll_x)
+000000B7  E8EF03                 +0        139         559 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+000000BA  E869                   +0        140         560 	decl 1,xwa ;start copying 1 tile before the screen
+000000BC  D7E6A8                 +0        141         561 	ldw qbc,0
+000000BF  D1000021             R +0        142         562 	ldw bc,(scroll_y)
+000000C3  E9EF03                 +0        143         563 	srll 3,xbc
+000000C6  E969                   +0        144         564 	decl 1,xbc ;start copying 1 tile higher than the screen
+000000C8  1E8000                 +0        145         565 	cal copy_row
+                                 +0        146         566 	
+000000CB                         +0        147         567 no_up:
+000000CB  C1000021             R +0        148         568 	ldb a,(scroll_mode)
+000000CF  C9CC08                 +0        149         569 	andb a,COPY_DOWN
+000000D2  661F                   +0        150         570 	j z,no_down
+                                 +0        151         571 	;scrolling down
+000000D4  D7E2A8                 +0        152         572 	ldw qwa,0
+000000D7  D1000020             R +0        153         573 	ldw wa,(scroll_x)
+000000DB  E8EF03                 +0        154         574 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+000000DE  E869                   +0        155         575 	decl 1,xwa ;start copying 1 tile before the screen
+000000E0  D7E6A8                 +0        156         576 	ldw qbc,0
+000000E3  D1000021             R +0        157         577 	ldw bc,(scroll_y)
+000000E7  E9EF03                 +0        158         578 	srll 3,xbc
+000000EA  E9C813000000           +0        159         579 	addl xbc,TILES_Y ;start copying 1 tile lower than the screen
+000000F0  1E5800                 +0        160         580 	cal copy_row	
+000000F3                         +0        161         581 no_down:
+000000F3  0E                     +0        162         582 	ret
+                                 +0        163         583 	
+                                 +0        164         584 ;-------------------------------------------------------
+                                 +0        165         585 ; copy_column: copy a column of scroll data into vram
+                                 +0        166         586 ;-------------------------------------------------------
+                                 +0        167         587 ; xwa: tile x
+                                 +0        168         588 ; xbc: tile y
+                                 +0        169         589 ;-------------------------------------------------------	
+000000F4                         +0        170         590 copy_column:
+                                 +0        171         591 ;get source address
+000000F4  E88A                   +0        172         592 	ldl xde,xwa
+000000F6  EAEC01                 +0        173         593 	slal 1,xde ;tile # to word #
+000000F9  E98D                   +0        174         594 	ldl xiy,xbc
+000000FB  EDEC07                 +0        175         595 	slal 7,xiy ;tile # * 128 bytes per row
+000000FE  EA85                   +0        176         596 	addl xiy,xde ;source offset now in xiy
+00000100  F200000032           R +0        177         597 	lda xde,map
+                                 +0        178         598 ;get destination address
+00000105  E8CC1F000000           +0        179         599 	andl xwa,0x1f ;virtual screen is 32x32 tiles
+0000010B  E8EC01                 +0        180         600 	slal 1,xwa
+0000010E  E9CC1F000000           +0        181         601 	andl xbc,0x1f
+00000114  E98C                   +0        182         602 	ldl xix,xbc
+00000116  ECEC06                 +0        183         603 	slal 6,xix ;tile # * 64 bytes per row
+00000119  E884                   +0        184         604 	addl xix,xwa
+0000011B  ECC800900000           +0        185         605 	addl xix,SCRL1_VRAM
+                                 +0        186         606 	
+00000121  2115                   +0        187         607 	ldb a,TILES_Y+2 ;want to go from 1 tile before the screen to 1 tile after
+00000123                         +0        188         608 copy_col_loop:
+00000123  EDCCFF1F0000           +0        189         609 	andl xiy,0x1fff ;keep source offset within tilemap (64*64*2)
+00000129  ECCCFF970000           +0        190         610 	andl xix,0x97ff ;keep destination within scroll 1 vram	
+0000012F  ED8A                   +0        191         611 	ldl xde,xiy
+00000131  EAC800000000         R +0        192         612 	addl xde,map ;get absolute source address
+00000137  9221                   +0        193         613 	ldw bc,(xde)
+00000139  B451                   +0        194         614 	ldw (xix),bc
+0000013B  EDC880000000           +0        195         615 	addl xiy,128 ;map is 64x64, so 128 bytes per row	
+00000141  ECC840000000           +0        196         616 	addl xix,64 ;vram is 32x32, so 64 bytes per row
+00000147  C91CD9                 +0        197         617 	djnz a,copy_col_loop
+0000014A  0E                     +0        198         618 	ret
+                                 +0        199         619 
+                                 +0        200         620 ;-------------------------------------------------------
+                                 +0        201         621 ; copy_row: copy a row of scroll data into vram
+                                 +0        202         622 ;-------------------------------------------------------
+                                 +0        203         623 ; xwa: tile x
+                                 +0        204         624 ; xbc: tile y
+                                 +0        205         625 ;-------------------------------------------------------	
+0000014B                         +0        206         626 copy_row:	
+                                 +0        207         627 ;get source address
+0000014B  E88A                   +0        208         628 	ldl xde,xwa
+0000014D  EAEC01                 +0        209         629 	slal 1,xde ;tile # to word #
+00000150  E98D                   +0        210         630 	ldl xiy,xbc
+00000152  EDEC07                 +0        211         631 	slal 7,xiy ;tile # * 128 bytes per row
+00000155  EA85                   +0        212         632 	addl xiy,xde
+00000157  EDC800000000         R +0        213         633 	addl xiy,map ;source address in xiy
+                                 +0        214         634 ;get destination address
+0000015D  C9CC1F                 +0        215         635 	andb a,0x1f ;virtual screen is 32x32 tiles
+00000160  C9EC01                 +0        216         636 	slab 1,a ;row offset in a
+00000163  E9CC1F000000           +0        217         637 	andl xbc,0x1f
+00000169  E98C                   +0        218         638 	ldl xix,xbc
+0000016B  ECEC06                 +0        219         639 	slal 6,xix ;tile # * 64 bytes per row
+0000016E  ECC800900000           +0        220         640 	addl xix,SCRL1_VRAM ;destination address in xix
+                                 +0        221         641 
+00000174  2716                   +0        222         642 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
+00000176                         +0        223         643 copy_row_loop:
+00000176  C9CC3F                 +0        224         644 	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
+00000179  ECCCFF970000           +0        225         645 	andl xix,0x97ff ;keep destination within scroll 1 vram
+0000017F  D5F521                 +0        226         646 	ldw bc,(xiy+)
+00000182  F303F0E051             +0        227         647 	ldw (xix+a),bc
+00000187  C9C802                 +0        228         648 	addb a,2
+0000018A  CF1CE9                 +0        229         649 	djnz l,copy_row_loop
+0000018D  0E                     +0        230         650 	ret
+                                 +0        231         651 	
+                                 +0        232         652 
+                                 +0        233         653 
+                                 +0        234         654 	
+                                 +0        235         655 ;-------------------------------------------------------
+                                 +0        236         656 	end
+                                 +0        237         657 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  scroll.lst
@@ -815,4 +821,4 @@ up_y             C L     LAB      0000001E  R           PROG
 
 TOTAL
   132 user defined symbol(s)
-    9 unreferenced external symbol(s)
+   15 unreferenced external symbol(s)

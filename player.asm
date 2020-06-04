@@ -26,7 +26,7 @@
 	$include "scroll.inc"
 	
 SPRITE_X equ 72
-SPRITE_Y equ 72
+SPRITE_Y equ 80
 PLAYER_WIDTH equ 16
 PLAYER_HEIGHT equ 16
 TSENSOR_HEIGHT equ 4
@@ -57,7 +57,7 @@ player_init:
 	
 	;---copy guy sprite---
 	lda xiy,guy
-	lda xix,CHR_VRAM+tiles_end-tiles
+	lda xix,CHR_VRAM+tiles_end-tiles+hills_end-hills
 	ldl xbc,guy_end-guy
 	ldir (xix+),(xiy+)
 	;---copy guy palette---
@@ -70,49 +70,29 @@ guy_pal_copy:                   ;to appease the assembler
 	djnz bc,guy_pal_copy
 
 	;upper left
-	ldb a,160 ;tile number
-	ldb (SPR_VRAM),a
-	ldb a,0y00011000 ;attributes
-	ldb (SPR_VRAM+1),a
-	ldb a,SPRITE_X ;x position
-	ldb (SPR_VRAM+2),a
-	ldb a,SPRITE_Y
-	ldb (SPR_VRAM+3),a ;y position
-	ldb a,0 ;palette number
-	ldb (SPR_PALCODE),a	
+	ldb (SPR_VRAM),304 & 0xff ;first byte of tile number
+	ldb (SPR_VRAM+1),0y00011001 ;attributes and tile # upper bit
+	ldb (SPR_VRAM+2),SPRITE_X ;x position
+	ldb (SPR_VRAM+3),SPRITE_Y ;y position
+	ldb (SPR_PALCODE),0 ;palette number
 	;upper right
-	ldb a,161
-	ldb (SPR_VRAM+4),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (SPR_VRAM+5),a
-	ldb a,8 ;offset 8 px from prev sprite on x axis
-	ldb (SPR_VRAM+6),a
-	ldb a,0
-	ldb (SPR_VRAM+7),a
-	ldb a,0
-	ldb (SPR_PALCODE+1),a
+	ldb (SPR_VRAM+4),305 & 0xff
+	ldb (SPR_VRAM+5),0y00011111 ;turn on h/v chain
+	ldb (SPR_VRAM+6),8 ;offset 8 px from prev sprite on x axis
+	ldb (SPR_VRAM+7),0
+	ldb (SPR_PALCODE+1),0
 	;lower left
-	ldb a,162
-	ldb (SPR_VRAM+8),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (SPR_VRAM+9),a
-	ldb a,248 ;offset -8 px from prev sprite on x axis
-	ldb (SPR_VRAM+10),a
-	ldb a,8 ;offset 8 px on y axis
-	ldb (SPR_VRAM+11),a
-	ldb a,0
-	ldb (SPR_PALCODE+2),a		
+	ldb (SPR_VRAM+8),306 & 0xff
+	ldb (SPR_VRAM+9),0y00011111 ;turn on h/v chain
+	ldb (SPR_VRAM+10),248 ;offset -8 px from prev sprite on x axis
+	ldb (SPR_VRAM+11),8 ;offset 8 px on y axis
+	ldb (SPR_PALCODE+2),0		
 	;lower right
-	ldb a,163
-	ldb (SPR_VRAM+12),a
-	ldb a,0y00011110 ;turn on h/v chain
-	ldb (SPR_VRAM+13),a
-	ldb a,8 ;offset 8 px from prev sprite on x axis
-	ldb (SPR_VRAM+14),a
-	ldb a,0 ;offset 0 px on y axis
-	ldb (SPR_VRAM+15),a
-	ldb a,0
-	ldb (SPR_PALCODE+3),a
+	ldb (SPR_VRAM+12),307 & 0xff
+	ldb (SPR_VRAM+13),0y00011111 ;turn on h/v chain
+	ldb (SPR_VRAM+14),8 ;offset 8 px from prev sprite on x axis
+	ldb (SPR_VRAM+15),0 ;offset 0 px on y axis
+	ldb (SPR_PALCODE+3),0
 	ret
 
 ;-------------------------------------------------------

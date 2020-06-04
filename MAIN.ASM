@@ -55,13 +55,14 @@ palette_copy:                   ;to appease the assembler
 	ldw wa,(xiy+)
 	ldw (xix+),wa
 	djnz bc,palette_copy	
-	;---clear scroll plane 2 palette---
-	ldw wa,0
+	;---copy hill palette to bg 2---
+	lda xiy,hills_pal
 	lda xix,SCROLL2_CRAM
-	ldw bc,4*16
-palette2_copy:
+	ldl xbc,hills_pal_end-hills_pal
+palette_copy2:
+	ldw wa,(xiy+)
 	ldw (xix+),wa
-	djnz bc,palette2_copy
+	djnz bc,palette_copy2
 
 	; ;---set bg color---	
 	ldw wa,0xf85
@@ -76,6 +77,12 @@ palette2_copy:
 	ldl xbc,tiles_end-tiles
 	ldir (xix+),(xiy+)
 	
+	lda xiy,hills
+	lda xix,CHR_VRAM+0xA00
+	ldl xbc,hills_end-hills
+	ldir (xix+),(xiy+)
+	
+	
 	;---copy map---
 	
 	lda xix,SCRL1_VRAM
@@ -89,6 +96,14 @@ copy_row:
 	addw iy,128-40
 	djnz d,map_copy	
 	
+	lda xiy,hills_map
+	lda xix,SCRL2_VRAM
+	ldl xbc,32*32
+map2_loop: ;have to add 160 to each tile because 160 tiles in the foreground
+	ldw wa,(xiy+)
+	addw wa,160
+	ldw (xix+),wa
+	djnz bc,map2_loop
 	cal player_init
 	
 ;-------------------------------------------------------

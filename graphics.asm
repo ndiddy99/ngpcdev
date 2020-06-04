@@ -11,8 +11,14 @@
 ;  ---------------------------------
 ;           EXTERNAL DEFINITION
 ;  ---------------------------------
-	public palette,tiles,map,guy,guy_pal
-	public palette_end,tiles_end,map_end,guy_end,guy_pal_end
+	public palette,palette_end
+	public tiles,tiles_end
+	public map,map_end
+	public hills,hills_end
+	public hills_map,hills_map_end
+	public hills_pal,hills_pal_end
+	public guy,guy_end
+	public guy_pal,guy_pal_end
 
 ;  ---------------------------------
 ;	INCLUDE
@@ -37,6 +43,21 @@ tiles_end:
 map:
 	$include "gfx\map1.map"
 map_end:
+
+	align 2
+hills:
+	$include "gfx\hills_tle.inc"
+hills_end:
+
+	align 2
+hills_map:
+	$include "gfx\hills.map"
+hills_map_end:
+
+	align 2
+hills_pal:
+	$include "gfx\hills_pal.inc"
+hills_pal_end:
 
 	align 2
 guy:
