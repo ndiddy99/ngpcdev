@@ -1,0 +1,5 @@
+Program, Graphics: Nathan Misner
+Special thanks:
+Example code: SNK Corporation
+Timer sample: Ivan Mackintosh
+

@@ -41,7 +41,6 @@ __STARTUP	equ	0xff1800
 ;-------------------------------------------------------
 reset:
 	cal	SYS_PATCH ;called during init to assist with power functionality
-
 ;------------------- INITIALIZATION --------------------
 	cal init_setting ;VRAM, work initialization
 	; cal print_init ;load system font
@@ -120,6 +119,8 @@ main:
 	cal SYSTEM_CALL
 
 main_100:
+	incw 1,(frame_cnt)
+	ldb (hint_cnt),0 ;reset number of times horizontal interrupt was called
 	cal player_move
 	
 	ldb (stopper),0
@@ -160,6 +161,68 @@ v_int:
 	andb a,w ;check if there's any overlap between what was pressed this frame
 	ldb (joyedge),a ;and what wasn't pressed last frame
 	
+	;keep scroll 2 from scrolling off screen
+	ldw wa,(scroll_y)
+	srlw 1,wa
+	cpb a,102
+	j c,normal_scroll
+	ldb a,102
+normal_scroll:	
+	ldb (SCRL_Y2_ADR),a
+	
+	;set up bank 2 registers for horizontal interrupt
+	ldw bc,(scroll_x)
+	ldb d,c
+	srlw 1,bc
+	ldb rc2,c ;x / 2
+	srlw 1,bc
+	ldb rb2,c ;x / 4
+	srlw 1,bc
+	ldb ra2,c ;x / 8
+	ldb e,c
+	; the 3 "split points" are at 88, 128, and 168.
+	ldb w,0
+	
+	ldw hl,88
+	subw hl,wa
+	cpw hl,5
+	j mi,low_vals
+	j normal_vals
+low_vals:
+	ldb l,128
+	subb l,a
+	ldb (SCRL_X2_ADR),e
+	ldb rw2,1
+	ldb re2,40
+	j done_vals
+normal_vals:
+	ldb a,(frame_cnt)
+	ldb (SCRL_X2_ADR),a
+	ldb rw2,0
+	ldb rd2,40
+	ldb re2,40
+done_vals:
+	
+	;enable horizontal interrupt
+set_int:
+	di
+	andb (0x20),0xfe ;disable timer 0
+	andb (0x24),0xfc ;timer 0: external clock (hblank)
+	ldb (0x22),l ;what line to trigger interrupt on
+	ldb rw3,VECT_INTLVSET ;enable interrupt through bios call
+	ldb rb3,3
+	ldb rc3,2
+	swi 1 ;go to bios call
+	orb (0x20),0x1 ;enable timer 0
+	ei 0
+	j done_int
+no_int:
+	di
+	andb (0x20),0xfe ;disable timer 0
+	ei 0
+	
+done_int:	
+	
 ;	--------------------------------
     popw sr
 	popl xhl
@@ -175,8 +238,58 @@ v_int:
 ;-------------------------------------------------------
 ; other interrupts
 ;-------------------------------------------------------
+; horizontal interrupt happens so quickly that we don't want to bother
+; touching ram, so instead we use register bank 2
+;
+; seams for hill bg are at 88, 128, and 168
+;-------------------------------------------------------
+; register map:
+; w: counts how many times horizontal interrupt has been called
+; a: x position for first zone (furthest back hill)
+; b: x position for second zone (middle hill)
+; c: x position for third zone (closest hill)
+; d: y position for second split
+; e: y position for third split
+;-------------------------------------------------------
 h_int:
+	ldf 2 ;load register bank 2
+	ldb h,(WD_LCDST_HPOS)
+	cpb h,152 ;don't mess with scroll if in vblank
+	j nc,done_h_int
+	cpb w,0
+	j eq,first
+	cpb w,1
+	; j c,first
+	j eq,second
+third:
+	ldb (SCRL_X2_ADR),c
+	di
+	andb (0x20),0xfe ;disable timer 0
+	ei 0
+	ldf 0
 	reti
+second:
+	ldb (SCRL_X2_ADR),b
+	ldb w,2
+	di
+	andb (0x20),0xfe ;disable timer 0
+	ldb (0x22),e ;scanline to fire next horizontal interrupt
+	orb (0x20),0x1 ;enable timer 0
+	ei 0
+	ldf 0
+	reti
+first:
+	ldb (SCRL_X2_ADR),a
+	ldb w,1
+	di
+	andb (0x20),0xfe ;disable timer 0
+	ldb (0x22),d ;scanline to fire next horizontal interrupt
+	orb (0x20),0x1 ;enable timer 0
+	ei 0
+done_h_int:	
+	ldf 0
+	reti
+	
 
 timer1:
 	reti

@@ -199,7 +199,7 @@ done_hcollision:
 	ldb a,(player_mode)
 	cpb a,MODE_AIR ;don't start jumping if you press the button in air
 	j z,not_start_jump
-	ldl xwa,-0x90000
+	ldl xwa,-0x80000
 	ldl (player_dy),xwa
 	ldb (player_mode),MODE_AIR
 not_start_jump:

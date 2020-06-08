@@ -7,7 +7,7 @@
 ;  ---------------------------------
 ;	EXTERNAL LOOK UP
 ;  ---------------------------------
-	extern medium scroll_x,scroll_y,scroll_mode
+	extern medium scroll_mode
 	
 ;  ---------------------------------
 ;   EXTERNAL DEFINITION
@@ -22,6 +22,7 @@
 	$include "k1head.inc"
 	$include "system.inc"
 	$include "graphics.inc"
+	$include "glbwork.inc"
 	
 TILES_X equ 20
 TILES_Y equ 19

@@ -17,6 +17,7 @@
 	public joypad
 	public joylast
 	public joyedge
+	public hint_cnt
 	public frame_cnt
 	public screen_x
 	public screen_y
@@ -42,6 +43,7 @@ stopper	dsb	1
 joypad dsb 1
 joylast dsb 1
 joyedge dsb 1
+hint_cnt dsb 1
 	align   2
 frame_cnt dsb 2
 screen_x dsb 2
@@ -49,7 +51,9 @@ screen_y dsb 2
 ;---scroll.asm---
 	align   2
 scroll_x dsb 2
+scroll_x2 dsb 2
 scroll_y dsb 2
+scroll_y2 dsb 2
 scroll_mode dsb 1
 ;---player.asm---
 	align 2

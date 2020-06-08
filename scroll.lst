@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Wed Jun 03 22:50:58 2020
+Sat Jun 06 13:34:33 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  scroll.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l scroll.asm
 
@@ -14,7 +14,7 @@ Location  Object                           Ins        Line Source Statement
                                  +0          7           7 ;  ---------------------------------
                                  +0          8           8 ;	EXTERNAL LOOK UP
                                  +0          9           9 ;  ---------------------------------
-                                 +0         10          10 	extern medium scroll_x,scroll_y,scroll_mode
+                                 +0         10          10 	extern medium scroll_mode
                                  +0         11          11 	
                                  +0         12          12 ;  ---------------------------------
                                  +0         13          13 ;   EXTERNAL DEFINITION
@@ -233,435 +233,464 @@ Location  Object                           Ins        Line Source Statement
                                  +1        204         226 
                                  +1        205         227 ;=======================================================
                                  +1        206         228 
-                                 +1        207         229 
+                                 +1        207         229 ;		TIMER EQU
                                  +1        208         230 
-                                 +0         23         231 	$include "system.inc"
-                                 +1          1         232 ;-----------------------------------------------------------------
-                                 +1          2         233 
-                                 +1          3         234 ;	SYSTEM CALL
-                                 +1          4         235 
-                                 +1          5         236 ;-----------------------------------------------------------------
-                                 +1          6         237 
-  00000000                       +1          7         238 SYS_SUCCESS		equ	0x00			;run success
-                                 +1          8         239 
-  000000FF                       +1          9         240 SYS_FAILURE		equ	0xff			;run failure
-                                 +1         10         241 
-                                 +1         11         242 ;-----------------------------------------------------------------
-                                 +1         12         243 
-  00000000                       +1         13         244 VECT_SHUTDOWN		equ	0x00			;shutdown (power OFF)
-                                 +1         14         245 
-  00000001                       +1         15         246 VECT_CLOCKGEARSET	equ	0x01			;clock gear change
-                                 +1         16         247 
-  00000002                       +1         17         248 VECT_RTCGET		equ	0x02			;obtain time
-                                 +1         18         249 
-  00000004                       +1         19         250 VECT_INTLVSET		equ	0x04			;set interrupt level
-                                 +1         20         251 
-  00000005                       +1         21         252 VECT_SYSFONTSET	equ	0x05			;set system font
-                                 +1         22         253 
-  00000006                       +1         23         254 VECT_FLASHWRITE	equ	0x06			;flash memory data write
-                                 +1         24         255 
-  00000007                       +1         25         256 VECT_FLASHALLERS	equ	0x07			;flash memory erase all blocks
-                                 +1         26         257 
-  00000008                       +1         27         258 VECT_FLASHERS		equ	0x08			;flash memory erase specified blocks
-                                 +1         28         259 
-  00000009                       +1         29         260 VECT_ALARMSET		equ	0x09			;game alarm setting
-                                 +1         30         261 
-  0000000B                       +1         31         262 VECT_ALARMDOWNSET	equ	0x0b			;alarm setting during shutdown
-                                 +1         32         263 
-  0000000D                       +1         33         264 VECT_FLASHPROTECT	equ	0x0d			;protect using tool
-                                 +1         34         265 
-  0000000E                       +1         35         266 VECT_GEMODESET	equ	0x0e			;switching GE mode
-                                 +1         36         267 
-                                 +1         37         268 ;-----------------------------------------------------------------
-                                 +1         38         269 
-                                 +1         39         270 ;	SYSTEM BIT EQU
-                                 +1         40         271 
-                                 +1         41         272 ;-----------------------------------------------------------------
-                                 +1         42         273 
-  00000007                       +1         43         274 INT_CLR_BIT		equ	0x07			;interrupt request clear bit
-                                 +1         44         275 
-  00000080                       +1         45         276 _INT_CLR_BIT		equ	0y10000000		;
-                                 +1         46         277 
-                                 +1         47         278 ;-----------------------------------------------------------------
-                                 +1         48         279 
-                                 +1         49         280 ;	SYSTEM WORK
-                                 +1         50         281 
-                                 +1         51         282 ;-----------------------------------------------------------------
-                                 +1         52         283 
-  00006F80                       +1         53         284 Battery_Voltage	equ	0x6f80			;estimated voltage
-                                 +1         54         285 
-  00006F82                       +1         55         286 Sys_lever		equ	0x6f82			;lever value
-                                 +1         56         287 
-  00006F87                       +1         57         288 Language		equ	0x6f87			;language chosen
-                                 +1         58         289 
-  00006F85                       +1         59         290 User_Shutdown		equ	0x6f85			;shutdown re1uest bit
-                                 +1         60         291 
-  00006F84                       +1         61         292 User_Boot		equ	0x6f84			;startup bit flag
-                                 +1         62         293 
-  00006F86                       +1         63         294 User_Answer		equ	0x6f86			;user request bit
-                                 +1         64         295 
-  00006F91                       +1         65         296 OS_Version		equ	0x6f91			;system version reserve work
-                                 +1         66         297 
-                                 +1         67         298 ;-----------------------------------------------------------------
-                                 +1         68         299 
-                                 +1         69         300 ;	WATCH DOG
-                                 +1         70         301 
-                                 +1         71         302 ;-----------------------------------------------------------------
-                                 +1         72         303 
-  0000006F                       +1         73         304 WDCR			equ	0x06F		;watch dog control address
-                                 +1         74         305 
-  0000004E                       +1         75         306 WD_CLR			equ	0x04e		;watch dog clear code
-                                 +1         76         307 
-                                 +1         77         308 ;-----------------------------------------------------------------
-                                 +1         78         309 
-                                 +1         79         310 ;	SYSTEM WORK BIT
-                                 +1         80         311 
-                                 +1         81         312 ;-----------------------------------------------------------------
-                                 +1         82         313 
-  00000001                       +1         83         314 JOY_UP 		equ 0x1
-  00000002                       +1         84         315 JOY_DOWN 	equ 0x2
-  00000004                       +1         85         316 JOY_LEFT 	equ 0x4
-  00000008                       +1         86         317 JOY_RIGHT 	equ 0x8
-  00000010                       +1         87         318 JOY_A		equ 0x10
-  00000020                       +1         88         319 JOY_B		equ 0x20
-  00000040                       +1         89         320 JOY_OPTION	equ 0x40
-                                 +1         90         321 
-  00000000                       +1         91         322 BIT_UP		equ 0
-  00000001                       +1         92         323 BIT_DOWN	equ 1
-  00000002                       +1         93         324 BIT_LEFT	equ 2
-  00000003                       +1         94         325 BIT_RIGHT	equ 3
-  00000004                       +1         95         326 BIT_A		equ 4
-  00000005                       +1         96         327 BIT_B		equ 5
-  00000006                       +1         97         328 BIT_OPTION	equ 6
-                                 +1         98         329 
-                                 +1         99         330 ;======================================================= 
-                                 +1        100         331 
-                                 +1        101         332 ;	USER START UP BIT
-                                 +1        102         333 
-                                 +1        103         334 ;======================================================= 
-                                 +1        104         335 
-                                 +1        105         336 ;User_Boot
-                                 +1        106         337 
-                                 +1        107         338 ;	00000000
-                                 +1        108         339 
-                                 +1        109         340 ;	||+------ resume startup			0:not resume startup		1:resume startup
-                                 +1        110         341 
-                                 +1        111         342 ;	|+------- POWER startup			0:not POWER startup		1:POWER startup
-                                 +1        112         343 
-                                 +1        113         344 ;	+-------- alarm startup			0:not alarm statup		1:alarm statup
-                                 +1        114         345 
-                                 +1        115         346 ;	=================================================
-                                 +1        116         347 
-                                 +1        117         348 
-                                 +1        118         349 
-  00000007                       +1        119         350 ALARM_BOOT_REQ		equ	0x07
-                                 +1        120         351 
-  00000006                       +1        121         352 POWER_BOOT_REQ		equ	0x06
-                                 +1        122         353 
-  00000005                       +1        123         354 RESUME_BOOT_REQ		equ	0x05
-                                 +1        124         355 
-  00000080                       +1        125         356 _ALARM_BOOT_REQ		equ	0y10000000
-                                 +1        126         357 
-  00000040                       +1        127         358 _POWER_BOOT_REQ		equ	0y01000000
-                                 +1        128         359 
-  00000020                       +1        129         360 _RESUME_BOOT_REQ	equ	0y00100000
-                                 +1        130         361 
-                                 +1        131         362 
-                                 +1        132         363 
-                                 +1        133         364 ;======================================================= 
-                                 +1        134         365 
-                                 +1        135         366 ;	USER SHUTDOWN BIT
-                                 +1        136         367 
-                                 +1        137         368 ;======================================================= 
-                                 +1        138         369 
-                                 +1        139         370 ;User_Shutdown
-                                 +1        140         371 
-                                 +1        141         372 ;	00000000
-                                 +1        142         373 
-                                 +1        143         374 ;	||+--------- main power use shutdown request	0:no request	1:request
-                                 +1        144         375 
-                                 +1        145         376 ;	|+---------- no use shutdown request		0:no request	1:request
-                                 +1        146         377 
-                                 +1        147         378 ;	+----------- power off shutdown request		0:no request	1:request
-                                 +1        148         379 
-                                 +1        149         380 ;	=================================================
-                                 +1        150         381 
-                                 +1        151         382 
-                                 +1        152         383 
-  00000007                       +1        153         384 MP_SHUTDOWN_REQ	equ	0x07
-                                 +1        154         385 
-  00000006                       +1        155         386 TIME_SHUTDOWN_REQ	equ	0x06
-                                 +1        156         387 
-  00000005                       +1        157         388 BAT_SHUTDOWN_REQ	equ	0x05
-                                 +1        158         389 
-  00000080                       +1        159         390 _MP_SHUTDOWN_REQ	equ	0y10000000
-                                 +1        160         391 
-  00000040                       +1        161         392 _TIME_SHUTDOWN_REQ	equ	0y01000000
-                                 +1        162         393 
-  00000020                       +1        163         394 _BAT_SHUTDOWN_REQ	equ	0y00100000
-                                 +1        164         395 
-                                 +1        165         396 
-                                 +1        166         397 
-                                 +1        167         398 ;======================================================= 
-                                 +1        168         399 
-                                 +1        169         400 ;	USER ANSWER BIT
-                                 +1        170         401 
-                                 +1        171         402 ;======================================================= 
-                                 +1        172         403 
-                                 +1        173         404 ;User_Answer
-                                 +1        174         405 
-                                 +1        175         406 ;	00000000
-                                 +1        176         407 
-                                 +1        177         408 ;	|+----------- no use shutdown operation	0:non-existent	1:exists
-                                 +1        178         409 
-                                 +1        179         410 ;	+------------ resume operation		0:non-existent	1:exists
-                                 +1        180         411 
-                                 +1        181         412 ;	=================================================
-                                 +1        182         413 
-                                 +1        183         414 
-                                 +1        184         415 
-  00000007                       +1        185         416 RESUME_ANS		equ	0x07
-                                 +1        186         417 
-  00000006                       +1        187         418 TIMER_SHUTDOWN_ANS	equ	0x06
-                                 +1        188         419 
-  00000080                       +1        189         420 _RESUME_ANS		equ	0y10000000
-                                 +1        190         421 
-  00000040                       +1        191         422 _TIMER_SHUTDOWN_ANS	equ	0y01000000
-                                 +1        192         423 
-                                 +0         24         424 	$include "graphics.inc"
-                                 +1          1         425 ;*****************************************
-                                 +1          2         426 ;	Graphics data 
-                                 +1          3         427 ;*****************************************
-                                 +1          4         428 
-                                 +1          5         429 	extern palette
-                                 +1          6         430 	extern palette_end
-                                 +1          7         431 	extern tiles
-                                 +1          8         432 	extern tiles_end
-                                 +1          9         433 	extern map
-                                 +1         10         434 	extern map_end
-                                 +1         11         435 	extern hills
-                                 +1         12         436 	extern hills_end
-                                 +1         13         437 	extern hills_map
-                                 +1         14         438 	extern hills_map_end
-                                 +1         15         439 	extern hills_pal
-                                 +1         16         440 	extern hills_pal_end
-                                 +1         17         441 	extern guy
-                                 +1         18         442 	extern guy_end
-                                 +1         19         443 	extern guy_pal
-                                 +1         20         444 	extern guy_pal_end
-                                 +0         25         445 	
-  00000014                       +0         26         446 TILES_X equ 20
-  00000013                       +0         27         447 TILES_Y equ 19
-  00000001                       +0         28         448 COPY_LEFT equ 1
-  00000002                       +0         29         449 COPY_RIGHT equ 2
-  00000004                       +0         30         450 COPY_UP equ 4
-  00000008                       +0         31         451 COPY_DOWN equ 8
-                                 +0         32         452 
-                                 +0         33         453 ;-------------------------------------------------------
-                                 +0         34         454 PROG section code large
-                                 +0         35         455 ;-------------------------------------------------------
-                                 +0         36         456 	
-                                 +0         37         457 ;-------------------------------------------------------
-                                 +0         38         458 ; scroll_set: set scroll to specified coords
-                                 +0         39         459 ;-------------------------------------------------------
-                                 +0         40         460 ; wa: x pos
-                                 +0         41         461 ; bc: y pos
-                                 +0         42         462 ;-------------------------------------------------------
-00000000                         +0         43         463 scroll_set:
-00000000  D10000F0             R +0         44         464 	cpw wa,(scroll_x)
-00000004  660A                   +0         45         465 	j z,no_x
-00000006  6D04                   +0         46         466 	j p,right_x
-                                 +0         47         467 	
-00000008                         +0         48         468 left_x: ;if scrolling to the left
-00000008  2401                   +0         49         469 	ldb d,COPY_LEFT
-0000000A  6806                   +0         50         470 	j done_x	
-0000000C                         +0         51         471 right_x: ;if scrolling to the right
-0000000C  2402                   +0         52         472 	ldb d,COPY_RIGHT
-0000000E  6802                   +0         53         473 	j done_x
-00000010                         +0         54         474 no_x: ;if values are the same
-00000010  2400                   +0         55         475 	ldb d,0
-00000012                         +0         56         476 done_x:
-00000012  F1000050             R +0         57         477 	ldw (scroll_x),wa
-                                 +0         58         478 	
-00000016  D10000F1             R +0         59         479 	cpw bc,(scroll_y)
-0000001A  660C                   +0         60         480 	j z,done_y
-0000001C  6D05                   +0         61         481 	j p,down_y
-                                 +0         62         482 
-0000001E                         +0         63         483 up_y: ;if scrolling up
-0000001E  CCCE04                 +0         64         484 	orb d,COPY_UP
-00000021  6805                   +0         65         485 	j done_y
-00000023                         +0         66         486 down_y: ;if scrolling down
-00000023  CCCE08                 +0         67         487 	orb d,COPY_DOWN
-00000026  6800                   +0         68         488 	j done_y
-00000028                         +0         69         489 done_y: ;if values are the same
-00000028  F1000044             R +0         70         490 	ldb (scroll_mode),d
-0000002C  F1000051             R +0         71         491 	ldw (scroll_y),bc
-00000030  0E                     +0         72         492 	ret
-                                 +0         73         493 
-                                 +0         74         494 
-                                 +0         75         495 ;-------------------------------------------------------
-                                 +0         76         496 ; scroll_get_tile: returns tile # at given coordinates in wa
-                                 +0         77         497 ;-------------------------------------------------------
-                                 +0         78         498 ; wa: x pos
-                                 +0         79         499 ; bc: y pos
-                                 +0         80         500 ;-------------------------------------------------------
-00000031                         +0         81         501 scroll_get_tile:
-00000031  D8EF03                 +0         82         502 	srlw 3,wa ;change pixels to 8x8 tiles
-00000034  D9EF03                 +0         83         503 	srlw 3,bc
-00000037  D9EC06                 +0         84         504 	slaw 6,bc ;64 tiles per row
-0000003A  D881                   +0         85         505 	addw bc,wa
-0000003C  D9EC01                 +0         86         506 	slaw 1,bc ;bytes->words
-0000003F  D7E6A8                 +0         87         507 	ldw qbc,0
-00000042  E9C800000000         R +0         88         508 	addl xbc,map
-00000048  9120                   +0         89         509 	ldw wa,(xbc)
-                                 +0         90         510 	; andw wa,0x1ff ;tile number is low 9 bits of map word
-0000004A  0E                     +0         91         511 	ret
-                                 +0         92         512 	
-                                 +0         93         513 	
-                                 +0         94         514 ;-------------------------------------------------------
-                                 +0         95         515 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
-                                 +0         96         516 ;-------------------------------------------------------	
-0000004B                         +0         97         517 scroll_copy:
-0000004B  C1000021             R +0         98         518 	ldb a,(scroll_x)
-0000004F  C1000023             R +0         99         519 	ldb c,(scroll_y)
-00000053  F1328041               +0        100         520 	ldb (SCRL_X1_ADR),a
-00000057  F1338043               +0        101         521 	ldb (SCRL_Y1_ADR),c
-                                 +0        102         522 	
-0000005B  C1000021             R +0        103         523 	ldb a,(scroll_mode)
-0000005F  C9CC01                 +0        104         524 	andb a,COPY_LEFT
-00000062  661B                   +0        105         525 	j z,no_left
-                                 +0        106         526 	;scrolling left
-00000064  D7E2A8                 +0        107         527 	ldw qwa,0
-00000067  D1000020             R +0        108         528 	ldw wa,(scroll_x)
-0000006B  E8EF03                 +0        109         529 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-0000006E  E869                   +0        110         530 	decl 1,xwa ;start copying 1 tile before the screen
-00000070  D7E6A8                 +0        111         531 	ldw qbc,0
-00000073  D1000021             R +0        112         532 	ldw bc,(scroll_y)
-00000077  E9EF03                 +0        113         533 	srll 3,xbc
-0000007A  E969                   +0        114         534 	decl 1,xbc ;start copying 1 tile higher than the screen
-0000007C  1E7500                 +0        115         535 	cal copy_column
-                                 +0        116         536 	
-0000007F                         +0        117         537 no_left:
-0000007F  C1000021             R +0        118         538 	ldb a,(scroll_mode)
-00000083  C9CC02                 +0        119         539 	andb a,COPY_RIGHT
-00000086  661F                   +0        120         540 	j z,no_right
-                                 +0        121         541 	;scrolling right
-00000088  D7E2A8                 +0        122         542 	ldw qwa,0
-0000008B  D1000020             R +0        123         543 	ldw wa,(scroll_x)
-0000008F  E8EF03                 +0        124         544 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-00000092  E8C814000000           +0        125         545 	addl xwa,TILES_X ;start copying 1 tile after the screen
-00000098  D7E6A8                 +0        126         546 	ldw qbc,0
-0000009B  D1000021             R +0        127         547 	ldw bc,(scroll_y)
-0000009F  E9EF03                 +0        128         548 	srll 3,xbc
-000000A2  E969                   +0        129         549 	decl 1,xbc ;start copying 1 tile higher than the screen
-000000A4  1E4D00                 +0        130         550 	cal copy_column
-                                 +0        131         551 	
-000000A7                         +0        132         552 no_right:
-000000A7  C1000021             R +0        133         553 	ldb a,(scroll_mode)
-000000AB  C9CC04                 +0        134         554 	andb a,COPY_UP
-000000AE  661B                   +0        135         555 	j z,no_up
-                                 +0        136         556 	;scrolling up
-000000B0  D7E2A8                 +0        137         557 	ldw qwa,0
-000000B3  D1000020             R +0        138         558 	ldw wa,(scroll_x)
-000000B7  E8EF03                 +0        139         559 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-000000BA  E869                   +0        140         560 	decl 1,xwa ;start copying 1 tile before the screen
-000000BC  D7E6A8                 +0        141         561 	ldw qbc,0
-000000BF  D1000021             R +0        142         562 	ldw bc,(scroll_y)
-000000C3  E9EF03                 +0        143         563 	srll 3,xbc
-000000C6  E969                   +0        144         564 	decl 1,xbc ;start copying 1 tile higher than the screen
-000000C8  1E8000                 +0        145         565 	cal copy_row
-                                 +0        146         566 	
-000000CB                         +0        147         567 no_up:
-000000CB  C1000021             R +0        148         568 	ldb a,(scroll_mode)
-000000CF  C9CC08                 +0        149         569 	andb a,COPY_DOWN
-000000D2  661F                   +0        150         570 	j z,no_down
-                                 +0        151         571 	;scrolling down
-000000D4  D7E2A8                 +0        152         572 	ldw qwa,0
-000000D7  D1000020             R +0        153         573 	ldw wa,(scroll_x)
-000000DB  E8EF03                 +0        154         574 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
-000000DE  E869                   +0        155         575 	decl 1,xwa ;start copying 1 tile before the screen
-000000E0  D7E6A8                 +0        156         576 	ldw qbc,0
-000000E3  D1000021             R +0        157         577 	ldw bc,(scroll_y)
-000000E7  E9EF03                 +0        158         578 	srll 3,xbc
-000000EA  E9C813000000           +0        159         579 	addl xbc,TILES_Y ;start copying 1 tile lower than the screen
-000000F0  1E5800                 +0        160         580 	cal copy_row	
-000000F3                         +0        161         581 no_down:
-000000F3  0E                     +0        162         582 	ret
-                                 +0        163         583 	
-                                 +0        164         584 ;-------------------------------------------------------
-                                 +0        165         585 ; copy_column: copy a column of scroll data into vram
-                                 +0        166         586 ;-------------------------------------------------------
-                                 +0        167         587 ; xwa: tile x
-                                 +0        168         588 ; xbc: tile y
-                                 +0        169         589 ;-------------------------------------------------------	
-000000F4                         +0        170         590 copy_column:
-                                 +0        171         591 ;get source address
-000000F4  E88A                   +0        172         592 	ldl xde,xwa
-000000F6  EAEC01                 +0        173         593 	slal 1,xde ;tile # to word #
-000000F9  E98D                   +0        174         594 	ldl xiy,xbc
-000000FB  EDEC07                 +0        175         595 	slal 7,xiy ;tile # * 128 bytes per row
-000000FE  EA85                   +0        176         596 	addl xiy,xde ;source offset now in xiy
-00000100  F200000032           R +0        177         597 	lda xde,map
-                                 +0        178         598 ;get destination address
-00000105  E8CC1F000000           +0        179         599 	andl xwa,0x1f ;virtual screen is 32x32 tiles
-0000010B  E8EC01                 +0        180         600 	slal 1,xwa
-0000010E  E9CC1F000000           +0        181         601 	andl xbc,0x1f
-00000114  E98C                   +0        182         602 	ldl xix,xbc
-00000116  ECEC06                 +0        183         603 	slal 6,xix ;tile # * 64 bytes per row
-00000119  E884                   +0        184         604 	addl xix,xwa
-0000011B  ECC800900000           +0        185         605 	addl xix,SCRL1_VRAM
-                                 +0        186         606 	
-00000121  2115                   +0        187         607 	ldb a,TILES_Y+2 ;want to go from 1 tile before the screen to 1 tile after
-00000123                         +0        188         608 copy_col_loop:
-00000123  EDCCFF1F0000           +0        189         609 	andl xiy,0x1fff ;keep source offset within tilemap (64*64*2)
-00000129  ECCCFF970000           +0        190         610 	andl xix,0x97ff ;keep destination within scroll 1 vram	
-0000012F  ED8A                   +0        191         611 	ldl xde,xiy
-00000131  EAC800000000         R +0        192         612 	addl xde,map ;get absolute source address
-00000137  9221                   +0        193         613 	ldw bc,(xde)
-00000139  B451                   +0        194         614 	ldw (xix),bc
-0000013B  EDC880000000           +0        195         615 	addl xiy,128 ;map is 64x64, so 128 bytes per row	
-00000141  ECC840000000           +0        196         616 	addl xix,64 ;vram is 32x32, so 64 bytes per row
-00000147  C91CD9                 +0        197         617 	djnz a,copy_col_loop
-0000014A  0E                     +0        198         618 	ret
-                                 +0        199         619 
-                                 +0        200         620 ;-------------------------------------------------------
-                                 +0        201         621 ; copy_row: copy a row of scroll data into vram
-                                 +0        202         622 ;-------------------------------------------------------
-                                 +0        203         623 ; xwa: tile x
-                                 +0        204         624 ; xbc: tile y
-                                 +0        205         625 ;-------------------------------------------------------	
-0000014B                         +0        206         626 copy_row:	
-                                 +0        207         627 ;get source address
-0000014B  E88A                   +0        208         628 	ldl xde,xwa
-0000014D  EAEC01                 +0        209         629 	slal 1,xde ;tile # to word #
-00000150  E98D                   +0        210         630 	ldl xiy,xbc
-00000152  EDEC07                 +0        211         631 	slal 7,xiy ;tile # * 128 bytes per row
-00000155  EA85                   +0        212         632 	addl xiy,xde
-00000157  EDC800000000         R +0        213         633 	addl xiy,map ;source address in xiy
-                                 +0        214         634 ;get destination address
-0000015D  C9CC1F                 +0        215         635 	andb a,0x1f ;virtual screen is 32x32 tiles
-00000160  C9EC01                 +0        216         636 	slab 1,a ;row offset in a
-00000163  E9CC1F000000           +0        217         637 	andl xbc,0x1f
-00000169  E98C                   +0        218         638 	ldl xix,xbc
-0000016B  ECEC06                 +0        219         639 	slal 6,xix ;tile # * 64 bytes per row
-0000016E  ECC800900000           +0        220         640 	addl xix,SCRL1_VRAM ;destination address in xix
-                                 +0        221         641 
-00000174  2716                   +0        222         642 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
-00000176                         +0        223         643 copy_row_loop:
-00000176  C9CC3F                 +0        224         644 	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
-00000179  ECCCFF970000           +0        225         645 	andl xix,0x97ff ;keep destination within scroll 1 vram
-0000017F  D5F521                 +0        226         646 	ldw bc,(xiy+)
-00000182  F303F0E051             +0        227         647 	ldw (xix+a),bc
-00000187  C9C802                 +0        228         648 	addb a,2
-0000018A  CF1CE9                 +0        229         649 	djnz l,copy_row_loop
-0000018D  0E                     +0        230         650 	ret
-                                 +0        231         651 	
-                                 +0        232         652 
-                                 +0        233         653 
-                                 +0        234         654 	
-                                 +0        235         655 ;-------------------------------------------------------
-                                 +0        236         656 	end
-                                 +0        237         657 ;-------------------------------------------------------
+                                 +1        209         231 ;=======================================================
+                                 +1        210         232 
+  00000020                       +1        211         233 T8RUN	EQU 0x0020 ;bitmask controlling 8 bit timers
+                                 +1        212         234 
+                                 +1        213         235 
+                                 +1        214         236 
+                                 +1        215         237 ;=======================================================
+                                 +0         23         238 	$include "system.inc"
+                                 +1          1         239 ;-----------------------------------------------------------------
+                                 +1          2         240 
+                                 +1          3         241 ;	SYSTEM CALL
+                                 +1          4         242 
+                                 +1          5         243 ;-----------------------------------------------------------------
+                                 +1          6         244 
+  00000000                       +1          7         245 SYS_SUCCESS		equ	0x00			;run success
+                                 +1          8         246 
+  000000FF                       +1          9         247 SYS_FAILURE		equ	0xff			;run failure
+                                 +1         10         248 
+                                 +1         11         249 ;-----------------------------------------------------------------
+                                 +1         12         250 
+  00000000                       +1         13         251 VECT_SHUTDOWN		equ	0x00			;shutdown (power OFF)
+                                 +1         14         252 
+  00000001                       +1         15         253 VECT_CLOCKGEARSET	equ	0x01			;clock gear change
+                                 +1         16         254 
+  00000002                       +1         17         255 VECT_RTCGET		equ	0x02			;obtain time
+                                 +1         18         256 
+  00000004                       +1         19         257 VECT_INTLVSET		equ	0x04			;set interrupt level
+                                 +1         20         258 
+  00000005                       +1         21         259 VECT_SYSFONTSET	equ	0x05			;set system font
+                                 +1         22         260 
+  00000006                       +1         23         261 VECT_FLASHWRITE	equ	0x06			;flash memory data write
+                                 +1         24         262 
+  00000007                       +1         25         263 VECT_FLASHALLERS	equ	0x07			;flash memory erase all blocks
+                                 +1         26         264 
+  00000008                       +1         27         265 VECT_FLASHERS		equ	0x08			;flash memory erase specified blocks
+                                 +1         28         266 
+  00000009                       +1         29         267 VECT_ALARMSET		equ	0x09			;game alarm setting
+                                 +1         30         268 
+  0000000B                       +1         31         269 VECT_ALARMDOWNSET	equ	0x0b			;alarm setting during shutdown
+                                 +1         32         270 
+  0000000D                       +1         33         271 VECT_FLASHPROTECT	equ	0x0d			;protect using tool
+                                 +1         34         272 
+  0000000E                       +1         35         273 VECT_GEMODESET	equ	0x0e			;switching GE mode
+                                 +1         36         274 
+                                 +1         37         275 ;-----------------------------------------------------------------
+                                 +1         38         276 
+                                 +1         39         277 ;	SYSTEM BIT EQU
+                                 +1         40         278 
+                                 +1         41         279 ;-----------------------------------------------------------------
+                                 +1         42         280 
+  00000007                       +1         43         281 INT_CLR_BIT		equ	0x07			;interrupt request clear bit
+                                 +1         44         282 
+  00000080                       +1         45         283 _INT_CLR_BIT		equ	0y10000000		;
+                                 +1         46         284 
+                                 +1         47         285 ;-----------------------------------------------------------------
+                                 +1         48         286 
+                                 +1         49         287 ;	SYSTEM WORK
+                                 +1         50         288 
+                                 +1         51         289 ;-----------------------------------------------------------------
+                                 +1         52         290 
+  00006F80                       +1         53         291 Battery_Voltage	equ	0x6f80			;estimated voltage
+                                 +1         54         292 
+  00006F82                       +1         55         293 Sys_lever		equ	0x6f82			;lever value
+                                 +1         56         294 
+  00006F87                       +1         57         295 Language		equ	0x6f87			;language chosen
+                                 +1         58         296 
+  00006F85                       +1         59         297 User_Shutdown		equ	0x6f85			;shutdown re1uest bit
+                                 +1         60         298 
+  00006F84                       +1         61         299 User_Boot		equ	0x6f84			;startup bit flag
+                                 +1         62         300 
+  00006F86                       +1         63         301 User_Answer		equ	0x6f86			;user request bit
+                                 +1         64         302 
+  00006F91                       +1         65         303 OS_Version		equ	0x6f91			;system version reserve work
+                                 +1         66         304 
+                                 +1         67         305 ;-----------------------------------------------------------------
+                                 +1         68         306 
+                                 +1         69         307 ;	WATCH DOG
+                                 +1         70         308 
+                                 +1         71         309 ;-----------------------------------------------------------------
+                                 +1         72         310 
+  0000006F                       +1         73         311 WDCR			equ	0x06F		;watch dog control address
+                                 +1         74         312 
+  0000004E                       +1         75         313 WD_CLR			equ	0x04e		;watch dog clear code
+                                 +1         76         314 
+                                 +1         77         315 ;-----------------------------------------------------------------
+                                 +1         78         316 
+                                 +1         79         317 ;	SYSTEM WORK BIT
+                                 +1         80         318 
+                                 +1         81         319 ;-----------------------------------------------------------------
+                                 +1         82         320 
+  00000001                       +1         83         321 JOY_UP 		equ 0x1
+  00000002                       +1         84         322 JOY_DOWN 	equ 0x2
+  00000004                       +1         85         323 JOY_LEFT 	equ 0x4
+  00000008                       +1         86         324 JOY_RIGHT 	equ 0x8
+  00000010                       +1         87         325 JOY_A		equ 0x10
+  00000020                       +1         88         326 JOY_B		equ 0x20
+  00000040                       +1         89         327 JOY_OPTION	equ 0x40
+                                 +1         90         328 
+  00000000                       +1         91         329 BIT_UP		equ 0
+  00000001                       +1         92         330 BIT_DOWN	equ 1
+  00000002                       +1         93         331 BIT_LEFT	equ 2
+  00000003                       +1         94         332 BIT_RIGHT	equ 3
+  00000004                       +1         95         333 BIT_A		equ 4
+  00000005                       +1         96         334 BIT_B		equ 5
+  00000006                       +1         97         335 BIT_OPTION	equ 6
+                                 +1         98         336 
+                                 +1         99         337 ;======================================================= 
+                                 +1        100         338 
+                                 +1        101         339 ;	USER START UP BIT
+                                 +1        102         340 
+                                 +1        103         341 ;======================================================= 
+                                 +1        104         342 
+                                 +1        105         343 ;User_Boot
+                                 +1        106         344 
+                                 +1        107         345 ;	00000000
+                                 +1        108         346 
+                                 +1        109         347 ;	||+------ resume startup			0:not resume startup		1:resume startup
+                                 +1        110         348 
+                                 +1        111         349 ;	|+------- POWER startup			0:not POWER startup		1:POWER startup
+                                 +1        112         350 
+                                 +1        113         351 ;	+-------- alarm startup			0:not alarm statup		1:alarm statup
+                                 +1        114         352 
+                                 +1        115         353 ;	=================================================
+                                 +1        116         354 
+                                 +1        117         355 
+                                 +1        118         356 
+  00000007                       +1        119         357 ALARM_BOOT_REQ		equ	0x07
+                                 +1        120         358 
+  00000006                       +1        121         359 POWER_BOOT_REQ		equ	0x06
+                                 +1        122         360 
+  00000005                       +1        123         361 RESUME_BOOT_REQ		equ	0x05
+                                 +1        124         362 
+  00000080                       +1        125         363 _ALARM_BOOT_REQ		equ	0y10000000
+                                 +1        126         364 
+  00000040                       +1        127         365 _POWER_BOOT_REQ		equ	0y01000000
+                                 +1        128         366 
+  00000020                       +1        129         367 _RESUME_BOOT_REQ	equ	0y00100000
+                                 +1        130         368 
+                                 +1        131         369 
+                                 +1        132         370 
+                                 +1        133         371 ;======================================================= 
+                                 +1        134         372 
+                                 +1        135         373 ;	USER SHUTDOWN BIT
+                                 +1        136         374 
+                                 +1        137         375 ;======================================================= 
+                                 +1        138         376 
+                                 +1        139         377 ;User_Shutdown
+                                 +1        140         378 
+                                 +1        141         379 ;	00000000
+                                 +1        142         380 
+                                 +1        143         381 ;	||+--------- main power use shutdown request	0:no request	1:request
+                                 +1        144         382 
+                                 +1        145         383 ;	|+---------- no use shutdown request		0:no request	1:request
+                                 +1        146         384 
+                                 +1        147         385 ;	+----------- power off shutdown request		0:no request	1:request
+                                 +1        148         386 
+                                 +1        149         387 ;	=================================================
+                                 +1        150         388 
+                                 +1        151         389 
+                                 +1        152         390 
+  00000007                       +1        153         391 MP_SHUTDOWN_REQ	equ	0x07
+                                 +1        154         392 
+  00000006                       +1        155         393 TIME_SHUTDOWN_REQ	equ	0x06
+                                 +1        156         394 
+  00000005                       +1        157         395 BAT_SHUTDOWN_REQ	equ	0x05
+                                 +1        158         396 
+  00000080                       +1        159         397 _MP_SHUTDOWN_REQ	equ	0y10000000
+                                 +1        160         398 
+  00000040                       +1        161         399 _TIME_SHUTDOWN_REQ	equ	0y01000000
+                                 +1        162         400 
+  00000020                       +1        163         401 _BAT_SHUTDOWN_REQ	equ	0y00100000
+                                 +1        164         402 
+                                 +1        165         403 
+                                 +1        166         404 
+                                 +1        167         405 ;======================================================= 
+                                 +1        168         406 
+                                 +1        169         407 ;	USER ANSWER BIT
+                                 +1        170         408 
+                                 +1        171         409 ;======================================================= 
+                                 +1        172         410 
+                                 +1        173         411 ;User_Answer
+                                 +1        174         412 
+                                 +1        175         413 ;	00000000
+                                 +1        176         414 
+                                 +1        177         415 ;	|+----------- no use shutdown operation	0:non-existent	1:exists
+                                 +1        178         416 
+                                 +1        179         417 ;	+------------ resume operation		0:non-existent	1:exists
+                                 +1        180         418 
+                                 +1        181         419 ;	=================================================
+                                 +1        182         420 
+                                 +1        183         421 
+                                 +1        184         422 
+  00000007                       +1        185         423 RESUME_ANS		equ	0x07
+                                 +1        186         424 
+  00000006                       +1        187         425 TIMER_SHUTDOWN_ANS	equ	0x06
+                                 +1        188         426 
+  00000080                       +1        189         427 _RESUME_ANS		equ	0y10000000
+                                 +1        190         428 
+  00000040                       +1        191         429 _TIMER_SHUTDOWN_ANS	equ	0y01000000
+                                 +1        192         430 
+                                 +0         24         431 	$include "graphics.inc"
+                                 +1          1         432 ;*****************************************
+                                 +1          2         433 ;	Graphics data 
+                                 +1          3         434 ;*****************************************
+                                 +1          4         435 
+                                 +1          5         436 	extern palette
+                                 +1          6         437 	extern palette_end
+                                 +1          7         438 	extern tiles
+                                 +1          8         439 	extern tiles_end
+                                 +1          9         440 	extern map
+                                 +1         10         441 	extern map_end
+                                 +1         11         442 	extern hills
+                                 +1         12         443 	extern hills_end
+                                 +1         13         444 	extern hills_map
+                                 +1         14         445 	extern hills_map_end
+                                 +1         15         446 	extern hills_pal
+                                 +1         16         447 	extern hills_pal_end
+                                 +1         17         448 	extern guy
+                                 +1         18         449 	extern guy_end
+                                 +1         19         450 	extern guy_pal
+                                 +1         20         451 	extern guy_pal_end
+                                 +0         25         452 	$include "glbwork.inc"
+                                 +1          1         453 ;================================================================
+                                 +1          2         454 ; global vars
+                                 +1          3         455 ;================================================================
+                                 +1          4         456 
+                                 +1          5         457 	extern medium start_work
+                                 +1          6         458 	extern medium stopper ; keeps main loop spinning until vblank (byte)
+                                 +1          7         459 	extern medium joypad ;joypad bitmask (byte)
+                                 +1          8         460 	extern medium joylast ;last frame's joypad bitmask (byte)
+                                 +1          9         461 	extern medium joyedge ;what buttons were pressed this frame (byte)
+                                 +1         10         462 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
+                                 +1         11         463 	extern medium frame_cnt ; counts number of frames (word)
+                                 +1         12         464 	
+                                 +1         13         465 	extern medium scroll_x ;scroll x pos (word)
+                                 +1         14         466 	extern medium scroll_y ;scroll y pos (word)
+                                 +1         15         467 	
+                                 +1         16         468 	extern medium player_x ;player x pos (long)
+                                 +1         17         469 	extern medium player_y ;player y pos (long)
+                                 +1         18         470 	extern medium player_dx ;long
+                                 +1         19         471 	extern medium player_dy ;long
+                                 +1         20         472 ;================================================================
+                                 +1         21         473 
+                                 +0         26         474 	
+  00000014                       +0         27         475 TILES_X equ 20
+  00000013                       +0         28         476 TILES_Y equ 19
+  00000001                       +0         29         477 COPY_LEFT equ 1
+  00000002                       +0         30         478 COPY_RIGHT equ 2
+  00000004                       +0         31         479 COPY_UP equ 4
+  00000008                       +0         32         480 COPY_DOWN equ 8
+                                 +0         33         481 
+                                 +0         34         482 ;-------------------------------------------------------
+                                 +0         35         483 PROG section code large
+                                 +0         36         484 ;-------------------------------------------------------
+                                 +0         37         485 	
+                                 +0         38         486 ;-------------------------------------------------------
+                                 +0         39         487 ; scroll_set: set scroll to specified coords
+                                 +0         40         488 ;-------------------------------------------------------
+                                 +0         41         489 ; wa: x pos
+                                 +0         42         490 ; bc: y pos
+                                 +0         43         491 ;-------------------------------------------------------
+00000000                         +0         44         492 scroll_set:
+00000000  D10000F0             R +0         45         493 	cpw wa,(scroll_x)
+00000004  660A                   +0         46         494 	j z,no_x
+00000006  6D04                   +0         47         495 	j p,right_x
+                                 +0         48         496 	
+00000008                         +0         49         497 left_x: ;if scrolling to the left
+00000008  2401                   +0         50         498 	ldb d,COPY_LEFT
+0000000A  6806                   +0         51         499 	j done_x	
+0000000C                         +0         52         500 right_x: ;if scrolling to the right
+0000000C  2402                   +0         53         501 	ldb d,COPY_RIGHT
+0000000E  6802                   +0         54         502 	j done_x
+00000010                         +0         55         503 no_x: ;if values are the same
+00000010  2400                   +0         56         504 	ldb d,0
+00000012                         +0         57         505 done_x:
+00000012  F1000050             R +0         58         506 	ldw (scroll_x),wa
+                                 +0         59         507 	
+00000016  D10000F1             R +0         60         508 	cpw bc,(scroll_y)
+0000001A  660C                   +0         61         509 	j z,done_y
+0000001C  6D05                   +0         62         510 	j p,down_y
+                                 +0         63         511 
+0000001E                         +0         64         512 up_y: ;if scrolling up
+0000001E  CCCE04                 +0         65         513 	orb d,COPY_UP
+00000021  6805                   +0         66         514 	j done_y
+00000023                         +0         67         515 down_y: ;if scrolling down
+00000023  CCCE08                 +0         68         516 	orb d,COPY_DOWN
+00000026  6800                   +0         69         517 	j done_y
+00000028                         +0         70         518 done_y: ;if values are the same
+00000028  F1000044             R +0         71         519 	ldb (scroll_mode),d
+0000002C  F1000051             R +0         72         520 	ldw (scroll_y),bc
+00000030  0E                     +0         73         521 	ret
+                                 +0         74         522 
+                                 +0         75         523 
+                                 +0         76         524 ;-------------------------------------------------------
+                                 +0         77         525 ; scroll_get_tile: returns tile # at given coordinates in wa
+                                 +0         78         526 ;-------------------------------------------------------
+                                 +0         79         527 ; wa: x pos
+                                 +0         80         528 ; bc: y pos
+                                 +0         81         529 ;-------------------------------------------------------
+00000031                         +0         82         530 scroll_get_tile:
+00000031  D8EF03                 +0         83         531 	srlw 3,wa ;change pixels to 8x8 tiles
+00000034  D9EF03                 +0         84         532 	srlw 3,bc
+00000037  D9EC06                 +0         85         533 	slaw 6,bc ;64 tiles per row
+0000003A  D881                   +0         86         534 	addw bc,wa
+0000003C  D9EC01                 +0         87         535 	slaw 1,bc ;bytes->words
+0000003F  D7E6A8                 +0         88         536 	ldw qbc,0
+00000042  E9C800000000         R +0         89         537 	addl xbc,map
+00000048  9120                   +0         90         538 	ldw wa,(xbc)
+                                 +0         91         539 	; andw wa,0x1ff ;tile number is low 9 bits of map word
+0000004A  0E                     +0         92         540 	ret
+                                 +0         93         541 	
+                                 +0         94         542 	
+                                 +0         95         543 ;-------------------------------------------------------
+                                 +0         96         544 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +0         97         545 ;-------------------------------------------------------	
+0000004B                         +0         98         546 scroll_copy:
+0000004B  C1000021             R +0         99         547 	ldb a,(scroll_x)
+0000004F  C1000023             R +0        100         548 	ldb c,(scroll_y)
+00000053  F1328041               +0        101         549 	ldb (SCRL_X1_ADR),a
+00000057  F1338043               +0        102         550 	ldb (SCRL_Y1_ADR),c
+                                 +0        103         551 	
+0000005B  C1000021             R +0        104         552 	ldb a,(scroll_mode)
+0000005F  C9CC01                 +0        105         553 	andb a,COPY_LEFT
+00000062  661B                   +0        106         554 	j z,no_left
+                                 +0        107         555 	;scrolling left
+00000064  D7E2A8                 +0        108         556 	ldw qwa,0
+00000067  D1000020             R +0        109         557 	ldw wa,(scroll_x)
+0000006B  E8EF03                 +0        110         558 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+0000006E  E869                   +0        111         559 	decl 1,xwa ;start copying 1 tile before the screen
+00000070  D7E6A8                 +0        112         560 	ldw qbc,0
+00000073  D1000021             R +0        113         561 	ldw bc,(scroll_y)
+00000077  E9EF03                 +0        114         562 	srll 3,xbc
+0000007A  E969                   +0        115         563 	decl 1,xbc ;start copying 1 tile higher than the screen
+0000007C  1E7500                 +0        116         564 	cal copy_column
+                                 +0        117         565 	
+0000007F                         +0        118         566 no_left:
+0000007F  C1000021             R +0        119         567 	ldb a,(scroll_mode)
+00000083  C9CC02                 +0        120         568 	andb a,COPY_RIGHT
+00000086  661F                   +0        121         569 	j z,no_right
+                                 +0        122         570 	;scrolling right
+00000088  D7E2A8                 +0        123         571 	ldw qwa,0
+0000008B  D1000020             R +0        124         572 	ldw wa,(scroll_x)
+0000008F  E8EF03                 +0        125         573 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+00000092  E8C814000000           +0        126         574 	addl xwa,TILES_X ;start copying 1 tile after the screen
+00000098  D7E6A8                 +0        127         575 	ldw qbc,0
+0000009B  D1000021             R +0        128         576 	ldw bc,(scroll_y)
+0000009F  E9EF03                 +0        129         577 	srll 3,xbc
+000000A2  E969                   +0        130         578 	decl 1,xbc ;start copying 1 tile higher than the screen
+000000A4  1E4D00                 +0        131         579 	cal copy_column
+                                 +0        132         580 	
+000000A7                         +0        133         581 no_right:
+000000A7  C1000021             R +0        134         582 	ldb a,(scroll_mode)
+000000AB  C9CC04                 +0        135         583 	andb a,COPY_UP
+000000AE  661B                   +0        136         584 	j z,no_up
+                                 +0        137         585 	;scrolling up
+000000B0  D7E2A8                 +0        138         586 	ldw qwa,0
+000000B3  D1000020             R +0        139         587 	ldw wa,(scroll_x)
+000000B7  E8EF03                 +0        140         588 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+000000BA  E869                   +0        141         589 	decl 1,xwa ;start copying 1 tile before the screen
+000000BC  D7E6A8                 +0        142         590 	ldw qbc,0
+000000BF  D1000021             R +0        143         591 	ldw bc,(scroll_y)
+000000C3  E9EF03                 +0        144         592 	srll 3,xbc
+000000C6  E969                   +0        145         593 	decl 1,xbc ;start copying 1 tile higher than the screen
+000000C8  1E8000                 +0        146         594 	cal copy_row
+                                 +0        147         595 	
+000000CB                         +0        148         596 no_up:
+000000CB  C1000021             R +0        149         597 	ldb a,(scroll_mode)
+000000CF  C9CC08                 +0        150         598 	andb a,COPY_DOWN
+000000D2  661F                   +0        151         599 	j z,no_down
+                                 +0        152         600 	;scrolling down
+000000D4  D7E2A8                 +0        153         601 	ldw qwa,0
+000000D7  D1000020             R +0        154         602 	ldw wa,(scroll_x)
+000000DB  E8EF03                 +0        155         603 	srll 3,xwa ;divide by 8 to change pixels to 8x8 tiles
+000000DE  E869                   +0        156         604 	decl 1,xwa ;start copying 1 tile before the screen
+000000E0  D7E6A8                 +0        157         605 	ldw qbc,0
+000000E3  D1000021             R +0        158         606 	ldw bc,(scroll_y)
+000000E7  E9EF03                 +0        159         607 	srll 3,xbc
+000000EA  E9C813000000           +0        160         608 	addl xbc,TILES_Y ;start copying 1 tile lower than the screen
+000000F0  1E5800                 +0        161         609 	cal copy_row	
+000000F3                         +0        162         610 no_down:
+000000F3  0E                     +0        163         611 	ret
+                                 +0        164         612 	
+                                 +0        165         613 ;-------------------------------------------------------
+                                 +0        166         614 ; copy_column: copy a column of scroll data into vram
+                                 +0        167         615 ;-------------------------------------------------------
+                                 +0        168         616 ; xwa: tile x
+                                 +0        169         617 ; xbc: tile y
+                                 +0        170         618 ;-------------------------------------------------------	
+000000F4                         +0        171         619 copy_column:
+                                 +0        172         620 ;get source address
+000000F4  E88A                   +0        173         621 	ldl xde,xwa
+000000F6  EAEC01                 +0        174         622 	slal 1,xde ;tile # to word #
+000000F9  E98D                   +0        175         623 	ldl xiy,xbc
+000000FB  EDEC07                 +0        176         624 	slal 7,xiy ;tile # * 128 bytes per row
+000000FE  EA85                   +0        177         625 	addl xiy,xde ;source offset now in xiy
+00000100  F200000032           R +0        178         626 	lda xde,map
+                                 +0        179         627 ;get destination address
+00000105  E8CC1F000000           +0        180         628 	andl xwa,0x1f ;virtual screen is 32x32 tiles
+0000010B  E8EC01                 +0        181         629 	slal 1,xwa
+0000010E  E9CC1F000000           +0        182         630 	andl xbc,0x1f
+00000114  E98C                   +0        183         631 	ldl xix,xbc
+00000116  ECEC06                 +0        184         632 	slal 6,xix ;tile # * 64 bytes per row
+00000119  E884                   +0        185         633 	addl xix,xwa
+0000011B  ECC800900000           +0        186         634 	addl xix,SCRL1_VRAM
+                                 +0        187         635 	
+00000121  2115                   +0        188         636 	ldb a,TILES_Y+2 ;want to go from 1 tile before the screen to 1 tile after
+00000123                         +0        189         637 copy_col_loop:
+00000123  EDCCFF1F0000           +0        190         638 	andl xiy,0x1fff ;keep source offset within tilemap (64*64*2)
+00000129  ECCCFF970000           +0        191         639 	andl xix,0x97ff ;keep destination within scroll 1 vram	
+0000012F  ED8A                   +0        192         640 	ldl xde,xiy
+00000131  EAC800000000         R +0        193         641 	addl xde,map ;get absolute source address
+00000137  9221                   +0        194         642 	ldw bc,(xde)
+00000139  B451                   +0        195         643 	ldw (xix),bc
+0000013B  EDC880000000           +0        196         644 	addl xiy,128 ;map is 64x64, so 128 bytes per row	
+00000141  ECC840000000           +0        197         645 	addl xix,64 ;vram is 32x32, so 64 bytes per row
+00000147  C91CD9                 +0        198         646 	djnz a,copy_col_loop
+0000014A  0E                     +0        199         647 	ret
+                                 +0        200         648 
+                                 +0        201         649 ;-------------------------------------------------------
+                                 +0        202         650 ; copy_row: copy a row of scroll data into vram
+                                 +0        203         651 ;-------------------------------------------------------
+                                 +0        204         652 ; xwa: tile x
+                                 +0        205         653 ; xbc: tile y
+                                 +0        206         654 ;-------------------------------------------------------	
+0000014B                         +0        207         655 copy_row:	
+                                 +0        208         656 ;get source address
+0000014B  E88A                   +0        209         657 	ldl xde,xwa
+0000014D  EAEC01                 +0        210         658 	slal 1,xde ;tile # to word #
+00000150  E98D                   +0        211         659 	ldl xiy,xbc
+00000152  EDEC07                 +0        212         660 	slal 7,xiy ;tile # * 128 bytes per row
+00000155  EA85                   +0        213         661 	addl xiy,xde
+00000157  EDC800000000         R +0        214         662 	addl xiy,map ;source address in xiy
+                                 +0        215         663 ;get destination address
+0000015D  C9CC1F                 +0        216         664 	andb a,0x1f ;virtual screen is 32x32 tiles
+00000160  C9EC01                 +0        217         665 	slab 1,a ;row offset in a
+00000163  E9CC1F000000           +0        218         666 	andl xbc,0x1f
+00000169  E98C                   +0        219         667 	ldl xix,xbc
+0000016B  ECEC06                 +0        220         668 	slal 6,xix ;tile # * 64 bytes per row
+0000016E  ECC800900000           +0        221         669 	addl xix,SCRL1_VRAM ;destination address in xix
+                                 +0        222         670 
+00000174  2716                   +0        223         671 	ldb l,TILES_X+2 ;1 tile before the screen to 1 tile after
+00000176                         +0        224         672 copy_row_loop:
+00000176  C9CC3F                 +0        225         673 	andb a,0x3f ;keep offset within 1 row of scroll 1 vram
+00000179  ECCCFF970000           +0        226         674 	andl xix,0x97ff ;keep destination within scroll 1 vram
+0000017F  D5F521                 +0        227         675 	ldw bc,(xiy+)
+00000182  F303F0E051             +0        228         676 	ldw (xix+a),bc
+00000187  C9C802                 +0        229         677 	addb a,2
+0000018A  CF1CE9                 +0        230         678 	djnz l,copy_row_loop
+0000018D  0E                     +0        231         679 	ret
+                                 +0        232         680 	
+                                 +0        233         681 
+                                 +0        234         682 
+                                 +0        235         683 	
+                                 +0        236         684 ;-------------------------------------------------------
+                                 +0        237         685 	end
+                                 +0        238         686 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  scroll.lst
@@ -745,6 +774,7 @@ STS_RG_ADD               NUM      00008010  A
 SYS_FAILURE              NUM      000000FF  A           
 SYS_SUCCESS              NUM      00000000  A           
 Sys_lever                NUM      00006F82  A           
+T8RUN                    NUM      00000020  A           
 TILES_X                  NUM      00000014  A           
 TILES_Y                  NUM      00000013  A           
 TIMER_SHUTDOWN_ANS
@@ -820,5 +850,5 @@ up_y             C L     LAB      0000001E  R           PROG
 
 
 TOTAL
-  132 user defined symbol(s)
-   15 unreferenced external symbol(s)
+  133 user defined symbol(s)
+   26 unreferenced external symbol(s)
