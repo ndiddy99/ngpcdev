@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Sun Jun 07 21:03:10 2020
+Mon Jun 08 21:15:20 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  main.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l main.asm
 
@@ -436,415 +436,496 @@ Location  Object                           Ins        Line Source Statement
                                  +1        213         429 
                                  +1        214         430 
                                  +1        215         431 ;=======================================================
-                                 +0         25         432 	$include "glbwork.inc"
-                                 +1          1         433 ;================================================================
-                                 +1          2         434 ; global vars
-                                 +1          3         435 ;================================================================
+                                 +0         25         432 	$include "tlcs900.inc"
+                                 +1          1         433 ;=======================================================
+                                 +1          2         434 
+                                 +1          3         435 ;		TLCS-900 CPU Equates
                                  +1          4         436 
-                                 +1          5         437 	extern medium start_work
-                                 +1          6         438 	extern medium stopper ; keeps main loop spinning until vblank (byte)
-                                 +1          7         439 	extern medium joypad ;joypad bitmask (byte)
-                                 +1          8         440 	extern medium joylast ;last frame's joypad bitmask (byte)
-                                 +1          9         441 	extern medium joyedge ;what buttons were pressed this frame (byte)
-                                 +1         10         442 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
-                                 +1         11         443 	extern medium frame_cnt ; counts number of frames (word)
-                                 +1         12         444 	
-                                 +1         13         445 	extern medium scroll_x ;scroll x pos (word)
-                                 +1         14         446 	extern medium scroll_y ;scroll y pos (word)
-                                 +1         15         447 	
-                                 +1         16         448 	extern medium player_x ;player x pos (long)
-                                 +1         17         449 	extern medium player_y ;player y pos (long)
-                                 +1         18         450 	extern medium player_dx ;long
-                                 +1         19         451 	extern medium player_dy ;long
-                                 +1         20         452 ;================================================================
-                                 +1         21         453 
-                                 +0         26         454 	$include "game.inc"
-                                 +1          1         455 ;================================================================
-                                 +1          2         456 ; GAME EQU
-                                 +1          3         457 ;================================================================
-                                 +1          4         458 
-  000000A0                       +1          5         459 disp_size_x		EQU	160		; X screen size
-                                 +1          6         460 
-  00000098                       +1          7         461 disp_size_y		EQU	152		; Y screen size
-                                 +1          8         462 
-  00000040                       +1          9         463 obj_max		EQU	64		; number of maximum sprites
-                                 +1         10         464 
-                                 +1         11         465 ;================================================================
-                                 +1         12         466 
-                                 +0         27         467 	$include "print.inc"
-                                 +1          1         468 ;*****************************************
-                                 +1          2         469 ;	Print functions 
-                                 +1          3         470 ;*****************************************
-                                 +1          4         471 
-                                 +1          5         472 ;-------------------------------------------------------
-                                 +1          6         473 ; print_init: loads system font into first half of vram
-                                 +1          7         474 ;-------------------------------------------------------
-                                 +1          8         475 	extern print_init
-                                 +1          9         476 
-                                 +1         10         477 ;-------------------------------------------------------
-                                 +1         11         478 ; print_string
-                                 +1         12         479 ;-------------------------------------------------------
-                                 +1         13         480 ; xix: pointer to null terminated text
-                                 +1         14         481 ; wa: x pos
-                                 +1         15         482 ; bc: y pos
-                                 +1         16         483 ;-------------------------------------------------------
-                                 +1         17         484 	extern print_string
-                                 +1         18         485 	
-                                 +1         19         486 ;-------------------------------------------------------
-                                 +1         20         487 ; print_byte
-                                 +1         21         488 ;-------------------------------------------------------
-                                 +1         22         489 ; xix: pointer to byte to print
-                                 +1         23         490 ; wa: x pos
-                                 +1         24         491 ; bc: y pos
-                                 +1         25         492 ;-------------------------------------------------------
-                                 +1         26         493 	extern print_byte
-                                 +1         27         494 	
-                                 +1         28         495 ;-------------------------------------------------------
-                                 +1         29         496 ; print_word	
-                                 +1         30         497 ;-------------------------------------------------------
-                                 +1         31         498 ; xix: pointer to word to print
-                                 +1         32         499 ; wa: x pos
-                                 +1         33         500 ; bc: y pos
-                                 +1         34         501 ;-------------------------------------------------------
-                                 +1         35         502 	extern print_word
-                                 +0         28         503 	$include "graphics.inc"
-                                 +1          1         504 ;*****************************************
-                                 +1          2         505 ;	Graphics data 
-                                 +1          3         506 ;*****************************************
-                                 +1          4         507 
-                                 +1          5         508 	extern palette
-                                 +1          6         509 	extern palette_end
-                                 +1          7         510 	extern tiles
-                                 +1          8         511 	extern tiles_end
-                                 +1          9         512 	extern map
-                                 +1         10         513 	extern map_end
-                                 +1         11         514 	extern hills
-                                 +1         12         515 	extern hills_end
-                                 +1         13         516 	extern hills_map
-                                 +1         14         517 	extern hills_map_end
-                                 +1         15         518 	extern hills_pal
-                                 +1         16         519 	extern hills_pal_end
-                                 +1         17         520 	extern guy
-                                 +1         18         521 	extern guy_end
-                                 +1         19         522 	extern guy_pal
-                                 +1         20         523 	extern guy_pal_end
-                                 +0         29         524 	$include "scroll.inc"
-                                 +1          1         525 ;-------------------------------------------------------
-                                 +1          2         526 ; scroll_set: set scroll to specified coords
-                                 +1          3         527 ;-------------------------------------------------------
-                                 +1          4         528 ; wa: x pos
-                                 +1          5         529 ; bc: y pos
-                                 +1          6         530 ;-------------------------------------------------------
-                                 +1          7         531 extern scroll_set
-                                 +1          8         532 
-                                 +1          9         533 ;-------------------------------------------------------
-                                 +1         10         534 ; scroll_get_tile: returns tile # at given coordinates in wa
-                                 +1         11         535 ;-------------------------------------------------------
-                                 +1         12         536 ; wa: x pos
-                                 +1         13         537 ; bc: y pos
-                                 +1         14         538 ;-------------------------------------------------------
-                                 +1         15         539 extern scroll_get_tile
-                                 +1         16         540 
-                                 +1         17         541 ;-------------------------------------------------------
-                                 +1         18         542 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
-                                 +1         19         543 ;-------------------------------------------------------
-                                 +1         20         544 extern scroll_copy
-                                 +0         30         545 	$include "player.inc"
-                                 +1          1         546 ;-------------------------------------------------------
-                                 +1          2         547 ; player_init: initialize player sprite
-                                 +1          3         548 ;-------------------------------------------------------	
-                                 +1          4         549 extern player_init
-                                 +1          5         550 ;-------------------------------------------------------
-                                 +1          6         551 ; player_move: handle player movement
-                                 +1          7         552 ;-------------------------------------------------------
-                                 +1          8         553 extern player_move
-                                 +0         31         554 
-                                 +0         32         555 
-                                 +0         33         556 ;-------------------------------------------------------
-                                 +0         34         557 PROG section code large
-                                 +0         35         558 ;-------------------------------------------------------
-                                 +0         36         559 
-                                 +0         37         560 		public	__STARTUP
-  00FF1800                       +0         38         561 __STARTUP	equ	0xff1800
-                                 +0         39         562 ;-------------------------------------------------------
-                                 +0         40         563 ; entry point			
-                                 +0         41         564 ;-------------------------------------------------------
-00000000                         +0         42         565 reset:
-00000000  1D000000             R +0         43         566 	cal	SYS_PATCH ;called during init to assist with power functionality
-                                 +0         44         567 ;------------------- INITIALIZATION --------------------
-00000004  1D000000             R +0         45         568 	cal init_setting ;VRAM, work initialization
-                                 +0         46         569 	; cal print_init ;load system font
-00000008  0600                   +0         47         570 	ei 0 ;allow interrupts with a priority >= 0
-                                 +0         48         571 
-                                 +0         49         572 	;---copy palette---
-0000000A  F200000035           R +0         50         573 	lda xiy,palette
-0000000F  F1808234               +0         51         574 	lda xix,SCROLL1_CRAM
-00000013  4100000000           R +0         52         575 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
-00000018                         +0         53         576 palette_copy:                   ;to appease the assembler
-00000018  D5F520                 +0         54         577 	ldw wa,(xiy+)
-0000001B  F5F150                 +0         55         578 	ldw (xix+),wa
-0000001E  D91CF7                 +0         56         579 	djnz bc,palette_copy	
-                                 +0         57         580 	;---copy hill palette to bg 2---
-00000021  F200000035           R +0         58         581 	lda xiy,hills_pal
-00000026  F1008334               +0         59         582 	lda xix,SCROLL2_CRAM
-0000002A  4100000000           R +0         60         583 	ldl xbc,hills_pal_end-hills_pal
-0000002F                         +0         61         584 palette_copy2:
-0000002F  D5F520                 +0         62         585 	ldw wa,(xiy+)
-00000032  F5F150                 +0         63         586 	ldw (xix+),wa
-00000035  D91CF7                 +0         64         587 	djnz bc,palette_copy2
-                                 +0         65         588 
-                                 +0         66         589 	; ;---set bg color---	
-00000038  30850F                 +0         67         590 	ldw wa,0xf85
-0000003B  F1E08350               +0         68         591 	ldw (0x83e0),wa
-0000003F  2180                   +0         69         592 	ldb a,0x80 ;bg color on, first color in cram
-00000041  F1188141               +0         70         593 	ldb (0x8118),a	
-                                 +0         71         594 	
-                                 +0         72         595 	;---copy tiles---
-                                 +0         73         596 	
-00000045  F200000035           R +0         74         597 	lda xiy,tiles
-0000004A  F100A034               +0         75         598 	lda xix,CHR_VRAM
-0000004E  4100000000           R +0         76         599 	ldl xbc,tiles_end-tiles
-00000053  8511                   +0         77         600 	ldir (xix+),(xiy+)
-                                 +0         78         601 	
-00000055  F200000035           R +0         79         602 	lda xiy,hills
-0000005A  F100AA34               +0         80         603 	lda xix,CHR_VRAM+0xA00
-0000005E  4100000000           R +0         81         604 	ldl xbc,hills_end-hills
-00000063  8511                   +0         82         605 	ldir (xix+),(xiy+)
-                                 +0         83         606 	
-                                 +0         84         607 	
-                                 +0         85         608 	;---copy map---
-                                 +0         86         609 	
-00000065  F1009034               +0         87         610 	lda xix,SCRL1_VRAM
-00000069  F200000035           R +0         88         611 	lda xiy,map
-0000006E  2413                   +0         89         612 	ldb d,19 ;19 rows
-00000070                         +0         90         613 map_copy:	
-00000070  312800                 +0         91         614 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
-00000073                         +0         92         615 copy_row:
-00000073  8511                   +0         93         616 	ldir (xix+),(xiy+)
-00000075  DCC81800               +0         94         617 	addw ix,64-40
-00000079  DDC85800               +0         95         618 	addw iy,128-40
-0000007D  CC1CF0                 +0         96         619 	djnz d,map_copy	
-                                 +0         97         620 	
-00000080  F200000035           R +0         98         621 	lda xiy,hills_map
-00000085  F1009834               +0         99         622 	lda xix,SCRL2_VRAM
-00000089  4100040000             +0        100         623 	ldl xbc,32*32
-0000008E                         +0        101         624 map2_loop: ;have to add 160 to each tile because 160 tiles in the foreground
-0000008E  D5F520                 +0        102         625 	ldw wa,(xiy+)
-00000091  D8C8A000               +0        103         626 	addw wa,160
-00000095  F5F150                 +0        104         627 	ldw (xix+),wa
-00000098  D91CF3                 +0        105         628 	djnz bc,map2_loop
-0000009B  1D000000             R +0        106         629 	cal player_init
-                                 +0        107         630 	
-                                 +0        108         631 ;-------------------------------------------------------
-                                 +0        109         632 ; main loop
-                                 +0        110         633 ;-------------------------------------------------------
-0000009F                         +0        111         634 main:
-0000009F  C100003F00           R +0        112         635 	cpb (stopper),0 ;spin until vblank resets var
-000000A4  66F9                   +0        113         636 	j z,main
-                                 +0        114         637 
-000000A6  C1856F3F00             +0        115         638 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
-000000AB  6607                   +0        116         639 	j eq,main_100
-                                 +0        117         640 
-000000AD  C731A8                 +0        118         641 	ldb rw3,VECT_SHUTDOWN
-000000B0  1D000000             R +0        119         642 	cal SYSTEM_CALL
-                                 +0        120         643 
-000000B4                         +0        121         644 main_100:
-000000B4  D1000061             R +0        122         645 	incw 1,(frame_cnt)
-000000B8  F100000000           R +0        123         646 	ldb (hint_cnt),0 ;reset number of times horizontal interrupt was called
-000000BD  1D000000             R +0        124         647 	cal player_move
-                                 +0        125         648 	
-000000C1  F100000000           R +0        126         649 	ldb (stopper),0
-000000C6  68D7                   +0        127         650 	j main
-                                 +0        128         651 	
-000000C8                         +0        129         652 String:
-000000C8  68656C6C6F20776F726C   +0        130         653 	db "hello world",0
+                                 +1          5         437 ;=======================================================
+                                 +1          6         438 
+  00000020                       +1          7         439 TRUN            equ     0x0020   ; Timer Operation Control
+  00000022                       +1          8         440 TREG0           equ     0x0022   ; Timer Register 0
+  00000023                       +1          9         441 TREG1           equ     0x0023   ; Timer Register 1
+  00000024                       +1         10         442 TMOD            equ     0x0024   ; Timer Mode Control
+  00000025                       +1         11         443 TFFCF           equ     0x0025   ; Timer Flip-Flop Control
+  00000026                       +1         12         444 TREG2           equ     0x0026   ; Timer Register 2
+  00000027                       +1         13         445 TREG3           equ     0x0027   ; Timer Register 3
+  00000028                       +1         14         446 P0MOD           equ     0x0028   ; 8-Bit PWM 0 Mode Control
+  00000029                       +1         15         447 P1MOD           equ     0x0029   ; 8-Bit PWM 1 Mode Control
+  0000002A                       +1         16         448 PFFCR           equ     0x002A   ; 8-Bit PWM Flip-Flop Control
+                                 +1         17         449 
+  00000030                       +1         18         450 TREG4L          equ     0x0030   ; Timer 4 Low Byte
+  00000031                       +1         19         451 TREG4H          equ     0x0031   ; Timer 4 High Byte
+  00000032                       +1         20         452 TREG5L          equ     0x0032   ; Timer 5 Low Byte
+  00000033                       +1         21         453 TREG5H          equ     0x0033   ; Timer 5 High Byte
+  00000034                       +1         22         454 CAP1L           equ     0x0034   ; Capture 1 Low Byte
+  00000035                       +1         23         455 CAP1H           equ     0x0035   ; Capture 1 High Byte
+  00000036                       +1         24         456 CAP2L           equ     0x0036   ; Capture 2 Low Byte
+  00000037                       +1         25         457 CAP2H           equ     0x0037   ; Capture 2 High Byte
+  00000038                       +1         26         458 T4MOD           equ     0x0038   ; 16-Bit Timer 4 Mode Control
+  00000039                       +1         27         459 T4FFCR          equ     0x0039   ; 16-Bit Timer 4 Flip-Flop Control
+  0000003A                       +1         28         460 T45CR           equ     0x003A   ; 16-Bit Timer 4/5 Control
+                                 +1         29         461 
+  00000040                       +1         30         462 TREG6L          equ     0x0040   ; Timer 6 Low Byte
+  00000041                       +1         31         463 TREG6H          equ     0x0041   ; Timer 6 High Byte
+  00000042                       +1         32         464 TREG7L          equ     0x0042   ; Timer 7 Low Byte
+  00000043                       +1         33         465 TREG7H          equ     0x0043   ; Timer 7 High Byte
+  00000044                       +1         34         466 CAP3L           equ     0x0044   ; Capture 3 Low Byte
+  00000045                       +1         35         467 CAP3H           equ     0x0045   ; Capture 3 High Byte
+  00000046                       +1         36         468 CAP4L           equ     0x0046   ; Capture 4 Low Byte
+  00000047                       +1         37         469 CAP4H           equ     0x0047   ; Capture 4 High Byte
+  00000048                       +1         38         470 T5MOD           equ     0x0048   ; 16-Bit Timer 4 Mode Control
+  00000049                       +1         39         471 T5FFCR          equ     0x0049   ; 16-Bit Timer 4 Flip-Flop Control
+                                 +1         40         472 
+  0000004C                       +1         41         473 PG0REG          equ     0x004C   ; Pattern Generator 0
+  0000004D                       +1         42         474 PG1REG          equ     0x004D   ; Pattern Generator 1
+  0000004E                       +1         43         475 PG01CR          equ     0x004E   ; Pattern Generator 0/1 Control
+                                 +1         44         476 
+  00000050                       +1         45         477 SC0BUF          equ     0x0050   ; Serial Channel 0 Buffer Data
+  00000051                       +1         46         478 SC0CR           equ     0x0051   ; Serial Channel 0 Control
+  00000052                       +1         47         479 SC0MOD          equ     0x0052   ; Serial Channel 0 Mode Control
+  00000053                       +1         48         480 BR0CR           equ     0x0053   ; Bit Rate Ser. Channel 0 Control
+  00000054                       +1         49         481 SC1BUF          equ     0x0054   ; Serial Channel 1 Buffer Data
+  00000055                       +1         50         482 SC1CR           equ     0x0055   ; Serial Channel 1 Control
+  00000056                       +1         51         483 SC1MOD          equ     0x0056   ; Serial Channel 1 Mode Control
+  00000057                       +1         52         484 BR1CR           equ     0x0057   ; Bit Rate Ser. Channel 1 Control
+                                 +1         53         485 
+  0000005E                       +1         54         486 ADMOD           equ     0x005E   ; A/D Control
+  00000060                       +1         55         487 ADREG0L         equ     0x0060   ; A/D Result Channel 0 Bit 7..6 = AD1..0
+  00000061                       +1         56         488 ADREG0H         equ     0x0061   ; A/D Result Channel 0 Bit 7..0 = AD9..2
+  00000062                       +1         57         489 ADREG1L         equ     0x0062   ; A/D Result Channel 1 Bit 7..6 = AD1..0
+  00000063                       +1         58         490 ADREG1H         equ     0x0063   ; A/D Result Channel 1 Bit 7..0 = AD9..2
+  00000064                       +1         59         491 ADREG2L         equ     0x0064   ; A/D Result Channel 2 Bit 7..6 = AD1..0
+  00000065                       +1         60         492 ADREG2H         equ     0x0065   ; A/D Result Channel 2 Bit 7..0 = AD9..2
+  00000066                       +1         61         493 ADREG3L         equ     0x0066   ; A/D Result Channel 3 Bit 7..6 = AD1..0
+  00000067                       +1         62         494 ADREG3H         equ     0x0067   ; A/D Result Channel 3 Bit 7..0 = AD9..2
+                                 +1         63         495 
+  00000068                       +1         64         496 B0CS            equ     0x0068   ; Block 0 CS/WAIT Control
+  00000069                       +1         65         497 B1CS            equ     0x0069   ; Block 1 CS/WAIT Control
+  0000006A                       +1         66         498 B2CS            equ     0x006A   ; Block 2 CS/WAIT Control
+                                 +1         67         499 
+  00000070                       +1         68         500 INTE0AD         equ     0x0070   ; Interrupt Enable/Level AD/Timer 0
+  00000071                       +1         69         501 INTE45          equ     0x0071   ; Interrupt Enable/Level IRQ 5/4
+  00000072                       +1         70         502 INTE67          equ     0x0072   ; Interrupt Enable/Level IRQ 7/6
+  00000073                       +1         71         503 INTET10         equ     0x0073   ; Interrupt Enable/Level Timer 1/0
+  00000074                       +1         72         504 INTEPW10        equ     0x0074   ; Interrupt Enable/Level Timer 3/2 (PWM 1/0)
+  00000075                       +1         73         505 INTET54         equ     0x0075   ; Interrupt Enable/Level TREG 5/4
+  00000076                       +1         74         506 INTET76         equ     0x0076   ; Interrupt Enable/Level TREG 7/6
+  00000077                       +1         75         507 INTES0          equ     0x0077   ; Interrupt Enable/Level Serial Channel 0
+  00000078                       +1         76         508 INTES1          equ     0x0078   ; Interrupt Enable/Level Serial Channel 1
+  0000007B                       +1         77         509 IIMC            equ     0x007B   ; Interrupt Input Mode Control
+                                 +1         78         510 
+  0000007C                       +1         79         511 DMA0V           equ     0x007C   ; fDMA 0 Start Vector
+  0000007D                       +1         80         512 DMA1V           equ     0x007D   ; fDMA 1 Start Vector
+  0000007E                       +1         81         513 DMA2V           equ     0x007E   ; fDMA 2 Start Vector
+  0000007F                       +1         82         514 DMA3V           equ     0x007F   ; fDMA 3 Start Vector
+                                 +0         26         515 	$include "glbwork.inc"
+                                 +1          1         516 ;================================================================
+                                 +1          2         517 ; global vars
+                                 +1          3         518 ;================================================================
+                                 +1          4         519 
+                                 +1          5         520 	extern medium start_work
+                                 +1          6         521 	extern medium stopper ; keeps main loop spinning until vblank (byte)
+                                 +1          7         522 	extern medium joypad ;joypad bitmask (byte)
+                                 +1          8         523 	extern medium joylast ;last frame's joypad bitmask (byte)
+                                 +1          9         524 	extern medium joyedge ;what buttons were pressed this frame (byte)
+                                 +1         10         525 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
+                                 +1         11         526 	extern medium frame_cnt ; counts number of frames (word)
+                                 +1         12         527 	
+                                 +1         13         528 	extern medium scroll_x ;scroll x pos (word)
+                                 +1         14         529 	extern medium scroll_y ;scroll y pos (word)
+                                 +1         15         530 	
+                                 +1         16         531 	extern medium player_x ;player x pos (long)
+                                 +1         17         532 	extern medium player_y ;player y pos (long)
+                                 +1         18         533 	extern medium player_dx ;long
+                                 +1         19         534 	extern medium player_dy ;long
+                                 +1         20         535 ;================================================================
+                                 +1         21         536 
+                                 +0         27         537 	$include "game.inc"
+                                 +1          1         538 ;================================================================
+                                 +1          2         539 ; GAME EQU
+                                 +1          3         540 ;================================================================
+                                 +1          4         541 
+  000000A0                       +1          5         542 disp_size_x		EQU	160		; X screen size
+                                 +1          6         543 
+  00000098                       +1          7         544 disp_size_y		EQU	152		; Y screen size
+                                 +1          8         545 
+  00000040                       +1          9         546 obj_max		EQU	64		; number of maximum sprites
+                                 +1         10         547 
+                                 +1         11         548 ;================================================================
+                                 +1         12         549 
+                                 +0         28         550 	$include "print.inc"
+                                 +1          1         551 ;*****************************************
+                                 +1          2         552 ;	Print functions 
+                                 +1          3         553 ;*****************************************
+                                 +1          4         554 
+                                 +1          5         555 ;-------------------------------------------------------
+                                 +1          6         556 ; print_init: loads system font into first half of vram
+                                 +1          7         557 ;-------------------------------------------------------
+                                 +1          8         558 	extern print_init
+                                 +1          9         559 
+                                 +1         10         560 ;-------------------------------------------------------
+                                 +1         11         561 ; print_string
+                                 +1         12         562 ;-------------------------------------------------------
+                                 +1         13         563 ; xix: pointer to null terminated text
+                                 +1         14         564 ; wa: x pos
+                                 +1         15         565 ; bc: y pos
+                                 +1         16         566 ;-------------------------------------------------------
+                                 +1         17         567 	extern print_string
+                                 +1         18         568 	
+                                 +1         19         569 ;-------------------------------------------------------
+                                 +1         20         570 ; print_byte
+                                 +1         21         571 ;-------------------------------------------------------
+                                 +1         22         572 ; xix: pointer to byte to print
+                                 +1         23         573 ; wa: x pos
+                                 +1         24         574 ; bc: y pos
+                                 +1         25         575 ;-------------------------------------------------------
+                                 +1         26         576 	extern print_byte
+                                 +1         27         577 	
+                                 +1         28         578 ;-------------------------------------------------------
+                                 +1         29         579 ; print_word	
+                                 +1         30         580 ;-------------------------------------------------------
+                                 +1         31         581 ; xix: pointer to word to print
+                                 +1         32         582 ; wa: x pos
+                                 +1         33         583 ; bc: y pos
+                                 +1         34         584 ;-------------------------------------------------------
+                                 +1         35         585 	extern print_word
+                                 +0         29         586 	$include "graphics.inc"
+                                 +1          1         587 ;*****************************************
+                                 +1          2         588 ;	Graphics data 
+                                 +1          3         589 ;*****************************************
+                                 +1          4         590 
+                                 +1          5         591 	extern palette
+                                 +1          6         592 	extern palette_end
+                                 +1          7         593 	extern tiles
+                                 +1          8         594 	extern tiles_end
+                                 +1          9         595 	extern map
+                                 +1         10         596 	extern map_end
+                                 +1         11         597 	extern hills
+                                 +1         12         598 	extern hills_end
+                                 +1         13         599 	extern hills_map
+                                 +1         14         600 	extern hills_map_end
+                                 +1         15         601 	extern hills_pal
+                                 +1         16         602 	extern hills_pal_end
+                                 +1         17         603 	extern guy
+                                 +1         18         604 	extern guy_end
+                                 +1         19         605 	extern guy_pal
+                                 +1         20         606 	extern guy_pal_end
+                                 +0         30         607 	$include "scroll.inc"
+                                 +1          1         608 ;-------------------------------------------------------
+                                 +1          2         609 ; scroll_set: set scroll to specified coords
+                                 +1          3         610 ;-------------------------------------------------------
+                                 +1          4         611 ; wa: x pos
+                                 +1          5         612 ; bc: y pos
+                                 +1          6         613 ;-------------------------------------------------------
+                                 +1          7         614 extern scroll_set
+                                 +1          8         615 
+                                 +1          9         616 ;-------------------------------------------------------
+                                 +1         10         617 ; scroll_get_tile: returns tile # at given coordinates in wa
+                                 +1         11         618 ;-------------------------------------------------------
+                                 +1         12         619 ; wa: x pos
+                                 +1         13         620 ; bc: y pos
+                                 +1         14         621 ;-------------------------------------------------------
+                                 +1         15         622 extern scroll_get_tile
+                                 +1         16         623 
+                                 +1         17         624 ;-------------------------------------------------------
+                                 +1         18         625 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +1         19         626 ;-------------------------------------------------------
+                                 +1         20         627 extern scroll_copy
+                                 +0         31         628 	$include "player.inc"
+                                 +1          1         629 ;-------------------------------------------------------
+                                 +1          2         630 ; player_init: initialize player sprite
+                                 +1          3         631 ;-------------------------------------------------------	
+                                 +1          4         632 extern player_init
+                                 +1          5         633 ;-------------------------------------------------------
+                                 +1          6         634 ; player_move: handle player movement
+                                 +1          7         635 ;-------------------------------------------------------
+                                 +1          8         636 extern player_move
+                                 +0         32         637 
+                                 +0         33         638 
+                                 +0         34         639 ;-------------------------------------------------------
+                                 +0         35         640 PROG section code large
+                                 +0         36         641 ;-------------------------------------------------------
+                                 +0         37         642 
+                                 +0         38         643 		public	__STARTUP
+  00FF1800                       +0         39         644 __STARTUP	equ	0xff1800
+                                 +0         40         645 ;-------------------------------------------------------
+                                 +0         41         646 ; entry point			
+                                 +0         42         647 ;-------------------------------------------------------
+00000000                         +0         43         648 reset:
+00000000  1D000000             R +0         44         649 	cal	SYS_PATCH ;called during init to assist with power functionality
+                                 +0         45         650 ;------------------- INITIALIZATION --------------------
+00000004  1D000000             R +0         46         651 	cal init_setting ;VRAM, work initialization
+                                 +0         47         652 	; cal print_init ;load system font
+00000008  0600                   +0         48         653 	ei 0 ;allow interrupts with a priority >= 0
+                                 +0         49         654 
+                                 +0         50         655 	;---copy palette---
+0000000A  F200000035           R +0         51         656 	lda xiy,palette
+0000000F  F1808234               +0         52         657 	lda xix,SCROLL1_CRAM
+00000013  4100000000           R +0         53         658 	ldl xbc,palette_end-palette ;should be a ldw but needs to be an ldl
+00000018                         +0         54         659 palette_copy:                   ;to appease the assembler
+00000018  D5F520                 +0         55         660 	ldw wa,(xiy+)
+0000001B  F5F150                 +0         56         661 	ldw (xix+),wa
+0000001E  D91CF7                 +0         57         662 	djnz bc,palette_copy	
+                                 +0         58         663 	;---copy hill palette to bg 2---
+00000021  F200000035           R +0         59         664 	lda xiy,hills_pal
+00000026  F1008334               +0         60         665 	lda xix,SCROLL2_CRAM
+0000002A  4100000000           R +0         61         666 	ldl xbc,hills_pal_end-hills_pal
+0000002F                         +0         62         667 palette_copy2:
+0000002F  D5F520                 +0         63         668 	ldw wa,(xiy+)
+00000032  F5F150                 +0         64         669 	ldw (xix+),wa
+00000035  D91CF7                 +0         65         670 	djnz bc,palette_copy2
+                                 +0         66         671 
+                                 +0         67         672 	; ;---set bg color---	
+00000038  30850F                 +0         68         673 	ldw wa,0xf85
+0000003B  F1E08350               +0         69         674 	ldw (0x83e0),wa
+0000003F  2180                   +0         70         675 	ldb a,0x80 ;bg color on, first color in cram
+00000041  F1188141               +0         71         676 	ldb (0x8118),a	
+                                 +0         72         677 	
+                                 +0         73         678 	;---copy tiles---
+                                 +0         74         679 	
+00000045  F200000035           R +0         75         680 	lda xiy,tiles
+0000004A  F100A034               +0         76         681 	lda xix,CHR_VRAM
+0000004E  4100000000           R +0         77         682 	ldl xbc,tiles_end-tiles
+00000053  8511                   +0         78         683 	ldir (xix+),(xiy+)
+                                 +0         79         684 	
+00000055  F200000035           R +0         80         685 	lda xiy,hills
+0000005A  F100AA34               +0         81         686 	lda xix,CHR_VRAM+0xA00
+0000005E  4100000000           R +0         82         687 	ldl xbc,hills_end-hills
+00000063  8511                   +0         83         688 	ldir (xix+),(xiy+)
+                                 +0         84         689 	
+                                 +0         85         690 	
+                                 +0         86         691 	;---copy map---
+                                 +0         87         692 	
+00000065  F1009034               +0         88         693 	lda xix,SCRL1_VRAM
+00000069  F200000035           R +0         89         694 	lda xiy,map
+0000006E  2413                   +0         90         695 	ldb d,19 ;19 rows
+00000070                         +0         91         696 map_copy:	
+00000070  312800                 +0         92         697 	ldw bc,40 ;40 bytes per row (20 columns * 2 bytes per tile)
+00000073                         +0         93         698 copy_row:
+00000073  8511                   +0         94         699 	ldir (xix+),(xiy+)
+00000075  DCC81800               +0         95         700 	addw ix,64-40
+00000079  DDC85800               +0         96         701 	addw iy,128-40
+0000007D  CC1CF0                 +0         97         702 	djnz d,map_copy	
+                                 +0         98         703 	
+00000080  F200000035           R +0         99         704 	lda xiy,hills_map
+00000085  F1009834               +0        100         705 	lda xix,SCRL2_VRAM
+00000089  4100040000             +0        101         706 	ldl xbc,32*32
+0000008E                         +0        102         707 map2_loop: ;have to add 160 to each tile because 160 tiles in the foreground
+0000008E  D5F520                 +0        103         708 	ldw wa,(xiy+)
+00000091  D8C8A000               +0        104         709 	addw wa,160
+00000095  F5F150                 +0        105         710 	ldw (xix+),wa
+00000098  D91CF3                 +0        106         711 	djnz bc,map2_loop
+0000009B  1D000000             R +0        107         712 	cal player_init
+                                 +0        108         713 	
+                                 +0        109         714 ;-------------------------------------------------------
+                                 +0        110         715 ; main loop
+                                 +0        111         716 ;-------------------------------------------------------
+0000009F                         +0        112         717 main:
+0000009F  C100003F00           R +0        113         718 	cpb (stopper),0 ;spin until vblank resets var
+000000A4  66F9                   +0        114         719 	j z,main
+                                 +0        115         720 
+000000A6  C1856F3F00             +0        116         721 	cpb (User_Shutdown),0 ;turn off the system if we get a shutdown req
+000000AB  6607                   +0        117         722 	j eq,main_100
+                                 +0        118         723 
+000000AD  C731A8                 +0        119         724 	ldb rw3,VECT_SHUTDOWN
+000000B0  1D000000             R +0        120         725 	cal SYSTEM_CALL
+                                 +0        121         726 
+000000B4                         +0        122         727 main_100:
+000000B4  D1000061             R +0        123         728 	incw 1,(frame_cnt)
+000000B8  F100000000           R +0        124         729 	ldb (hint_cnt),0 ;reset number of times horizontal interrupt was called
+000000BD  1D000000             R +0        125         730 	cal player_move
+                                 +0        126         731 	
+000000C1  F100000000           R +0        127         732 	ldb (stopper),0
+000000C6  68D7                   +0        128         733 	j main
+                                 +0        129         734 	
+000000C8                         +0        130         735 String:
+000000C8  68656C6C6F20776F726C   +0        131         736 	db "hello world",0
           6400                                             
-000000D4                         +0        131         654 	align 2
-000000D4                         +0        132         655 JoyStr:
-000000D4  6A6F797061643A207878   +0        133         656 	db "joypad: xx",0
+000000D4                         +0        132         737 	align 2
+000000D4                         +0        133         738 JoyStr:
+000000D4  6A6F797061643A207878   +0        134         739 	db "joypad: xx",0
           00                                               
-000000DF                         +0        134         657 	align 2
-000000E0                         +0        135         658 FrameStr:
-000000E0  6672616D653A20787878   +0        136         659 	db "frame: xxxx",0
+000000DF                         +0        135         740 	align 2
+000000E0                         +0        136         741 FrameStr:
+000000E0  6672616D653A20787878   +0        137         742 	db "frame: xxxx",0
           7800                                             
-000000EC                         +0        137         660 	align 2
-                                 +0        138         661 	
-                                 +0        139         662 ;-------------------------------------------------------
-                                 +0        140         663 ; v-blank interrupt
-                                 +0        141         664 ;-------------------------------------------------------
-000000EC                         +0        142         665 v_int:
-000000EC  3C                     +0        143         666 	pushl xix
-000000ED  3D                     +0        144         667 	pushl xiy
-000000EE  3E                     +0        145         668 	pushl xiz
-000000EF  38                     +0        146         669 	pushl xwa
-000000F0  39                     +0        147         670 	pushl xbc
-000000F1  3A                     +0        148         671 	pushl xde
-000000F2  3B                     +0        149         672 	pushl xhl
-000000F3  02                     +0        150         673 	pushw sr
-                                 +0        151         674 ;	--------------------------------
-000000F4  086F4E                 +0        152         675 	ldb	(WDCR),WD_CLR ;watch dog clear
-000000F7  F1000000FF           R +0        153         676 	ldb	(stopper),0xff
-000000FC  1D000000             R +0        154         677 	cal scroll_copy
-                                 +0        155         678 	;set up joypad variables
-00000100  C1000021             R +0        156         679 	ldb a,(joypad)
-00000104  F1000041             R +0        157         680 	ldb (joylast),a
-00000108  C1826F20               +0        158         681 	ldb w,(Sys_lever)
-0000010C  F1000040             R +0        159         682 	ldb (joypad),w
-00000110  C9CDFF                 +0        160         683 	xorb a,0xff ;flip the bits
-00000113  C8C1                   +0        161         684 	andb a,w ;check if there's any overlap between what was pressed this frame
-00000115  F1000041             R +0        162         685 	ldb (joyedge),a ;and what wasn't pressed last frame
-                                 +0        163         686 	
-                                 +0        164         687 	;keep scroll 2 from scrolling off screen
-00000119  D1000020             R +0        165         688 	ldw wa,(scroll_y)
-0000011D  D8EF01                 +0        166         689 	srlw 1,wa
-00000120  C9CF66                 +0        167         690 	cpb a,102
-00000123  6702                   +0        168         691 	j c,normal_scroll
-00000125  2166                   +0        169         692 	ldb a,102
-00000127                         +0        170         693 normal_scroll:	
-00000127  F1358041               +0        171         694 	ldb (SCRL_Y2_ADR),a
-                                 +0        172         695 	
-                                 +0        173         696 	;set up bank 2 registers for horizontal interrupt
-0000012B  D1000021             R +0        174         697 	ldw bc,(scroll_x)
-0000012F  CB8C                   +0        175         698 	ldb d,c
-00000131  D9EF01                 +0        176         699 	srlw 1,bc
-00000134  C7249B                 +0        177         700 	ldb rc2,c ;x / 2
-00000137  D9EF01                 +0        178         701 	srlw 1,bc
-0000013A  C7259B                 +0        179         702 	ldb rb2,c ;x / 4
-0000013D  D9EF01                 +0        180         703 	srlw 1,bc
-00000140  C7209B                 +0        181         704 	ldb ra2,c ;x / 8
-00000143  CB8D                   +0        182         705 	ldb e,c
-                                 +0        183         706 	; the 3 "split points" are at 88, 128, and 168.
-00000145  2000                   +0        184         707 	ldb w,0
-                                 +0        185         708 	
-00000147  335800                 +0        186         709 	ldw hl,88
-0000014A  D8A3                   +0        187         710 	subw hl,wa
-0000014C  DBDD                   +0        188         711 	cpw hl,5
-0000014E  6502                   +0        189         712 	j mi,low_vals
-00000150  6811                   +0        190         713 	j normal_vals
-00000152                         +0        191         714 low_vals:
-00000152  2780                   +0        192         715 	ldb l,128
-00000154  C9A7                   +0        193         716 	subb l,a
-00000156  F1348045               +0        194         717 	ldb (SCRL_X2_ADR),e
-0000015A  C721A9                 +0        195         718 	ldb rw2,1
-0000015D  C7280328               +0        196         719 	ldb re2,40
-00000161  6813                   +0        197         720 	j done_vals
-00000163                         +0        198         721 normal_vals:
-00000163  C1000021             R +0        199         722 	ldb a,(frame_cnt)
-00000167  F1348041               +0        200         723 	ldb (SCRL_X2_ADR),a
-0000016B  C721A8                 +0        201         724 	ldb rw2,0
-0000016E  C7290328               +0        202         725 	ldb rd2,40
-00000172  C7280328               +0        203         726 	ldb re2,40
-00000176                         +0        204         727 done_vals:
-                                 +0        205         728 	
-                                 +0        206         729 	;enable horizontal interrupt
-00000176                         +0        207         730 set_int:
-00000176  0607                   +0        208         731 	di
-00000178  C0203CFE               +0        209         732 	andb (0x20),0xfe ;disable timer 0
-0000017C  C0243CFC               +0        210         733 	andb (0x24),0xfc ;timer 0: external clock (hblank)
-00000180  F02247                 +0        211         734 	ldb (0x22),l ;what line to trigger interrupt on
-00000183  C731AC                 +0        212         735 	ldb rw3,VECT_INTLVSET ;enable interrupt through bios call
-00000186  C735AB                 +0        213         736 	ldb rb3,3
-00000189  C734AA                 +0        214         737 	ldb rc3,2
-0000018C  F9                     +0        215         738 	swi 1 ;go to bios call
-0000018D  C0203E01               +0        216         739 	orb (0x20),0x1 ;enable timer 0
-00000191  0600                   +0        217         740 	ei 0
-00000193  6808                   +0        218         741 	j done_int
-00000195                         +0        219         742 no_int:
-00000195  0607                   +0        220         743 	di
-00000197  C0203CFE               +0        221         744 	andb (0x20),0xfe ;disable timer 0
-0000019B  0600                   +0        222         745 	ei 0
-                                 +0        223         746 	
-0000019D                         +0        224         747 done_int:	
-                                 +0        225         748 	
-                                 +0        226         749 ;	--------------------------------
-0000019D  03                     +0        227         750     popw sr
-0000019E  5B                     +0        228         751 	popl xhl
-0000019F  5A                     +0        229         752 	popl xde
-000001A0  59                     +0        230         753 	popl xbc
-000001A1  58                     +0        231         754 	popl xwa
-000001A2  5E                     +0        232         755 	popl xiz
-000001A3  5D                     +0        233         756 	popl xiy
-000001A4  5C                     +0        234         757 	popl xix
-                                 +0        235         758 
-000001A5  07                     +0        236         759 	reti
-                                 +0        237         760 
-                                 +0        238         761 ;-------------------------------------------------------
-                                 +0        239         762 ; other interrupts
-                                 +0        240         763 ;-------------------------------------------------------
-                                 +0        241         764 ; horizontal interrupt happens so quickly that we don't want to bother
-                                 +0        242         765 ; touching ram, so instead we use register bank 2
-                                 +0        243         766 ;
-                                 +0        244         767 ; seams for hill bg are at 88, 128, and 168
-                                 +0        245         768 ;-------------------------------------------------------
-                                 +0        246         769 ; register map:
-                                 +0        247         770 ; w: counts how many times horizontal interrupt has been called
-                                 +0        248         771 ; a: x position for first zone (furthest back hill)
-                                 +0        249         772 ; b: x position for second zone (middle hill)
-                                 +0        250         773 ; c: x position for third zone (closest hill)
-                                 +0        251         774 ; d: y position for second split
-                                 +0        252         775 ; e: y position for third split
-                                 +0        253         776 ;-------------------------------------------------------
-000001A6                         +0        254         777 h_int:
-000001A6  1702                   +0        255         778 	ldf 2 ;load register bank 2
-000001A8  C1088026               +0        256         779 	ldb h,(WD_LCDST_HPOS)
-000001AC  CECF98                 +0        257         780 	cpb h,152 ;don't mess with scroll if in vblank
-000001AF  6F44                   +0        258         781 	j nc,done_h_int
-000001B1  C8D8                   +0        259         782 	cpb w,0
-000001B3  662B                   +0        260         783 	j eq,first
-000001B5  C8D9                   +0        261         784 	cpb w,1
-                                 +0        262         785 	; j c,first
-000001B7  660F                   +0        263         786 	j eq,second
-000001B9                         +0        264         787 third:
-000001B9  F1348043               +0        265         788 	ldb (SCRL_X2_ADR),c
-000001BD  0607                   +0        266         789 	di
-000001BF  C0203CFE               +0        267         790 	andb (0x20),0xfe ;disable timer 0
-000001C3  0600                   +0        268         791 	ei 0
-000001C5  1700                   +0        269         792 	ldf 0
-000001C7  07                     +0        270         793 	reti
-000001C8                         +0        271         794 second:
-000001C8  F1348042               +0        272         795 	ldb (SCRL_X2_ADR),b
-000001CC  2002                   +0        273         796 	ldb w,2
-000001CE  0607                   +0        274         797 	di
-000001D0  C0203CFE               +0        275         798 	andb (0x20),0xfe ;disable timer 0
-000001D4  F02245                 +0        276         799 	ldb (0x22),e ;scanline to fire next horizontal interrupt
-000001D7  C0203E01               +0        277         800 	orb (0x20),0x1 ;enable timer 0
-000001DB  0600                   +0        278         801 	ei 0
-000001DD  1700                   +0        279         802 	ldf 0
-000001DF  07                     +0        280         803 	reti
-000001E0                         +0        281         804 first:
-000001E0  F1348041               +0        282         805 	ldb (SCRL_X2_ADR),a
-000001E4  2001                   +0        283         806 	ldb w,1
-000001E6  0607                   +0        284         807 	di
-000001E8  C0203CFE               +0        285         808 	andb (0x20),0xfe ;disable timer 0
-000001EC  F02244                 +0        286         809 	ldb (0x22),d ;scanline to fire next horizontal interrupt
-000001EF  C0203E01               +0        287         810 	orb (0x20),0x1 ;enable timer 0
-000001F3  0600                   +0        288         811 	ei 0
-000001F5                         +0        289         812 done_h_int:	
-000001F5  1700                   +0        290         813 	ldf 0
-000001F7  07                     +0        291         814 	reti
-                                 +0        292         815 	
-                                 +0        293         816 
-000001F8                         +0        294         817 timer1:
-000001F8  07                     +0        295         818 	reti
-                                 +0        296         819 
-000001F9                         +0        297         820 timer2:
-000001F9  07                     +0        298         821 	reti
-                                 +0        299         822 
-000001FA                         +0        300         823 alarm_int:
-000001FA  07                     +0        301         824 	reti
-                                 +0        302         825 
-000001FB                         +0        303         826 z80_int:
-000001FB  07                     +0        304         827 	reti
-                                 +0        305         828 
-000001FC                         +0        306         829 sound_int:
-000001FC  07                     +0        307         830 	reti
-                                 +0        308         831 
-000001FD                         +0        309         832 dummy:
-000001FD  07                     +0        310         833 	reti
-                                 +0        311         834 
-                                 +0        312         835 ;-------------------------------------------------------
-                                 +0        313         836 	end
-                                 +0        314         837 ;-------------------------------------------------------
+000000EC                         +0        138         743 	align 2
+                                 +0        139         744 	
+                                 +0        140         745 ;-------------------------------------------------------
+                                 +0        141         746 ; v-blank interrupt
+                                 +0        142         747 ;-------------------------------------------------------
+000000EC                         +0        143         748 v_int:
+000000EC  3C                     +0        144         749 	pushl xix
+000000ED  3D                     +0        145         750 	pushl xiy
+000000EE  3E                     +0        146         751 	pushl xiz
+000000EF  38                     +0        147         752 	pushl xwa
+000000F0  39                     +0        148         753 	pushl xbc
+000000F1  3A                     +0        149         754 	pushl xde
+000000F2  3B                     +0        150         755 	pushl xhl
+000000F3  02                     +0        151         756 	pushw sr
+                                 +0        152         757 ;	--------------------------------
+000000F4  086F4E                 +0        153         758 	ldb	(WDCR),WD_CLR ;watch dog clear
+000000F7  F1000000FF           R +0        154         759 	ldb	(stopper),0xff
+000000FC  1D000000             R +0        155         760 	cal scroll_copy
+                                 +0        156         761 	;set up joypad variables
+00000100  C1000021             R +0        157         762 	ldb a,(joypad)
+00000104  F1000041             R +0        158         763 	ldb (joylast),a
+00000108  C1826F20               +0        159         764 	ldb w,(Sys_lever)
+0000010C  F1000040             R +0        160         765 	ldb (joypad),w
+00000110  C9CDFF                 +0        161         766 	xorb a,0xff ;flip the bits
+00000113  C8C1                   +0        162         767 	andb a,w ;check if there's any overlap between what was pressed this frame
+00000115  F1000041             R +0        163         768 	ldb (joyedge),a ;and what wasn't pressed last frame
+                                 +0        164         769 	
+                                 +0        165         770 	;keep scroll 2 from scrolling off screen
+00000119  D1000020             R +0        166         771 	ldw wa,(scroll_y)
+0000011D  D8EF01                 +0        167         772 	srlw 1,wa
+00000120  C9CF66                 +0        168         773 	cpb a,102
+00000123  6702                   +0        169         774 	j c,normal_scroll
+00000125  2166                   +0        170         775 	ldb a,102
+00000127                         +0        171         776 normal_scroll:	
+00000127  F1358041               +0        172         777 	ldb (SCRL_Y2_ADR),a
+                                 +0        173         778 	
+                                 +0        174         779 	;set up bank 2 registers for horizontal interrupt
+0000012B  D1000021             R +0        175         780 	ldw bc,(scroll_x)
+0000012F  CB8C                   +0        176         781 	ldb d,c
+00000131  D9EF01                 +0        177         782 	srlw 1,bc
+00000134  C7249B                 +0        178         783 	ldb rc2,c ;x / 2
+00000137  D9EF01                 +0        179         784 	srlw 1,bc
+0000013A  C7259B                 +0        180         785 	ldb rb2,c ;x / 4
+0000013D  D9EF01                 +0        181         786 	srlw 1,bc
+00000140  C7209B                 +0        182         787 	ldb ra2,c ;x / 8
+00000143  CB8D                   +0        183         788 	ldb e,c
+                                 +0        184         789 	; the 3 "split points" are at 88, 128, and 168.
+00000145  2000                   +0        185         790 	ldb w,0
+                                 +0        186         791 	
+00000147  335800                 +0        187         792 	ldw hl,88
+0000014A  D8A3                   +0        188         793 	subw hl,wa
+0000014C  DBDD                   +0        189         794 	cpw hl,5
+0000014E  6502                   +0        190         795 	j mi,low_vals
+00000150  6811                   +0        191         796 	j normal_vals
+00000152                         +0        192         797 low_vals:
+00000152  2780                   +0        193         798 	ldb l,128
+00000154  C9A7                   +0        194         799 	subb l,a
+00000156  F1348045               +0        195         800 	ldb (SCRL_X2_ADR),e
+0000015A  C721A9                 +0        196         801 	ldb rw2,1
+0000015D  C7280328               +0        197         802 	ldb re2,40
+00000161  6813                   +0        198         803 	j done_vals
+00000163                         +0        199         804 normal_vals:
+00000163  C1000021             R +0        200         805 	ldb a,(frame_cnt)
+00000167  F1348041               +0        201         806 	ldb (SCRL_X2_ADR),a
+0000016B  C721A8                 +0        202         807 	ldb rw2,0
+0000016E  C7290328               +0        203         808 	ldb rd2,40
+00000172  C7280328               +0        204         809 	ldb re2,40
+00000176                         +0        205         810 done_vals:
+                                 +0        206         811 	
+                                 +0        207         812 	;enable horizontal interrupt
+00000176                         +0        208         813 set_int:
+00000176  0607                   +0        209         814 	di
+00000178  C0203CFE               +0        210         815 	andb (TRUN),0xfe ;disable timer 0
+0000017C  C0243CFC               +0        211         816 	andb (TMOD),0xfc ;timer 0: external clock (hblank)
+00000180  F02247                 +0        212         817 	ldb (TREG0),l ;what line to trigger interrupt on
+00000183  C731AC                 +0        213         818 	ldb rw3,VECT_INTLVSET ;enable interrupt through bios call
+00000186  C735AB                 +0        214         819 	ldb rb3,3
+00000189  C734AA                 +0        215         820 	ldb rc3,2
+0000018C  F9                     +0        216         821 	swi 1 ;go to bios call
+0000018D  C0203E01               +0        217         822 	orb (TRUN),0x1 ;enable timer 0
+00000191  0600                   +0        218         823 	ei 0
+00000193  6808                   +0        219         824 	j done_int
+00000195                         +0        220         825 no_int:
+00000195  0607                   +0        221         826 	di
+00000197  C0203CFE               +0        222         827 	andb (TRUN),0xfe ;disable timer 0
+0000019B  0600                   +0        223         828 	ei 0
+                                 +0        224         829 	
+0000019D                         +0        225         830 done_int:	
+                                 +0        226         831 	
+                                 +0        227         832 ;	--------------------------------
+0000019D  03                     +0        228         833     popw sr
+0000019E  5B                     +0        229         834 	popl xhl
+0000019F  5A                     +0        230         835 	popl xde
+000001A0  59                     +0        231         836 	popl xbc
+000001A1  58                     +0        232         837 	popl xwa
+000001A2  5E                     +0        233         838 	popl xiz
+000001A3  5D                     +0        234         839 	popl xiy
+000001A4  5C                     +0        235         840 	popl xix
+                                 +0        236         841 
+000001A5  07                     +0        237         842 	reti
+                                 +0        238         843 
+                                 +0        239         844 ;-------------------------------------------------------
+                                 +0        240         845 ; other interrupts
+                                 +0        241         846 ;-------------------------------------------------------
+                                 +0        242         847 ; horizontal interrupt happens so quickly that we don't want to bother
+                                 +0        243         848 ; touching ram, so instead we use register bank 2
+                                 +0        244         849 ;
+                                 +0        245         850 ; seams for hill bg are at 88, 128, and 168
+                                 +0        246         851 ;-------------------------------------------------------
+                                 +0        247         852 ; register map:
+                                 +0        248         853 ; w: counts how many times horizontal interrupt has been called
+                                 +0        249         854 ; a: x position for first zone (furthest back hill)
+                                 +0        250         855 ; b: x position for second zone (middle hill)
+                                 +0        251         856 ; c: x position for third zone (closest hill)
+                                 +0        252         857 ; d: y position for second split
+                                 +0        253         858 ; e: y position for third split
+                                 +0        254         859 ;-------------------------------------------------------
+000001A6                         +0        255         860 h_int:
+000001A6  1702                   +0        256         861 	ldf 2 ;load register bank 2
+000001A8  C1088026               +0        257         862 	ldb h,(WD_LCDST_HPOS)
+000001AC  CECF98                 +0        258         863 	cpb h,152 ;don't mess with scroll if in vblank
+000001AF  6F42                   +0        259         864 	j nc,done_h_int
+000001B1  C8D9                   +0        260         865 	cpb w,1
+000001B3  6729                   +0        261         866 	j c,first
+000001B5  660F                   +0        262         867 	j eq,second
+000001B7                         +0        263         868 third:
+000001B7  F1348043               +0        264         869 	ldb (SCRL_X2_ADR),c
+000001BB  0607                   +0        265         870 	di
+000001BD  C0203CFE               +0        266         871 	andb (TRUN),0xfe ;disable timer 0
+000001C1  0600                   +0        267         872 	ei 0
+000001C3  1700                   +0        268         873 	ldf 0
+000001C5  07                     +0        269         874 	reti
+000001C6                         +0        270         875 second:
+000001C6  F1348042               +0        271         876 	ldb (SCRL_X2_ADR),b
+000001CA  2002                   +0        272         877 	ldb w,2
+000001CC  0607                   +0        273         878 	di
+000001CE  C0203CFE               +0        274         879 	andb (TRUN),0xfe ;disable timer 0
+000001D2  F02245                 +0        275         880 	ldb (TREG0),e ;scanline to fire next horizontal interrupt
+000001D5  C0203E01               +0        276         881 	orb (TRUN),0x1 ;enable timer 0
+000001D9  0600                   +0        277         882 	ei 0
+000001DB  1700                   +0        278         883 	ldf 0
+000001DD  07                     +0        279         884 	reti
+000001DE                         +0        280         885 first:
+000001DE  F1348041               +0        281         886 	ldb (SCRL_X2_ADR),a
+000001E2  2001                   +0        282         887 	ldb w,1
+000001E4  0607                   +0        283         888 	di
+000001E6  C0203CFE               +0        284         889 	andb (TRUN),0xfe ;disable timer 0
+000001EA  F02244                 +0        285         890 	ldb (TREG0),d ;scanline to fire next horizontal interrupt
+000001ED  C0203E01               +0        286         891 	orb (TRUN),0x1 ;enable timer 0
+000001F1  0600                   +0        287         892 	ei 0
+000001F3                         +0        288         893 done_h_int:	
+000001F3  1700                   +0        289         894 	ldf 0
+000001F5  07                     +0        290         895 	reti
+                                 +0        291         896 	
+                                 +0        292         897 
+000001F6                         +0        293         898 timer1:
+000001F6  07                     +0        294         899 	reti
+                                 +0        295         900 
+000001F7                         +0        296         901 timer2:
+000001F7  07                     +0        297         902 	reti
+                                 +0        298         903 
+000001F8                         +0        299         904 alarm_int:
+000001F8  07                     +0        300         905 	reti
+                                 +0        301         906 
+000001F9                         +0        302         907 z80_int:
+000001F9  07                     +0        303         908 	reti
+                                 +0        304         909 
+000001FA                         +0        305         910 sound_int:
+000001FA  07                     +0        306         911 	reti
+                                 +0        307         912 
+000001FB                         +0        308         913 dummy:
+000001FB  07                     +0        309         914 	reti
+                                 +0        310         915 
+                                 +0        311         916 ;-------------------------------------------------------
+                                 +0        312         917 	end
+                                 +0        313         918 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  main.lst
@@ -854,7 +935,19 @@ Symbol table listing
 
 Symbol           Category         Value     Attribute
 
+ADMOD                    NUM      0000005E  A           
+ADREG0H                  NUM      00000061  A           
+ADREG0L                  NUM      00000060  A           
+ADREG1H                  NUM      00000063  A           
+ADREG1L                  NUM      00000062  A           
+ADREG2H                  NUM      00000065  A           
+ADREG2L                  NUM      00000064  A           
+ADREG3H                  NUM      00000067  A           
+ADREG3L                  NUM      00000066  A           
 ALARM_BOOT_REQ           NUM      00000007  A           
+B0CS                     NUM      00000068  A           
+B1CS                     NUM      00000069  A           
+B2CS                     NUM      0000006A  A           
 BAT_SHUTDOWN_REQ
                          NUM      00000005  A           
 BGCOL_CRAM               NUM      000083E0  A           
@@ -866,10 +959,34 @@ BIT_LEFT                 NUM      00000002  A
 BIT_OPTION               NUM      00000006  A           
 BIT_RIGHT                NUM      00000003  A           
 BIT_UP                   NUM      00000000  A           
+BR0CR                    NUM      00000053  A           
+BR1CR                    NUM      00000057  A           
 Battery_Voltage          NUM      00006F80  A           
+CAP1H                    NUM      00000035  A           
+CAP1L                    NUM      00000034  A           
+CAP2H                    NUM      00000037  A           
+CAP2L                    NUM      00000036  A           
+CAP3H                    NUM      00000045  A           
+CAP3L                    NUM      00000044  A           
+CAP4H                    NUM      00000047  A           
+CAP4L                    NUM      00000046  A           
 CHR_VRAM                 NUM      0000A000  A           
 DISP_CTL0                NUM      00008000  A           
+DMA0V                    NUM      0000007C  A           
+DMA1V                    NUM      0000007D  A           
+DMA2V                    NUM      0000007E  A           
+DMA3V                    NUM      0000007F  A           
 FrameStr         C L     LAB      000000E0  R           PROG
+IIMC                     NUM      0000007B  A           
+INTE0AD                  NUM      00000070  A           
+INTE45                   NUM      00000071  A           
+INTE67                   NUM      00000072  A           
+INTEPW10                 NUM      00000074  A           
+INTES0                   NUM      00000077  A           
+INTES1                   NUM      00000078  A           
+INTET10                  NUM      00000073  A           
+INTET54                  NUM      00000075  A           
+INTET76                  NUM      00000076  A           
 INT_CLR_BIT              NUM      00000007  A           
 JOY_A                    NUM      00000010  A           
 JOY_B                    NUM      00000020  A           
@@ -883,12 +1000,18 @@ LCD_CTR_ADD              NUM      00008012  A
 Language                 NUM      00006F87  A           
 MP_SHUTDOWN_REQ          NUM      00000007  A           
 OS_Version               NUM      00006F91  A           
+P0MOD                    NUM      00000028  A           
+P1MOD                    NUM      00000029  A           
 PAL_SCR1_00              NUM      00008111  A           
 PAL_SCR1_01              NUM      00008112  A           
 PAL_SCR1_02              NUM      00008113  A           
 PAL_SCR1_10              NUM      00008115  A           
 PAL_SCR1_11              NUM      00008116  A           
 PAL_SCR1_12              NUM      00008117  A           
+PFFCR                    NUM      0000002A  A           
+PG01CR                   NUM      0000004E  A           
+PG0REG                   NUM      0000004C  A           
+PG1REG                   NUM      0000004D  A           
 PL_SCR0_00               NUM      00008109  A           
 PL_SCR0_01               NUM      0000810A  A           
 PL_SCR0_02               NUM      0000810B  A           
@@ -902,10 +1025,16 @@ PL_SPR_10                NUM      00008105  A
 PL_SPR_11                NUM      00008106  A           
 PL_SPR_12                NUM      00008107  A           
 POWER_BOOT_REQ           NUM      00000006  A           
-PROG             C L     SEC      00000000  R 1FE       
+PROG             C L     SEC      00000000  R 1FC       
 RESET_ADD                NUM      000087E0  A           
 RESUME_ANS               NUM      00000007  A           
 RESUME_BOOT_REQ          NUM      00000005  A           
+SC0BUF                   NUM      00000050  A           
+SC0CR                    NUM      00000051  A           
+SC0MOD                   NUM      00000052  A           
+SC1BUF                   NUM      00000054  A           
+SC1CR                    NUM      00000055  A           
+SC1MOD                   NUM      00000056  A           
 SCRL1_VRAM               NUM      00009000  A           
 SCRL2_VRAM               NUM      00009800  A           
 SCRL_PRIO_ADR            NUM      00008030  A           
@@ -929,11 +1058,31 @@ SYS_PATCH                         00000000  R EXT
 SYS_SUCCESS              NUM      00000000  A           
 String           C L     LAB      000000C8  R           PROG
 Sys_lever                NUM      00006F82  A           
+T45CR                    NUM      0000003A  A           
+T4FFCR                   NUM      00000039  A           
+T4MOD                    NUM      00000038  A           
+T5FFCR                   NUM      00000049  A           
+T5MOD                    NUM      00000048  A           
 T8RUN                    NUM      00000020  A           
+TFFCF                    NUM      00000025  A           
 TIMER_SHUTDOWN_ANS
                          NUM      00000006  A           
 TIME_SHUTDOWN_REQ
                          NUM      00000006  A           
+TMOD                     NUM      00000024  A           
+TREG0                    NUM      00000022  A           
+TREG1                    NUM      00000023  A           
+TREG2                    NUM      00000026  A           
+TREG3                    NUM      00000027  A           
+TREG4H                   NUM      00000031  A           
+TREG4L                   NUM      00000030  A           
+TREG5H                   NUM      00000033  A           
+TREG5L                   NUM      00000032  A           
+TREG6H                   NUM      00000041  A           
+TREG6L                   NUM      00000040  A           
+TREG7H                   NUM      00000043  A           
+TREG7L                   NUM      00000042  A           
+TRUN                     NUM      00000020  A           
 User_Answer              NUM      00006F86  A           
 User_Boot                NUM      00006F84  A           
 User_Shutdown            NUM      00006F85  A           
@@ -978,15 +1127,15 @@ _TIMER_SHUTDOWN_ANS
 _TIME_SHUTDOWN_REQ
                          NUM      00000040  A           
 __STARTUP                NUM      00FF1800  A PUB       
-alarm_int        C L     LAB      000001FA  R PUB       PROG
+alarm_int        C L     LAB      000001F8  R PUB       PROG
 copy_row         C L     LAB      00000073  R           PROG
 disp_size_x              NUM      000000A0  A           
 disp_size_y              NUM      00000098  A           
-done_h_int       C L     LAB      000001F5  R           PROG
+done_h_int       C L     LAB      000001F3  R           PROG
 done_int         C L     LAB      0000019D  R           PROG
 done_vals        C L     LAB      00000176  R           PROG
-dummy            C L     LAB      000001FD  R PUB       PROG
-first            C L     LAB      000001E0  R           PROG
+dummy            C L     LAB      000001FB  R PUB       PROG
+first            C L     LAB      000001DE  R           PROG
 frame_cnt                         00000000  R EXT       
 game_main                MOD
 h_int            C L     LAB      000001A6  R PUB       PROG
@@ -1020,19 +1169,19 @@ reset            C L     LAB      00000000  R PUB       PROG
 scroll_copy                       00000000  R EXT       
 scroll_x                          00000000  R EXT       
 scroll_y                          00000000  R EXT       
-second           C L     LAB      000001C8  R           PROG
+second           C L     LAB      000001C6  R           PROG
 set_int          C L     LAB      00000176  R           PROG
-sound_int        C L     LAB      000001FC  R PUB       PROG
+sound_int        C L     LAB      000001FA  R PUB       PROG
 stopper                           00000000  R EXT       
-third            C L     LAB      000001B9  R           PROG
+third            C L     LAB      000001B7  R           PROG
 tiles                             00000000  R EXT       
 tiles_end                         00000000  R EXT       
-timer1           C L     LAB      000001F8  R PUB       PROG
-timer2           C L     LAB      000001F9  R PUB       PROG
+timer1           C L     LAB      000001F6  R PUB       PROG
+timer2           C L     LAB      000001F7  R PUB       PROG
 v_int            C L     LAB      000000EC  R PUB       PROG
-z80_int          C L     LAB      000001FB  R PUB       PROG
+z80_int          C L     LAB      000001F9  R PUB       PROG
 
 
 TOTAL
-  163 user defined symbol(s)
+  231 user defined symbol(s)
    17 unreferenced external symbol(s)

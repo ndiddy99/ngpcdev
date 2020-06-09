@@ -22,6 +22,7 @@
 ;  ---------------------------------
 	$include "system.inc"
 	$include "k1head.inc"
+	$include "tlcs900.inc"
 	$include "glbwork.inc"
 	$include "game.inc"
 	$include "print.inc"
@@ -206,19 +207,19 @@ done_vals:
 	;enable horizontal interrupt
 set_int:
 	di
-	andb (0x20),0xfe ;disable timer 0
-	andb (0x24),0xfc ;timer 0: external clock (hblank)
-	ldb (0x22),l ;what line to trigger interrupt on
+	andb (TRUN),0xfe ;disable timer 0
+	andb (TMOD),0xfc ;timer 0: external clock (hblank)
+	ldb (TREG0),l ;what line to trigger interrupt on
 	ldb rw3,VECT_INTLVSET ;enable interrupt through bios call
 	ldb rb3,3
 	ldb rc3,2
 	swi 1 ;go to bios call
-	orb (0x20),0x1 ;enable timer 0
+	orb (TRUN),0x1 ;enable timer 0
 	ei 0
 	j done_int
 no_int:
 	di
-	andb (0x20),0xfe ;disable timer 0
+	andb (TRUN),0xfe ;disable timer 0
 	ei 0
 	
 done_int:	
@@ -256,15 +257,13 @@ h_int:
 	ldb h,(WD_LCDST_HPOS)
 	cpb h,152 ;don't mess with scroll if in vblank
 	j nc,done_h_int
-	cpb w,0
-	j eq,first
 	cpb w,1
-	; j c,first
+	j c,first
 	j eq,second
 third:
 	ldb (SCRL_X2_ADR),c
 	di
-	andb (0x20),0xfe ;disable timer 0
+	andb (TRUN),0xfe ;disable timer 0
 	ei 0
 	ldf 0
 	reti
@@ -272,9 +271,9 @@ second:
 	ldb (SCRL_X2_ADR),b
 	ldb w,2
 	di
-	andb (0x20),0xfe ;disable timer 0
-	ldb (0x22),e ;scanline to fire next horizontal interrupt
-	orb (0x20),0x1 ;enable timer 0
+	andb (TRUN),0xfe ;disable timer 0
+	ldb (TREG0),e ;scanline to fire next horizontal interrupt
+	orb (TRUN),0x1 ;enable timer 0
 	ei 0
 	ldf 0
 	reti
@@ -282,9 +281,9 @@ first:
 	ldb (SCRL_X2_ADR),a
 	ldb w,1
 	di
-	andb (0x20),0xfe ;disable timer 0
-	ldb (0x22),d ;scanline to fire next horizontal interrupt
-	orb (0x20),0x1 ;enable timer 0
+	andb (TRUN),0xfe ;disable timer 0
+	ldb (TREG0),d ;scanline to fire next horizontal interrupt
+	orb (TRUN),0x1 ;enable timer 0
 	ei 0
 done_h_int:	
 	ldf 0
