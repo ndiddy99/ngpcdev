@@ -8,7 +8,8 @@
 ;	EXTERNAL LOOK UP
 ;  ---------------------------------
 	extern medium player_mode ;if player is on ground, in air, etc (byte)
-	
+	extern medium player_frame ;byte
+	extern medium player_timer ;keeps track of # of frames between animation frames (byte)
 ;  ---------------------------------
 ;   EXTERNAL DEFINITION
 ;  ---------------------------------
@@ -35,9 +36,16 @@ PLAYER_ACCEL equ 0x8000
 MAX_SPEED equ 0x38000
 MODE_GROUND equ 0
 MODE_AIR equ 1
+
 GRAVITY equ 0xa000
 JUMP_GRAVITY equ 0x7000
 MAX_GRAVITY equ 0x70000
+
+STAND_FRAME equ 0
+START_WALK_FRAME equ 1
+END_WALK_FRAME equ 7
+JUMP_FRAME equ 7
+WALK_TIMER equ 3
 
 ;-------------------------------------------------------
 PROG section code large
@@ -58,7 +66,7 @@ player_init:
 	;---copy guy sprite---
 	lda xiy,guy
 	lda xix,CHR_VRAM+tiles_end-tiles+hills_end-hills
-	ldl xbc,guy_end-guy
+	ldl xbc,16*4 ;16 rows * 4 bytes per row
 	ldir (xix+),(xiy+)
 	;---copy guy palette---
 	lda xiy,guy_pal
@@ -70,28 +78,28 @@ guy_pal_copy:                   ;to appease the assembler
 	djnz bc,guy_pal_copy
 
 	;upper left
-	ldb (SPR_VRAM),304 & 0xff ;first byte of tile number
-	ldb (SPR_VRAM+1),0y00011001 ;attributes and tile # upper bit
-	ldb (SPR_VRAM+2),SPRITE_X ;x position
-	ldb (SPR_VRAM+3),SPRITE_Y ;y position
+	ldb (sprite_mirror),304 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+1),0y00011001 ;attributes and tile # upper bit
+	ldb (sprite_mirror+2),SPRITE_X ;x position
+	ldb (sprite_mirror+3),SPRITE_Y ;y position
 	ldb (SPR_PALCODE),0 ;palette number
 	;upper right
-	ldb (SPR_VRAM+4),305 & 0xff
-	ldb (SPR_VRAM+5),0y00011111 ;turn on h/v chain
-	ldb (SPR_VRAM+6),8 ;offset 8 px from prev sprite on x axis
-	ldb (SPR_VRAM+7),0
+	ldb (sprite_mirror+4),305 & 0xff
+	ldb (sprite_mirror+5),0y00011111 ;turn on h/v chain
+	ldb (sprite_mirror+6),8 ;offset 8 px from prev sprite on x axis
+	ldb (sprite_mirror+7),0
 	ldb (SPR_PALCODE+1),0
 	;lower left
-	ldb (SPR_VRAM+8),306 & 0xff
-	ldb (SPR_VRAM+9),0y00011111 ;turn on h/v chain
-	ldb (SPR_VRAM+10),248 ;offset -8 px from prev sprite on x axis
-	ldb (SPR_VRAM+11),8 ;offset 8 px on y axis
+	ldb (sprite_mirror+8),306 & 0xff
+	ldb (sprite_mirror+9),0y00011111 ;turn on h/v chain
+	ldb (sprite_mirror+10),248 ;offset -8 px from prev sprite on x axis
+	ldb (sprite_mirror+11),8 ;offset 8 px on y axis
 	ldb (SPR_PALCODE+2),0		
 	;lower right
-	ldb (SPR_VRAM+12),307 & 0xff
-	ldb (SPR_VRAM+13),0y00011111 ;turn on h/v chain
-	ldb (SPR_VRAM+14),8 ;offset 8 px from prev sprite on x axis
-	ldb (SPR_VRAM+15),0 ;offset 0 px on y axis
+	ldb (sprite_mirror+12),307 & 0xff
+	ldb (sprite_mirror+13),0y00011111 ;turn on h/v chain
+	ldb (sprite_mirror+14),8 ;offset 8 px from prev sprite on x axis
+	ldb (sprite_mirror+15),0 ;offset 0 px on y axis
 	ldb (SPR_PALCODE+3),0
 	ret
 
@@ -304,7 +312,7 @@ done_vcollision:
 	j pl,right_checkx
 	;when scroll pos is less than 0, set scroll pos to 0 and instead move sprite
 	ldb a,(player_x+2)
-	ldb (SPR_VRAM+2),a
+	ldb (sprite_mirror+2),a
 	ldw wa,0
 	j done_sprx
 right_checkx:
@@ -312,17 +320,17 @@ right_checkx:
 	j mi,normal_x
 	ldw wa,(player_x+2)
 	subw wa,512-160
-	ldb (SPR_VRAM+2),a
+	ldb (sprite_mirror+2),a
 	ldw wa,512-160
 	j done_sprx
 normal_x:	
-	ldb (SPR_VRAM+2),SPRITE_X
+	ldb (sprite_mirror+2),SPRITE_X
 done_sprx:	
 	ldw bc,(player_y+2)
 	subw bc,SPRITE_Y
 	j pl,down_checky
 	ldb c,(player_y+2)
-	ldb (SPR_VRAM+3),c
+	ldb (sprite_mirror+3),c
 	ldw bc,0
 	j done_spry
 down_checky:
@@ -330,13 +338,76 @@ down_checky:
 	j mi,normal_y
 	ldw bc,(player_y+2)
 	subw bc,512-152
-	ldb (SPR_VRAM+3),c
+	ldb (sprite_mirror+3),c
 	ldw bc,512-152
 	j done_spry
 normal_y:
-	ldb (SPR_VRAM+3),SPRITE_Y
+	ldb (sprite_mirror+3),SPRITE_Y
 done_spry:
 	cal scroll_set
+	
+	;---set player's animation frame---
+	ldb a,(player_mode)
+	cpb a,MODE_AIR
+	j ne,no_air_frame
+	ldb (player_frame),JUMP_FRAME
+	ldw (player_timer),0
+	j done_set_frame
+no_air_frame:
+
+	ldw wa,(player_dx+2)
+	andw wa,wa
+	j ne,no_stand_frame
+	ldb (player_frame),STAND_FRAME
+	ldb (player_timer),0
+	j done_set_frame
+no_stand_frame:
+
+	ldb a,(player_timer)
+	andb a,a
+	j eq,change_frame
+	dec 1,a
+	ldb (player_timer),a
+	j done_set_frame
+change_frame:
+	ldb (player_timer),WALK_TIMER
+	ldb a,(player_frame)
+	inc 1,a
+	ldb (player_frame),a
+	cpb a,END_WALK_FRAME
+	j c,done_set_frame
+	ldb (player_frame),START_WALK_FRAME
+done_set_frame:
+	
+	;set up sprite mirroring
+	ldl xwa,(player_dx)
+	cpl xwa,0
+	j eq,done_mirror ;keep facing the direction you were
+	j pl,moving_right
+moving_left:
+	;set tile numbers
+	ldb (sprite_mirror),305 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+4),304 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+8),307 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+12),306 & 0xff ;first byte of tile number
+	;set mirror bit
+	orb (sprite_mirror+1),0x80
+	orb (sprite_mirror+5),0x80
+	orb (sprite_mirror+9),0x80
+	orb (sprite_mirror+13),0x80
+	j done_mirror
+moving_right:
+	;set tile numbers
+	ldb (sprite_mirror),304 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+4),305 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+8),306 & 0xff ;first byte of tile number
+	ldb (sprite_mirror+12),307 & 0xff ;first byte of tile number
+	;clear mirror bit
+	andb (sprite_mirror+1),0x7f
+	andb (sprite_mirror+5),0x7f
+	andb (sprite_mirror+9),0x7f
+	andb (sprite_mirror+13),0x7f
+done_mirror:	
 	ret
 
 ;-------------------------------------------------------

@@ -1,6 +1,6 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
 
-Mon Jun 08 21:15:21 2020
+Tue Jun 09 21:04:21 2020
 
 Toshiba Unified Linker (32) V2.0p     [Page     1]     sample.map
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf 
@@ -62,21 +62,21 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
     Memory     Out-sec    Attri   Base       Length     In-sec(In-file)        Information
     ---------- ---------- ------- ---------- ---------- ---------------------- ---------------
     io                                     0        100                        *** Gap ***
-    work       WORK       DATA          4000         27 WORK    (work.rel)     NORMAL
-    work                                4027       2BD9                        *** Gap ***
+    work       WORK       DATA          4000        129 WORK    (work.rel)     NORMAL
+    work                                4129       2AD7                        *** Gap ***
     z80                                 7000       1000                        *** Gap ***
     lcd                                 8000       4000                        *** Gap ***
     user       HEADER     ROMDATA     200000         88 INT_TBL (vect.rel)     NORMAL
     user                              200088         78                        *** Gap ***
-    user       PROGRAM    CODE        200100        1FC PROG    (main.rel)     NORMAL
-    user       PROGRAM    CODE        2002FC         C0 PROG    (init.rel)     NORMAL
-    user       PROGRAM    CODE        2003BC         EE PROG    (print.rel)    NORMAL
-    user       PROGRAM    CODE        2004AA       3BB0 PROG    (graphics.rel) NORMAL
-    user       PROGRAM    CODE        20405A        18E PROG    (scroll.rel)   NORMAL
-    user       PROGRAM    CODE        2041E8        416 PROG    (player.rel)   NORMAL
-    user       PROGRAM    CODE        2045FE         17 SYSLIB  (system.lib)   NORMAL
-    user       PROGRAM    CODE        204615         11 SYSLIB  (system.lib)   NORMAL
-    user                              204626     1FB9DA                        *** Gap ***
+    user       PROGRAM    CODE        200100        223 PROG    (main.rel)     NORMAL
+    user       PROGRAM    CODE        200323         C0 PROG    (init.rel)     NORMAL
+    user       PROGRAM    CODE        2003E3         EE PROG    (print.rel)    NORMAL
+    user       PROGRAM    CODE        2004D1       3D70 PROG    (graphics.rel) NORMAL
+    user       PROGRAM    CODE        204241        18E PROG    (scroll.rel)   NORMAL
+    user       PROGRAM    CODE        2043CF        4C7 PROG    (player.rel)   NORMAL
+    user       PROGRAM    CODE        204896         17 SYSLIB  (system.lib)   NORMAL
+    user       PROGRAM    CODE        2048AD         11 SYSLIB  (system.lib)   NORMAL
+    user                              2048BE     1FB742                        *** Gap ***
 
   Symbol table for sample.abs
       Symbol       Address  In-sec   Cross-reference
@@ -90,31 +90,35 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       joyedge          4003 WORK     player   game_main 
       joylast          4002 WORK     game_main 
       joypad           4001 WORK     player   game_main 
-      player_dx        401E WORK     player   
-      player_dy        4022 WORK     player   
-      player_mode      4026 WORK     player   
-      player_x         4016 WORK     player   
-      player_y         401A WORK     player   
+      player_dx        411E WORK     player   
+      player_dy        4122 WORK     player   
+      player_frame     4127 WORK     player   game_main 
+      player_mode      4126 WORK     player   
+      player_timer     4128 WORK     player   
+      player_x         4116 WORK     player   
+      player_y         411A WORK     player   
       screen_x         4008 WORK     
       screen_y         400A WORK     
-      scroll_mode      4014 WORK     scroll   
-      scroll_x         400C WORK     scroll   game_main 
-      scroll_y         4010 WORK     scroll   game_main 
+      scroll_mode      4114 WORK     scroll   
+      scroll_x         410C WORK     scroll   game_main 
+      scroll_y         4110 WORK     scroll   game_main 
+      sprite_mirror
+                       400C WORK     player   game_main 
       start_work       4000 WORK     init     
       stopper          4000 WORK     game_main 
-      scroll_x2        400E WORK     
-      scroll_y2        4012 WORK     
+      scroll_x2        410E WORK     
+      scroll_y2        4112 WORK     
     Input module : game_main
       __STARTUP      FF1800          
-      alarm_int      2002F8 PROG     game_vect 
-      dummy          2002FB PROG     game_vect 
-      h_int          2002A6 PROG     game_vect 
+      alarm_int      20031F PROG     game_vect 
+      dummy          200322 PROG     game_vect 
+      h_int          2002CD PROG     game_vect 
       reset          200100 PROG     game_vect 
-      sound_int      2002FA PROG     game_vect 
-      timer1         2002F6 PROG     game_vect 
-      timer2         2002F7 PROG     game_vect 
+      sound_int      200321 PROG     game_vect 
+      timer1         20031D PROG     game_vect 
+      timer2         20031E PROG     game_vect 
       v_int          2001EC PROG     game_vect 
-      z80_int        2002F9 PROG     game_vect 
+      z80_int        200320 PROG     game_vect 
       ADMOD              5E          
       ADREG0H            61          
       ADREG0L            60          
@@ -324,28 +328,28 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       copy_row       200173 PROG     
       disp_size_x        A0          
       disp_size_y        98          
-      done_h_int     2002F3 PROG     
-      done_int       20029D PROG     
-      done_vals      200276 PROG     
-      first          2002DE PROG     
-      low_vals       200252 PROG     
+      done_h_int     20031A PROG     
+      done_int       2002C4 PROG     
+      done_vals      20029D PROG     
+      first          200305 PROG     
+      low_vals       200279 PROG     
       main           20019F PROG     
       main_100       2001B4 PROG     
       map2_loop      20018E PROG     
       map_copy       200170 PROG     
-      no_int         200295 PROG     
+      no_int         2002BC PROG     
       normal_scroll
-                     200227 PROG     
-      normal_vals    200263 PROG     
+                     20024E PROG     
+      normal_vals    20028A PROG     
       obj_max            40          
       palette_copy   200118 PROG     
       palette_copy2
                      20012F PROG     
-      second         2002C6 PROG     
-      set_int        200276 PROG     
-      third          2002B7 PROG     
+      second         2002ED PROG     
+      set_int        20029D PROG     
+      third          2002DE PROG     
     Input module : init
-      init_setting   2002FC PROG     game_main 
+      init_setting   200323 PROG     game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -484,21 +488,21 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       disp_size_x        A0          
       disp_size_y        98          
       obj_max            40          
-      pal_data       2003A9 PROG     
-      palet_loop     200398 PROG     
-      plaet_seting   20038C PROG     
-      scroll_clr     200376 PROG     
-      scroll_loop    20037E PROG     
-      sprite_clr     200362 PROG     
-      sprite_loop    20036C PROG     
-      vect_copy      20030B PROG     
+      pal_data       2003D0 PROG     
+      palet_loop     2003BF PROG     
+      plaet_seting   2003B3 PROG     
+      scroll_clr     20039D PROG     
+      scroll_loop    2003A5 PROG     
+      sprite_clr     200389 PROG     
+      sprite_loop    200393 PROG     
+      vect_copy      200332 PROG     
       work_init_loop
-                     200352 PROG     
+                     200379 PROG     
     Input module : print
-      print_byte     2003E6 PROG     
-      print_init     2003BC PROG     
-      print_string   2003C7 PROG     
-      print_word     20042C PROG     
+      print_byte     20040D PROG     
+      print_init     2003E3 PROG     
+      print_string   2003EE PROG     
+      print_word     200453 PROG     
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -634,46 +638,46 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      byte_atf0      200408 PROG     
-      byte_atf1      200421 PROG     
+      byte_atf0      20042F PROG     
+      byte_atf1      200448 PROG     
       byte_doneadd0
-                     20040B PROG     
+                     200432 PROG     
       byte_doneadd1
-                     200424 PROG     
-      copy_text      2003D5 PROG     
+                     20044B PROG     
+      copy_text      2003FC PROG     
       done_copy_text
-                     2003E5 PROG     
-      word_atf0      20044E PROG     
-      word_atf1      200467 PROG     
-      word_atf2      200486 PROG     
-      word_atf3      20049F PROG     
+                     20040C PROG     
+      word_atf0      200475 PROG     
+      word_atf1      20048E PROG     
+      word_atf2      2004AD PROG     
+      word_atf3      2004C6 PROG     
       word_doneadd0
-                     200451 PROG     
+                     200478 PROG     
       word_doneadd1
-                     20046A PROG     
+                     200491 PROG     
       word_doneadd2
-                     200489 PROG     
+                     2004B0 PROG     
       word_doneadd3
-                     2004A2 PROG     
+                     2004C9 PROG     
     Input module : print
-      guy            204012 PROG     player   
-      guy_end        204052 PROG     player   
-      guy_pal        204052 PROG     player   
-      guy_pal_end    20405A PROG     player   
-      hills          202EFA PROG     player   game_main 
-      hills_end      2037FA PROG     player   game_main 
-      hills_map      2037FA PROG     game_main 
+      guy            204039 PROG     player   game_main 
+      guy_end        204239 PROG     
+      guy_pal        204239 PROG     player   
+      guy_pal_end    204241 PROG     player   
+      hills          202F21 PROG     player   game_main 
+      hills_end      203821 PROG     player   game_main 
+      hills_map      203821 PROG     game_main 
       hills_map_end
-                     203FFA PROG     
-      hills_pal      203FFA PROG     game_main 
+                     204021 PROG     
+      hills_pal      204021 PROG     game_main 
       hills_pal_end
-                     204012 PROG     game_main 
-      map            200EFA PROG     scroll   game_main 
-      map_end        202EFA PROG     
-      palette        2004AA PROG     game_main 
-      palette_end    2004FA PROG     game_main 
-      tiles          2004FA PROG     player   game_main 
-      tiles_end      200EFA PROG     player   game_main 
+                     204039 PROG     game_main 
+      map            200F21 PROG     scroll   game_main 
+      map_end        202F21 PROG     
+      palette        2004D1 PROG     game_main 
+      palette_end    200521 PROG     game_main 
+      tiles          200521 PROG     player   game_main 
+      tiles_end      200F21 PROG     player   game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -810,10 +814,10 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       _TIME_SHUTDOWN_REQ
                          40          
     Input module : scroll
-      scroll_copy    2040A5 PROG     game_main 
+      scroll_copy    20428C PROG     game_main 
       scroll_get_tile
-                     20408B PROG     player   
-      scroll_set     20405A PROG     player   
+                     204272 PROG     player   
+      scroll_set     204241 PROG     player   
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -956,26 +960,26 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       _TIME_SHUTDOWN_REQ
                          40          
       copy_col_loop
-                     20417D PROG     
-      copy_column    20414E PROG     
-      copy_row       2041A5 PROG     
+                     204364 PROG     
+      copy_column    204335 PROG     
+      copy_row       20438C PROG     
       copy_row_loop
-                     2041D0 PROG     
-      done_x         20406C PROG     
-      done_y         204082 PROG     
-      down_y         20407D PROG     
-      left_x         204062 PROG     
-      no_down        20414D PROG     
-      no_left        2040D9 PROG     
-      no_right       204101 PROG     
-      no_up          204125 PROG     
-      no_x           20406A PROG     
-      right_x        204066 PROG     
-      up_y           204078 PROG     
+                     2043B7 PROG     
+      done_x         204253 PROG     
+      done_y         204269 PROG     
+      down_y         204264 PROG     
+      left_x         204249 PROG     
+      no_down        204334 PROG     
+      no_left        2042C0 PROG     
+      no_right       2042E8 PROG     
+      no_up          20430C PROG     
+      no_x           204251 PROG     
+      right_x        20424D PROG     
+      up_y           20425F PROG     
     Input module : player
-      get_sensor     2044FF PROG     
-      player_init    2041E8 PROG     game_main 
-      player_move    20428D PROG     game_main 
+      get_sensor     204797 PROG     
+      player_init    2043CF PROG     game_main 
+      player_move    204474 PROG     game_main 
       ALARM_BOOT_REQ
                           7          
       BAT_SHUTDOWN_REQ
@@ -995,12 +999,14 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        6F80          
       CHR_VRAM         A000          
       DISP_CTL0        8000          
+      END_WALK_FRAME
+                          7          
       GRAVITY          A000          
-      Height2251     20459E PROG     
-      Height2252     2045AE PROG     
-      Height45       20458E PROG     
-      HeightEmpty    20456E PROG     
-      HeightFull     20457E PROG     
+      Height2251     204836 PROG     
+      Height2252     204846 PROG     
+      Height45       204826 PROG     
+      HeightEmpty    204806 PROG     
+      HeightFull     204816 PROG     
       INT_CLR_BIT         7          
       JOY_A              10          
       JOY_B              20          
@@ -1009,6 +1015,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       JOY_OPTION         40          
       JOY_RIGHT           8          
       JOY_UP              1          
+      JUMP_FRAME          7          
       JUMP_GRAVITY     7000          
       LCD_CTR_ADD      8012          
       Language         6F87          
@@ -1066,6 +1073,9 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                        8021          
       SPR_PALCODE      8C00          
       SPR_VRAM         8800          
+      STAND_FRAME         0          
+      START_WALK_FRAME
+                          1          
       STS_RG_ADD       8010          
       SYS_FAILURE        FF          
       SYS_SUCCESS         0          
@@ -1110,6 +1120,7 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
       VECT_SYSFONTSET
                           5          
       VERSION_ADD      87FE          
+      WALK_TIMER          3          
       WDCR               6F          
       WD_CLR             4E          
       WD_LCDST_HPOS
@@ -1137,53 +1148,62 @@ Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\tulink.exe sample.lcf
                          40          
       _TIME_SHUTDOWN_REQ
                          40          
-      block_arrs     20456E PROG     
-      block_types    2045BE PROG     
-      ceil_rebound   204414 PROG     
+      block_arrs     204806 PROG     
+      block_types    204856 PROG     
+      ceil_rebound   2045FB PROG     
       ceiling_collision
-                     2043F1 PROG     
-      check_above    204525 PROG     
-      check_below    204513 PROG     
-      decel_left     2042E2 PROG     
-      decel_right    2042D0 PROG     
+                     2045D8 PROG     
+      change_frame   20471E PROG     
+      check_above    2047BD PROG     
+      check_below    2047AB PROG     
+      decel_left     2044C9 PROG     
+      decel_right    2044B7 PROG     
       done_add_gravity
-                     2043D9 PROG     
-      done_air       2043E7 PROG     
+                     2045C0 PROG     
+      done_air       2045CE PROG     
       done_hcollision
-                     20438D PROG     
-      done_sprx      2044C8 PROG     
-      done_spry      2044FA PROG     
+                     204574 PROG     
+      done_mirror    204796 PROG     
+      done_set_frame
+                     204736 PROG     
+      done_sprx      2046AF PROG     
+      done_spry      2046E1 PROG     
       done_vcollision
-                     204496 PROG     
-      down_checky    2044DE PROG     
+                     20467D PROG     
+      down_checky    2046C5 PROG     
       floor_collision
-                     20442F PROG     
-      get_height     204536 PROG     
+                     204616 PROG     
+      get_height     2047CE PROG     
       get_sensor_end
-                     204535 PROG     
-      guy_pal_copy   20421F PROG     
+                     2047CD PROG     
+      guy_pal_copy   204406 PROG     
       hcollision_left
-                     20435A PROG     
+                     204541 PROG     
       hcollision_right
-                     204376 PROG     
-      left_higher    20445A PROG     
-      no_decel       2042F2 PROG     
-      no_mirror      20454D PROG     
+                     20455D PROG     
+      left_higher    204641 PROG     
+      moving_left    204744 PROG     
+      moving_right   20476E PROG     
+      no_air_frame   2046FA PROG     
+      no_decel       2044D9 PROG     
+      no_mirror      2047E5 PROG     
+      no_stand_frame
+                     20470E PROG     
       normal_add_gravity
-                     2043D3 PROG     
+                     2045BA PROG     
       normal_ground
-                     204490 PROG     
-      normal_x       2044C3 PROG     
-      normal_y       2044F5 PROG     
-      not_left       2042A8 PROG     
-      not_right      2042BB PROG     
+                     204677 PROG     
+      normal_x       2046AA PROG     
+      normal_y       2046DC PROG     
+      not_left       20448F PROG     
+      not_right      2044A2 PROG     
       not_start_jump
-                     2043A9 PROG     
-      on_ground      204466 PROG     
-      right_checkx   2044AC PROG     
+                     204590 PROG     
+      on_ground      20464D PROG     
+      right_checkx   204693 PROG     
     Input module : vec_lib
-      SYSTEM_CALL    2045FE SYSLIB   print    game_main 
+      SYSTEM_CALL    204896 SYSLIB   print    game_main 
     Input module : patch
-      SYS_PATCH      204615 SYSLIB   game_main 
+      SYS_PATCH      2048AD SYSLIB   game_main 
 
 Linker end,No error

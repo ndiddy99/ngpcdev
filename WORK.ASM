@@ -21,6 +21,7 @@
 	public frame_cnt
 	public screen_x
 	public screen_y
+	public sprite_mirror
 	public scroll_x
 	public scroll_y
 	public scroll_mode
@@ -29,6 +30,8 @@
 	public player_dx
 	public player_dy
 	public player_mode
+	public player_frame
+	public player_timer
 ;  ---------------------------------
 ;		INCLUDE
 ;  ---------------------------------
@@ -44,10 +47,11 @@ joypad dsb 1
 joylast dsb 1
 joyedge dsb 1
 hint_cnt dsb 1
-	align   2
+	align   2	
 frame_cnt dsb 2
 screen_x dsb 2
 screen_y dsb 2
+sprite_mirror dsb 256
 ;---scroll.asm---
 	align   2
 scroll_x dsb 2
@@ -62,6 +66,8 @@ player_y dsb 4
 player_dx dsb 4
 player_dy dsb 4
 player_mode dsb 1
+player_frame dsb 1
+player_timer dsb 1
 	
 	
 ;-------------------------------------------------------

@@ -1,5 +1,5 @@
 (C)Copyright TOSHIBA CORPORATION 1993-2009  All rights reserved
-Mon Jun 08 21:15:21 2020
+Tue Jun 09 21:04:20 2020
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     1]  player.lst
 Runtime option : c:\Program Files (x86)\TOSHIBA\T900\bin\asm900.exe -Nb2 -O1 -g -l player.asm
 
@@ -15,915 +15,987 @@ Location  Object                           Ins        Line Source Statement
                                  +0          8           8 ;	EXTERNAL LOOK UP
                                  +0          9           9 ;  ---------------------------------
                                  +0         10          10 	extern medium player_mode ;if player is on ground, in air, etc (byte)
-                                 +0         11          11 	
-                                 +0         12          12 ;  ---------------------------------
-                                 +0         13          13 ;   EXTERNAL DEFINITION
-                                 +0         14          14 ;  ---------------------------------
-                                 +0         15          15 	public player_init
-                                 +0         16          16 	public player_move
-                                 +0         17          17 	public get_sensor
-                                 +0         18          18 
-                                 +0         19          19 ;  ---------------------------------
-                                 +0         20          20 ;	INCLUDE
-                                 +0         21          21 ;  ---------------------------------
-                                 +0         22          22 	$include "k1head.inc"
-                                 +1          1          23 ;=======================================================
-                                 +1          2          24 
-                                 +1          3          25 ;		SYSTEM RELATED EQU
-                                 +1          4          26 
-                                 +1          5          27 ;=======================================================
-                                 +1          6          28 
-  00008000                       +1          7          29 DISP_CTL0		EQU	0x08000			;interrupt control register
-                                 +1          8          30 
-                                 +1          9          31 ;D7 : 1 = Vint allowed / 0 = not allowed
-                                 +1         10          32 
-                                 +1         11          33 ;D6 : 1 = Hint allowed / 0 = not allowed
-                                 +1         12          34 
-                                 +1         13          35 
-                                 +1         14          36 
-  00008010                       +1         15          37 STS_RG_ADD		EQU	0x08010			;2D status register (READ)
-                                 +1         16          38 
-                                 +1         17          39 ;D7 : 1 = character over / 0 = no character over
-                                 +1         18          40 
-                                 +1         19          41 ;D6 : 1 = while V blanking / 0 = while in display mode
-                                 +1         20          42 
-                                 +1         21          43 
-                                 +1         22          44 
-  00008012                       +1         23          45 LCD_CTR_ADD		EQU	0x08012			;2D control register
-                                 +1         24          46 
-                                 +1         25          47 ;D7 : 1 = screen color inverse display / 0 = normal display
-                                 +1         26          48 
-                                 +1         27          49 ;D2Å`D0 : outside window frame color CODE
-                                 +1         28          50 
-                                 +1         29          51 
-                                 +1         30          52 
-  00008118                       +1         31          53 BG_COLOR		EQU 0x08118			;Background color register
-                                 +1         32          54 
-                                 +1         33          55 ;D7`D6: BGON. D7 = 1, D6 = 0: Use specified BG color. Defaults to D7/D6 both 0
-                                 +1         34          56 
-                                 +1         35          57 ;D2`D0: BG color code
-                                 +1         36          58 
-                                 +1         37          59 
-                                 +1         38          60 
-                                 +1         39          61 
-  000087E0                       +1         40          62 RESET_ADD		EQU	0X087E0			;2D software reset (WRITE)
-                                 +1         41          63 
-                                 +1         42          64 ;2D cicuit initialization with "52" write
-                                 +1         43          65 
-                                 +1         44          66 
-                                 +1         45          67 
-  000087FE                       +1         46          68 VERSION_ADD		EQU	0x087FE			;2D cicuit version (READ)
-                                 +1         47          69 
-                                 +1         48          70 ;D7 : 1 = white LCD panel /0 = balck LCD panel 
-                                 +1         49          71 
-                                 +1         50          72 ;D5Å`D0 : 2D circuit version
-                                 +1         51          73 
-                                 +1         52          74 
-                                 +1         53          75 
-                                 +1         54          76 
-                                 +1         55          77 
-                                 +1         56          78 ;=======================================================
-                                 +1         57          79 
-                                 +1         58          80 ;		CHARACTER EQU
-                                 +1         59          81 
-                                 +1         60          82 ;=======================================================
-                                 +1         61          83 
-  0000A000                       +1         62          84 CHR_VRAM		EQU	0x0A000			;character data RAM address
-                                 +1         63          85 
-                                 +1         64          86 
-                                 +1         65          87 
-                                 +1         66          88 
-                                 +1         67          89 
-                                 +1         68          90 ;=======================================================
-                                 +1         69          91 
-                                 +1         70          92 ;		SCROLL EQU
-                                 +1         71          93 
-                                 +1         72          94 ;=======================================================
-                                 +1         73          95 
-  00009000                       +1         74          96 SCRL1_VRAM		EQU	0x09000
-                                 +1         75          97 
-  00009800                       +1         76          98 SCRL2_VRAM		EQU	0x09800
-                                 +1         77          99 
-                                 +1         78         100 
-                                 +1         79         101 
-  00008030                       +1         80         102 SCRL_PRIO_ADR		EQU	0X08030			;scroll priority level invert register 
-                                 +1         81         103 
-  00008032                       +1         82         104 SCRL_X1_ADR		EQU	0x08032			;scroll 1 offset H register
-                                 +1         83         105 
-  00008033                       +1         84         106 SCRL_Y1_ADR		EQU	0x08033			;scroll 1 offset V register
-                                 +1         85         107 
-  00008034                       +1         86         108 SCRL_X2_ADR		EQU	0x08034			;scroll 2 offset H register
-                                 +1         87         109 
-  00008035                       +1         88         110 SCRL_Y2_ADR		EQU	0x08035			;scroll 2 offset V register
-                                 +1         89         111 
-                                 +1         90         112 
-                                 +1         91         113 
-                                 +1         92         114 ;=======================================================
-                                 +1         93         115 
-                                 +1         94         116 ;		SPRITE EQU
-                                 +1         95         117 
-                                 +1         96         118 ;=======================================================
-                                 +1         97         119 
-  00008800                       +1         98         120 SPR_VRAM		EQU	0x08800
-                                 +1         99         121 
-  00008020                       +1        100         122 SPR_OFFSET_X_ADR	EQU	0x08020			;sprite offset H
-                                 +1        101         123 
-  00008021                       +1        102         124 SPR_OFFSET_Y_ADR	EQU	0x08021			;sprite offset V
-                                 +1        103         125 
-  00008C00                       +1        104         126 SPR_PALCODE EQU 0x8C00 ;what palette # to use for each sprite 
-                                 +1        105         127 
-                                 +1        106         128 
-                                 +1        107         129 
-                                 +1        108         130 
-                                 +1        109         131 ;=======================================================
-                                 +1        110         132 
-                                 +1        111         133 ;		WINDOW SYSTEM EQU
-                                 +1        112         134 
-                                 +1        113         135 ;=======================================================
-                                 +1        114         136 
-  00008002                       +1        115         137 WIN_WBAX_ADR		EQU	0x08002			;window origin H
-                                 +1        116         138 
-  00008003                       +1        117         139 WIN_WBAY_ADR		EQU	0x08003			;window origin V
-                                 +1        118         140 
-  00008004                       +1        119         141 WIN_WSIX_ADR		EQU	0x08004			;window size H
-                                 +1        120         142 
-  00008005                       +1        121         143 WIN_WSIY_ADR		EQU	0x08005			;window size V
-                                 +1        122         144 
-                                 +1        123         145 
-                                 +1        124         146 
-  00008008                       +1        125         147 WD_LCDST_HPOS		EQU	0x08008			;raster H position register (READ)
-                                 +1        126         148 
-  00008009                       +1        127         149 WD_LCDST_VPOS		EQU	0x08009			;raster V position register (READ)
-                                 +1        128         150 
-                                 +1        129         151 
-                                 +1        130         152 
-                                 +1        131         153 ;=======================================================
-                                 +1        132         154 
-                                 +1        133         155 ;		PALETTE EQU
-                                 +1        134         156 
-                                 +1        135         157 ;=======================================================
-                                 +1        136         158 
-                                 +1        137         159 ;sprite palette 0
-                                 +1        138         160 
-  00008101                       +1        139         161 PL_SPR_00		EQU	0x08101	
-                                 +1        140         162 
-  00008102                       +1        141         163 PL_SPR_01		EQU	0x08102
-                                 +1        142         164 
-  00008103                       +1        143         165 PL_SPR_02		EQU	0x08103
-                                 +1        144         166 
-                                 +1        145         167 ;sprite palette 1
-                                 +1        146         168 
-  00008105                       +1        147         169 PL_SPR_10		EQU	0x08105
-                                 +1        148         170 
-  00008106                       +1        149         171 PL_SPR_11		EQU	0x08106
-                                 +1        150         172 
-  00008107                       +1        151         173 PL_SPR_12		EQU	0x08107
-                                 +1        152         174 
-                                 +1        153         175 
-                                 +1        154         176 
-                                 +1        155         177 ;scroll 0 palette 0
-                                 +1        156         178 
-  00008109                       +1        157         179 PL_SCR0_00		EQU	0x08109
-                                 +1        158         180 
-  0000810A                       +1        159         181 PL_SCR0_01		EQU	0x0810A
-                                 +1        160         182 
-  0000810B                       +1        161         183 PL_SCR0_02		EQU	0x0810B
-                                 +1        162         184 
-                                 +1        163         185 ;scroll 0 palette 1
-                                 +1        164         186 
-  0000810D                       +1        165         187 PL_SCR0_10		EQU	0x0810D
-                                 +1        166         188 
-  0000810E                       +1        167         189 PL_SCR0_11		EQU	0x0810E
-                                 +1        168         190 
-  0000810F                       +1        169         191 PL_SCR0_12		EQU	0x0810F
-                                 +1        170         192 
-                                 +1        171         193 ;scroll 1 palette 0
-                                 +1        172         194 
-  00008111                       +1        173         195 PAL_SCR1_00		EQU	0x08111
-                                 +1        174         196 
-  00008112                       +1        175         197 PAL_SCR1_01		EQU	0x08112
-                                 +1        176         198 
-  00008113                       +1        177         199 PAL_SCR1_02		EQU	0x08113
-                                 +1        178         200 
-                                 +1        179         201 ;scroll 1 palette 1
-                                 +1        180         202 
-  00008115                       +1        181         203 PAL_SCR1_10		EQU	0x08115
-                                 +1        182         204 
-  00008116                       +1        183         205 PAL_SCR1_11		EQU	0x08116
-                                 +1        184         206 
-  00008117                       +1        185         207 PAL_SCR1_12		EQU	0x08117
-                                 +1        186         208 
-                                 +1        187         209 
-                                 +1        188         210 ;=======================================================
-                                 +1        189         211 
-                                 +1        190         212 ;		COLOR PALETTE RAM EQU
-                                 +1        191         213 
-                                 +1        192         214 ;=======================================================
-                                 +1        193         215 
-  00008200                       +1        194         216 SPRITE_CRAM		EQU 0x08200
-                                 +1        195         217 
-  00008280                       +1        196         218 SCROLL1_CRAM	EQU 0x08280
-                                 +1        197         219 
-  00008300                       +1        198         220 SCROLL2_CRAM	EQU 0x08300
-                                 +1        199         221 
-  000083E0                       +1        200         222 BGCOL_CRAM		EQU 0x083E0 ;for the background color
-                                 +1        201         223 
-  000083F0                       +1        202         224 WINDOW_CRAM		EQU 0x083F0
-                                 +1        203         225 
-                                 +1        204         226 
-                                 +1        205         227 ;=======================================================
-                                 +1        206         228 
-                                 +1        207         229 ;		TIMER EQU
-                                 +1        208         230 
-                                 +1        209         231 ;=======================================================
-                                 +1        210         232 
-  00000020                       +1        211         233 T8RUN	EQU 0x0020 ;bitmask controlling 8 bit timers
-                                 +1        212         234 
-                                 +1        213         235 
-                                 +1        214         236 
-                                 +1        215         237 ;=======================================================
-                                 +0         23         238 	$include "system.inc"
-                                 +1          1         239 ;-----------------------------------------------------------------
-                                 +1          2         240 
-                                 +1          3         241 ;	SYSTEM CALL
-                                 +1          4         242 
-                                 +1          5         243 ;-----------------------------------------------------------------
-                                 +1          6         244 
-  00000000                       +1          7         245 SYS_SUCCESS		equ	0x00			;run success
-                                 +1          8         246 
-  000000FF                       +1          9         247 SYS_FAILURE		equ	0xff			;run failure
-                                 +1         10         248 
-                                 +1         11         249 ;-----------------------------------------------------------------
-                                 +1         12         250 
-  00000000                       +1         13         251 VECT_SHUTDOWN		equ	0x00			;shutdown (power OFF)
-                                 +1         14         252 
-  00000001                       +1         15         253 VECT_CLOCKGEARSET	equ	0x01			;clock gear change
-                                 +1         16         254 
-  00000002                       +1         17         255 VECT_RTCGET		equ	0x02			;obtain time
-                                 +1         18         256 
-  00000004                       +1         19         257 VECT_INTLVSET		equ	0x04			;set interrupt level
-                                 +1         20         258 
-  00000005                       +1         21         259 VECT_SYSFONTSET	equ	0x05			;set system font
-                                 +1         22         260 
-  00000006                       +1         23         261 VECT_FLASHWRITE	equ	0x06			;flash memory data write
-                                 +1         24         262 
-  00000007                       +1         25         263 VECT_FLASHALLERS	equ	0x07			;flash memory erase all blocks
-                                 +1         26         264 
-  00000008                       +1         27         265 VECT_FLASHERS		equ	0x08			;flash memory erase specified blocks
-                                 +1         28         266 
-  00000009                       +1         29         267 VECT_ALARMSET		equ	0x09			;game alarm setting
-                                 +1         30         268 
-  0000000B                       +1         31         269 VECT_ALARMDOWNSET	equ	0x0b			;alarm setting during shutdown
-                                 +1         32         270 
-  0000000D                       +1         33         271 VECT_FLASHPROTECT	equ	0x0d			;protect using tool
-                                 +1         34         272 
-  0000000E                       +1         35         273 VECT_GEMODESET	equ	0x0e			;switching GE mode
-                                 +1         36         274 
-                                 +1         37         275 ;-----------------------------------------------------------------
-                                 +1         38         276 
-                                 +1         39         277 ;	SYSTEM BIT EQU
-                                 +1         40         278 
-                                 +1         41         279 ;-----------------------------------------------------------------
-                                 +1         42         280 
-  00000007                       +1         43         281 INT_CLR_BIT		equ	0x07			;interrupt request clear bit
-                                 +1         44         282 
-  00000080                       +1         45         283 _INT_CLR_BIT		equ	0y10000000		;
-                                 +1         46         284 
-                                 +1         47         285 ;-----------------------------------------------------------------
-                                 +1         48         286 
-                                 +1         49         287 ;	SYSTEM WORK
-                                 +1         50         288 
-                                 +1         51         289 ;-----------------------------------------------------------------
-                                 +1         52         290 
-  00006F80                       +1         53         291 Battery_Voltage	equ	0x6f80			;estimated voltage
-                                 +1         54         292 
-  00006F82                       +1         55         293 Sys_lever		equ	0x6f82			;lever value
-                                 +1         56         294 
-  00006F87                       +1         57         295 Language		equ	0x6f87			;language chosen
-                                 +1         58         296 
-  00006F85                       +1         59         297 User_Shutdown		equ	0x6f85			;shutdown re1uest bit
-                                 +1         60         298 
-  00006F84                       +1         61         299 User_Boot		equ	0x6f84			;startup bit flag
-                                 +1         62         300 
-  00006F86                       +1         63         301 User_Answer		equ	0x6f86			;user request bit
-                                 +1         64         302 
-  00006F91                       +1         65         303 OS_Version		equ	0x6f91			;system version reserve work
-                                 +1         66         304 
-                                 +1         67         305 ;-----------------------------------------------------------------
-                                 +1         68         306 
-                                 +1         69         307 ;	WATCH DOG
-                                 +1         70         308 
-                                 +1         71         309 ;-----------------------------------------------------------------
-                                 +1         72         310 
-  0000006F                       +1         73         311 WDCR			equ	0x06F		;watch dog control address
-                                 +1         74         312 
-  0000004E                       +1         75         313 WD_CLR			equ	0x04e		;watch dog clear code
-                                 +1         76         314 
-                                 +1         77         315 ;-----------------------------------------------------------------
-                                 +1         78         316 
-                                 +1         79         317 ;	SYSTEM WORK BIT
-                                 +1         80         318 
-                                 +1         81         319 ;-----------------------------------------------------------------
-                                 +1         82         320 
-  00000001                       +1         83         321 JOY_UP 		equ 0x1
-  00000002                       +1         84         322 JOY_DOWN 	equ 0x2
-  00000004                       +1         85         323 JOY_LEFT 	equ 0x4
-  00000008                       +1         86         324 JOY_RIGHT 	equ 0x8
-  00000010                       +1         87         325 JOY_A		equ 0x10
-  00000020                       +1         88         326 JOY_B		equ 0x20
-  00000040                       +1         89         327 JOY_OPTION	equ 0x40
-                                 +1         90         328 
-  00000000                       +1         91         329 BIT_UP		equ 0
-  00000001                       +1         92         330 BIT_DOWN	equ 1
-  00000002                       +1         93         331 BIT_LEFT	equ 2
-  00000003                       +1         94         332 BIT_RIGHT	equ 3
-  00000004                       +1         95         333 BIT_A		equ 4
-  00000005                       +1         96         334 BIT_B		equ 5
-  00000006                       +1         97         335 BIT_OPTION	equ 6
-                                 +1         98         336 
-                                 +1         99         337 ;======================================================= 
-                                 +1        100         338 
-                                 +1        101         339 ;	USER START UP BIT
-                                 +1        102         340 
-                                 +1        103         341 ;======================================================= 
-                                 +1        104         342 
-                                 +1        105         343 ;User_Boot
-                                 +1        106         344 
-                                 +1        107         345 ;	00000000
-                                 +1        108         346 
-                                 +1        109         347 ;	||+------ resume startup			0:not resume startup		1:resume startup
-                                 +1        110         348 
-                                 +1        111         349 ;	|+------- POWER startup			0:not POWER startup		1:POWER startup
-                                 +1        112         350 
-                                 +1        113         351 ;	+-------- alarm startup			0:not alarm statup		1:alarm statup
-                                 +1        114         352 
-                                 +1        115         353 ;	=================================================
-                                 +1        116         354 
-                                 +1        117         355 
-                                 +1        118         356 
-  00000007                       +1        119         357 ALARM_BOOT_REQ		equ	0x07
-                                 +1        120         358 
-  00000006                       +1        121         359 POWER_BOOT_REQ		equ	0x06
-                                 +1        122         360 
-  00000005                       +1        123         361 RESUME_BOOT_REQ		equ	0x05
-                                 +1        124         362 
-  00000080                       +1        125         363 _ALARM_BOOT_REQ		equ	0y10000000
-                                 +1        126         364 
-  00000040                       +1        127         365 _POWER_BOOT_REQ		equ	0y01000000
-                                 +1        128         366 
-  00000020                       +1        129         367 _RESUME_BOOT_REQ	equ	0y00100000
-                                 +1        130         368 
-                                 +1        131         369 
-                                 +1        132         370 
-                                 +1        133         371 ;======================================================= 
-                                 +1        134         372 
-                                 +1        135         373 ;	USER SHUTDOWN BIT
-                                 +1        136         374 
-                                 +1        137         375 ;======================================================= 
-                                 +1        138         376 
-                                 +1        139         377 ;User_Shutdown
-                                 +1        140         378 
-                                 +1        141         379 ;	00000000
-                                 +1        142         380 
-                                 +1        143         381 ;	||+--------- main power use shutdown request	0:no request	1:request
-                                 +1        144         382 
-                                 +1        145         383 ;	|+---------- no use shutdown request		0:no request	1:request
-                                 +1        146         384 
-                                 +1        147         385 ;	+----------- power off shutdown request		0:no request	1:request
-                                 +1        148         386 
-                                 +1        149         387 ;	=================================================
-                                 +1        150         388 
-                                 +1        151         389 
-                                 +1        152         390 
-  00000007                       +1        153         391 MP_SHUTDOWN_REQ	equ	0x07
-                                 +1        154         392 
-  00000006                       +1        155         393 TIME_SHUTDOWN_REQ	equ	0x06
-                                 +1        156         394 
-  00000005                       +1        157         395 BAT_SHUTDOWN_REQ	equ	0x05
-                                 +1        158         396 
-  00000080                       +1        159         397 _MP_SHUTDOWN_REQ	equ	0y10000000
-                                 +1        160         398 
-  00000040                       +1        161         399 _TIME_SHUTDOWN_REQ	equ	0y01000000
-                                 +1        162         400 
-  00000020                       +1        163         401 _BAT_SHUTDOWN_REQ	equ	0y00100000
-                                 +1        164         402 
-                                 +1        165         403 
-                                 +1        166         404 
-                                 +1        167         405 ;======================================================= 
-                                 +1        168         406 
-                                 +1        169         407 ;	USER ANSWER BIT
-                                 +1        170         408 
-                                 +1        171         409 ;======================================================= 
-                                 +1        172         410 
-                                 +1        173         411 ;User_Answer
-                                 +1        174         412 
-                                 +1        175         413 ;	00000000
-                                 +1        176         414 
-                                 +1        177         415 ;	|+----------- no use shutdown operation	0:non-existent	1:exists
-                                 +1        178         416 
-                                 +1        179         417 ;	+------------ resume operation		0:non-existent	1:exists
-                                 +1        180         418 
-                                 +1        181         419 ;	=================================================
-                                 +1        182         420 
-                                 +1        183         421 
-                                 +1        184         422 
-  00000007                       +1        185         423 RESUME_ANS		equ	0x07
-                                 +1        186         424 
-  00000006                       +1        187         425 TIMER_SHUTDOWN_ANS	equ	0x06
-                                 +1        188         426 
-  00000080                       +1        189         427 _RESUME_ANS		equ	0y10000000
-                                 +1        190         428 
-  00000040                       +1        191         429 _TIMER_SHUTDOWN_ANS	equ	0y01000000
-                                 +1        192         430 
-                                 +0         24         431 	$include "graphics.inc"
-                                 +1          1         432 ;*****************************************
-                                 +1          2         433 ;	Graphics data 
-                                 +1          3         434 ;*****************************************
-                                 +1          4         435 
-                                 +1          5         436 	extern palette
-                                 +1          6         437 	extern palette_end
-                                 +1          7         438 	extern tiles
-                                 +1          8         439 	extern tiles_end
-                                 +1          9         440 	extern map
-                                 +1         10         441 	extern map_end
-                                 +1         11         442 	extern hills
-                                 +1         12         443 	extern hills_end
-                                 +1         13         444 	extern hills_map
-                                 +1         14         445 	extern hills_map_end
-                                 +1         15         446 	extern hills_pal
-                                 +1         16         447 	extern hills_pal_end
-                                 +1         17         448 	extern guy
-                                 +1         18         449 	extern guy_end
-                                 +1         19         450 	extern guy_pal
-                                 +1         20         451 	extern guy_pal_end
-                                 +0         25         452 	$include "glbwork.inc"
-                                 +1          1         453 ;================================================================
-                                 +1          2         454 ; global vars
-                                 +1          3         455 ;================================================================
-                                 +1          4         456 
-                                 +1          5         457 	extern medium start_work
-                                 +1          6         458 	extern medium stopper ; keeps main loop spinning until vblank (byte)
-                                 +1          7         459 	extern medium joypad ;joypad bitmask (byte)
-                                 +1          8         460 	extern medium joylast ;last frame's joypad bitmask (byte)
-                                 +1          9         461 	extern medium joyedge ;what buttons were pressed this frame (byte)
-                                 +1         10         462 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
-                                 +1         11         463 	extern medium frame_cnt ; counts number of frames (word)
-                                 +1         12         464 	
-                                 +1         13         465 	extern medium scroll_x ;scroll x pos (word)
-                                 +1         14         466 	extern medium scroll_y ;scroll y pos (word)
-                                 +1         15         467 	
-                                 +1         16         468 	extern medium player_x ;player x pos (long)
-                                 +1         17         469 	extern medium player_y ;player y pos (long)
-                                 +1         18         470 	extern medium player_dx ;long
-                                 +1         19         471 	extern medium player_dy ;long
-                                 +1         20         472 ;================================================================
-                                 +1         21         473 
-                                 +0         26         474 	$include "scroll.inc"
-                                 +1          1         475 ;-------------------------------------------------------
-                                 +1          2         476 ; scroll_set: set scroll to specified coords
-                                 +1          3         477 ;-------------------------------------------------------
-                                 +1          4         478 ; wa: x pos
-                                 +1          5         479 ; bc: y pos
-                                 +1          6         480 ;-------------------------------------------------------
-                                 +1          7         481 extern scroll_set
-                                 +1          8         482 
-                                 +1          9         483 ;-------------------------------------------------------
-                                 +1         10         484 ; scroll_get_tile: returns tile # at given coordinates in wa
-                                 +1         11         485 ;-------------------------------------------------------
-                                 +1         12         486 ; wa: x pos
-                                 +1         13         487 ; bc: y pos
-                                 +1         14         488 ;-------------------------------------------------------
-                                 +1         15         489 extern scroll_get_tile
-                                 +1         16         490 
-                                 +1         17         491 ;-------------------------------------------------------
-                                 +1         18         492 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
-                                 +1         19         493 ;-------------------------------------------------------
-                                 +1         20         494 extern scroll_copy
-                                 +0         27         495 	
-  00000048                       +0         28         496 SPRITE_X equ 72
-  00000050                       +0         29         497 SPRITE_Y equ 80
-  00000010                       +0         30         498 PLAYER_WIDTH equ 16
-  00000010                       +0         31         499 PLAYER_HEIGHT equ 16
-  00000004                       +0         32         500 TSENSOR_HEIGHT equ 4
-  0000000C                       +0         33         501 BSENSOR_HEIGHT equ 12
-  00008000                       +0         34         502 PLAYER_ACCEL equ 0x8000
-  00038000                       +0         35         503 MAX_SPEED equ 0x38000
-  00000000                       +0         36         504 MODE_GROUND equ 0
-  00000001                       +0         37         505 MODE_AIR equ 1
-  0000A000                       +0         38         506 GRAVITY equ 0xa000
-  00007000                       +0         39         507 JUMP_GRAVITY equ 0x7000
-  00070000                       +0         40         508 MAX_GRAVITY equ 0x70000
-                                 +0         41         509 
-                                 +0         42         510 ;-------------------------------------------------------
-                                 +0         43         511 PROG section code large
-                                 +0         44         512 ;-------------------------------------------------------
-                                 +0         45         513 	
-                                 +0         46         514 ;-------------------------------------------------------
-                                 +0         47         515 ; player_init: initialize player sprite
-                                 +0         48         516 ;-------------------------------------------------------	
-00000000                         +0         49         517 player_init:
-00000000  D8A8                   +0         50         518 	ldw wa,0
-00000002  F1000041             R +0         51         519 	ldb (player_mode),a	
-00000006  D7E2034800             +0         52         520 	ldw qwa,SPRITE_X
-0000000B  F1000060             R +0         53         521 	ldl (player_x),xwa
-                                 +0         54         522 	
-0000000F  D7E2035000             +0         55         523 	ldw qwa,SPRITE_Y
-00000014  F1000060             R +0         56         524 	ldl (player_y),xwa
-                                 +0         57         525 	
-                                 +0         58         526 	;---copy guy sprite---
-00000018  F200000035           R +0         59         527 	lda xiy,guy
-0000001D  F200000034           R +0         60         528 	lda xix,CHR_VRAM+tiles_end-tiles+hills_end-hills
-00000022  4100000000           R +0         61         529 	ldl xbc,guy_end-guy
-00000027  8511                   +0         62         530 	ldir (xix+),(xiy+)
-                                 +0         63         531 	;---copy guy palette---
-00000029  F200000035           R +0         64         532 	lda xiy,guy_pal
-0000002E  F1008234               +0         65         533 	lda xix,SPRITE_CRAM
-00000032  4100000000           R +0         66         534 	ldl xbc,guy_pal_end-guy_pal ;should be a ldw but needs to be an ldl
-00000037                         +0         67         535 guy_pal_copy:                   ;to appease the assembler
-00000037  D5F520                 +0         68         536 	ldw wa,(xiy+)
-0000003A  F5F150                 +0         69         537 	ldw (xix+),wa
-0000003D  D91CF7                 +0         70         538 	djnz bc,guy_pal_copy
-                                 +0         71         539 
-                                 +0         72         540 	;upper left
-00000040  F100880030             +0         73         541 	ldb (SPR_VRAM),304 & 0xff ;first byte of tile number
-00000045  F101880019             +0         74         542 	ldb (SPR_VRAM+1),0y00011001 ;attributes and tile # upper bit
-0000004A  F102880048             +0         75         543 	ldb (SPR_VRAM+2),SPRITE_X ;x position
-0000004F  F103880050             +0         76         544 	ldb (SPR_VRAM+3),SPRITE_Y ;y position
-00000054  F1008C0000             +0         77         545 	ldb (SPR_PALCODE),0 ;palette number
-                                 +0         78         546 	;upper right
-00000059  F104880031             +0         79         547 	ldb (SPR_VRAM+4),305 & 0xff
-0000005E  F10588001F             +0         80         548 	ldb (SPR_VRAM+5),0y00011111 ;turn on h/v chain
-00000063  F106880008             +0         81         549 	ldb (SPR_VRAM+6),8 ;offset 8 px from prev sprite on x axis
-00000068  F107880000             +0         82         550 	ldb (SPR_VRAM+7),0
-0000006D  F1018C0000             +0         83         551 	ldb (SPR_PALCODE+1),0
-                                 +0         84         552 	;lower left
-00000072  F108880032             +0         85         553 	ldb (SPR_VRAM+8),306 & 0xff
-00000077  F10988001F             +0         86         554 	ldb (SPR_VRAM+9),0y00011111 ;turn on h/v chain
-0000007C  F10A8800F8             +0         87         555 	ldb (SPR_VRAM+10),248 ;offset -8 px from prev sprite on x axis
-00000081  F10B880008             +0         88         556 	ldb (SPR_VRAM+11),8 ;offset 8 px on y axis
-00000086  F1028C0000             +0         89         557 	ldb (SPR_PALCODE+2),0		
-                                 +0         90         558 	;lower right
-0000008B  F10C880033             +0         91         559 	ldb (SPR_VRAM+12),307 & 0xff
-00000090  F10D88001F             +0         92         560 	ldb (SPR_VRAM+13),0y00011111 ;turn on h/v chain
-00000095  F10E880008             +0         93         561 	ldb (SPR_VRAM+14),8 ;offset 8 px from prev sprite on x axis
-0000009A  F10F880000             +0         94         562 	ldb (SPR_VRAM+15),0 ;offset 0 px on y axis
-0000009F  F1038C0000             +0         95         563 	ldb (SPR_PALCODE+3),0
-000000A4  0E                     +0         96         564 	ret
-                                 +0         97         565 
-                                 +0         98         566 ;-------------------------------------------------------
-                                 +0         99         567 ; player_move: handle player movement
-                                 +0        100         568 ;-------------------------------------------------------
-000000A5                         +0        101         569 player_move:
-                                 +0        102         570 	;---horizontal movement---
-000000A5  C1000021             R +0        103         571 	ldb a,(joypad)
-000000A9  E1000021             R +0        104         572 	ldl xbc,(player_dx)
-000000AD  C93302                 +0        105         573 	bit BIT_LEFT,a
-000000B0  660E                   +0        106         574 	j z,not_left
-000000B2  E9CF0080FCFF           +0        107         575 	cpl xbc,-MAX_SPEED
-000000B8  6506                   +0        108         576 	j mi,not_left
-000000BA  E9CA00800000           +0        109         577 	subl xbc,PLAYER_ACCEL
-000000C0                         +0        110         578 not_left:
-000000C0  C93303                 +0        111         579 	bit BIT_RIGHT,a
-000000C3  660E                   +0        112         580 	j z,not_right
-000000C5  E9CF00800300           +0        113         581 	cpl xbc,MAX_SPEED
-000000CB  6D06                   +0        114         582 	j pl,not_right
-000000CD  E9C800800000           +0        115         583 	addl xbc,PLAYER_ACCEL
-000000D3                         +0        116         584 not_right:
-                                 +0        117         585 	;if we're not pressing left or right, decelerate
-000000D3  C1000021             R +0        118         586 	ldb a,(joypad)
-000000D7  C9CC0C                 +0        119         587 	andb a,JOY_LEFT | JOY_RIGHT
-000000DA  6E2E                   +0        120         588 	j nz,no_decel
-000000DC  E9CF00000000           +0        121         589 	cpl xbc,0
-000000E2  6626                   +0        122         590 	j z,no_decel ;if player_dx is 0, don't have to decelerate
-000000E4  6D02                   +0        123         591 	j pl,decel_right
-000000E6  6512                   +0        124         592 	j mi,decel_left
-000000E8                         +0        125         593 decel_right:
-000000E8  E9CA00800000           +0        126         594 	subl xbc,PLAYER_ACCEL
-                                 +0        127         595 	;if value goes under 0, make it 0
-000000EE  E9CF00000000           +0        128         596 	cpl xbc,0
-000000F4  6D14                   +0        129         597 	j pl,no_decel
-000000F6  E9A8                   +0        130         598 	ldl xbc,0
-000000F8  6810                   +0        131         599 	j no_decel
-000000FA                         +0        132         600 decel_left:
-000000FA  E9C800800000           +0        133         601 	addl xbc,PLAYER_ACCEL
-                                 +0        134         602 	;if value goes over 0, make it 0
-00000100  E9CF00000000           +0        135         603 	cpl xbc,0
-00000106  6502                   +0        136         604 	j mi,no_decel
-00000108  E9A8                   +0        137         605 	ldl xbc,0
-0000010A                         +0        138         606 no_decel:	
-0000010A  E1000020             R +0        139         607 	ldl xwa,(player_x)
-0000010E  F1000061             R +0        140         608 	ldl (player_dx),xbc
-00000112  E980                   +0        141         609 	addl xwa,xbc
-00000114  F1000060             R +0        142         610 	ldl (player_x),xwa
-                                 +0        143         611 	
-                                 +0        144         612 	;---horizontal collision detection---
-                                 +0        145         613 	;top left
-00000118  D1000020             R +0        146         614 	ldw wa,(player_x+2)
-0000011C  D1000021             R +0        147         615 	ldw bc,(player_y+2)
-00000120  D9C80400               +0        148         616 	addw bc,TSENSOR_HEIGHT
-00000124  1E2702                 +0        149         617 	cal get_height
-00000127  C9CF10                 +0        150         618 	cpb a,16
-0000012A  6646                   +0        151         619 	j z,hcollision_left
-                                 +0        152         620 	;bottom left
-0000012C  D1000020             R +0        153         621 	ldw wa,(player_x+2)
-00000130  D1000021             R +0        154         622 	ldw bc,(player_y+2)
-00000134  D9C80C00               +0        155         623 	addw bc,BSENSOR_HEIGHT
-00000138  1E1302                 +0        156         624 	cal get_height
-0000013B  C9CF10                 +0        157         625 	cpb a,16
-0000013E  6632                   +0        158         626 	j z,hcollision_left
-                                 +0        159         627 	;top right
-00000140  D1000020             R +0        160         628 	ldw wa,(player_x+2)
-00000144  D8C80F00               +0        161         629 	addw wa,PLAYER_WIDTH-1
-00000148  D1000021             R +0        162         630 	ldw bc,(player_y+2)
-0000014C  D9C80400               +0        163         631 	addw bc,TSENSOR_HEIGHT
-00000150  1EFB01                 +0        164         632 	cal get_height
-00000153  C9CF10                 +0        165         633 	cpb a,16
-00000156  6636                   +0        166         634 	j z,hcollision_right
-                                 +0        167         635 	;bottom right
-00000158  D1000020             R +0        168         636 	ldw wa,(player_x+2)
-0000015C  D8C80F00               +0        169         637 	addw wa,PLAYER_WIDTH-1
-00000160  D1000021             R +0        170         638 	ldw bc,(player_y+2)
-00000164  D9C80C00               +0        171         639 	addw bc,BSENSOR_HEIGHT
-00000168  1EE301                 +0        172         640 	cal get_height
-0000016B  C9CF10                 +0        173         641 	cpb a,16
-0000016E  661E                   +0        174         642 	j z,hcollision_right
-00000170  6833                   +0        175         643 	j done_hcollision
-00000172                         +0        176         644 hcollision_left:
-                                 +0        177         645 	;reset dx and subpixel position
-00000172  E8A8                   +0        178         646 	ldl xwa,0
-00000174  F1000060             R +0        179         647 	ldl (player_dx),xwa
-00000178  E1000020             R +0        180         648 	ldl xwa,(player_x)
-0000017C  E8CC0000F8FF           +0        181         649 	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
-00000182  E8C800000800           +0        182         650 	addl xwa,0x80000 ;eject into next tile
-00000188  F1000060             R +0        183         651 	ldl (player_x),xwa
-0000018C  6817                   +0        184         652 	j done_hcollision
-0000018E                         +0        185         653 hcollision_right:
-                                 +0        186         654 	;reset dx and subpixel position
-0000018E  E8A8                   +0        187         655 	ldl xwa,0
-00000190  F1000060             R +0        188         656 	ldl (player_dx),xwa
-00000194  E1000020             R +0        189         657 	ldl xwa,(player_x)
-00000198  E8CC0000F8FF           +0        190         658 	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
-0000019E  30FFFF                 +0        191         659 	ldw wa,0xffff ;subpixel portion- almost into next tile
-000001A1  F1000060             R +0        192         660 	ldl (player_x),xwa
-000001A5                         +0        193         661 done_hcollision:
-                                 +0        194         662 
-                                 +0        195         663 	;---jumping and falling---
-                                 +0        196         664 	; ldb a,(joyedge)
-000001A5  F10000CD             R +0        197         665 	bit BIT_B,(joyedge)
-000001A9  6616                   +0        198         666 	j z,not_start_jump
-000001AB  C1000021             R +0        199         667 	ldb a,(player_mode)
-000001AF  C9D9                   +0        200         668 	cpb a,MODE_AIR ;don't start jumping if you press the button in air
-000001B1  660E                   +0        201         669 	j z,not_start_jump
-000001B3  400000F8FF             +0        202         670 	ldl xwa,-0x80000
-000001B8  F1000060             R +0        203         671 	ldl (player_dy),xwa
-000001BC  F100000001           R +0        204         672 	ldb (player_mode),MODE_AIR
-000001C1                         +0        205         673 not_start_jump:
-                                 +0        206         674 	;gravity
-000001C1  C1000021             R +0        207         675 	ldb a,(player_mode)
-000001C5  C9D9                   +0        208         676 	cpb a,MODE_AIR
-000001C7  6E36                   +0        209         677 	j nz,done_air
-000001C9  E1000020             R +0        210         678 	ldl xwa,(player_dy)
-000001CD  E8CF00000700           +0        211         679 	cpl xwa,MAX_GRAVITY
-000001D3  6D1C                   +0        212         680 	j pl,done_add_gravity
-                                 +0        213         681 	;if holding down the jump button, jump higher
-000001D5  F10000CD             R +0        214         682 	bit BIT_B,(joypad)
-000001D9  6610                   +0        215         683 	j z,normal_add_gravity
-000001DB  E8CF00000000           +0        216         684 	cpl xwa,0 ;don't use low gravity when falling
-000001E1  6D08                   +0        217         685 	j pl,normal_add_gravity
-000001E3  E8C800700000           +0        218         686 	addl xwa,JUMP_GRAVITY
-000001E9  6806                   +0        219         687 	j done_add_gravity
-000001EB                         +0        220         688 normal_add_gravity:	
-000001EB  E8C800A00000           +0        221         689 	addl xwa,GRAVITY
-000001F1                         +0        222         690 done_add_gravity:	
-000001F1  F1000060             R +0        223         691 	ldl (player_dy),xwa
-000001F5  E1000021             R +0        224         692 	ldl xbc,(player_y)
-000001F9  E881                   +0        225         693 	addl xbc,xwa
-000001FB  F1000061             R +0        226         694 	ldl (player_y),xbc
-000001FF                         +0        227         695 done_air:
-                                 +0        228         696 	
-                                 +0        229         697 	;---vertical collision detection---
-000001FF  E8CF00000000           +0        230         698 	cpl xwa,0
-00000205  6D40                   +0        231         699 	j pl,floor_collision
-00000207  663E                   +0        232         700 	j z,floor_collision
-00000209                         +0        233         701 ceiling_collision:
-                                 +0        234         702 	;top left
-00000209  D1000020             R +0        235         703 	ldw wa,(player_x+2)
-0000020D  D1000021             R +0        236         704 	ldw bc,(player_y+2)
-00000211  1E3A01                 +0        237         705 	cal get_height
-00000214  C9C1                   +0        238         706 	andb a,a
-00000216  6E14                   +0        239         707 	j nz,ceil_rebound
-                                 +0        240         708 	;top right
-00000218  D1000020             R +0        241         709 	ldw wa,(player_x+2)
-0000021C  D8C80F00               +0        242         710 	addw wa,PLAYER_WIDTH-1
-00000220  D1000021             R +0        243         711 	ldw bc,(player_y+2)
-00000224  1E2701                 +0        244         712 	cal get_height
-00000227  C9C1                   +0        245         713 	andb a,a
-00000229  768200                 +0        246         714 	j z,done_vcollision
-0000022C                         +0        247         715 ceil_rebound:
-0000022C  E8A8                   +0        248         716 	ldl xwa,0
-0000022E  F1000060             R +0        249         717 	ldl (player_dy),xwa
-00000232  E1000020             R +0        250         718 	ldl xwa,(player_y)
-00000236  E8CC0000F0FF           +0        251         719 	andl xwa,0xfff00000 ;top of tile you're in
-0000023C  D7E2C81000             +0        252         720 	addw qwa,0x10 ;move to bottom
-00000241  F1000060             R +0        253         721 	ldl (player_y),xwa
-00000245  6867                   +0        254         722 	j done_vcollision
-                                 +0        255         723 
-00000247                         +0        256         724 floor_collision:	
-                                 +0        257         725 	;left foot
-00000247  D1000020             R +0        258         726 	ldw wa,(player_x+2)
-                                 +0        259         727 	; addw wa,4
-0000024B  D1000021             R +0        260         728 	ldw bc,(player_y+2)
-0000024F  D9C81000               +0        261         729 	addw bc,PLAYER_HEIGHT
-00000253  1EC100                 +0        262         730 	cal get_sensor
-00000256  14                     +0        263         731 	pushb a
-                                 +0        264         732 	;right foot
-00000257  D1000020             R +0        265         733 	ldw wa,(player_x+2)
-0000025B  D8C80F00               +0        266         734 	addw wa,PLAYER_WIDTH-1
-0000025F  D1000021             R +0        267         735 	ldw bc,(player_y+2)
-00000263  D9C81000               +0        268         736 	addw bc,PLAYER_HEIGHT
-00000267  1EAD00                 +0        269         737 	cal get_sensor ;right sensor height in a
-0000026A  CA05                   +0        270         738 	popb b ;left sensor height in b
-0000026C  C9F2                   +0        271         739 	cpb b,a
-0000026E  6502                   +0        272         740 	j mi,left_higher
-00000270  CA89                   +0        273         741 	ldb a,b
-00000272                         +0        274         742 left_higher:
-00000272  C9CFF0                 +0        275         743 	cpb a,0xf0 ;value returned if no floor found
-00000275  6E07                   +0        276         744 	j nz,on_ground
-00000277  F100000001           R +0        277         745 	ldb (player_mode),MODE_AIR
-0000027C  6830                   +0        278         746 	j done_vcollision
-0000027E                         +0        279         747 on_ground:
-0000027E  D1000021             R +0        280         748 	ldw bc,(player_y+2)
-00000282  D98A                   +0        281         749 	ldw de,bc ;player_y in de for later "if in air" comparison
-00000284  D9C81000               +0        282         750 	addw bc,PLAYER_HEIGHT ;foot pos in bc
-00000288  D9CCF0FF               +0        283         751 	andw bc,0xfff0 ;place feet at bottom of block
-0000028C  D9C81000               +0        284         752 	addw bc,16
-00000290  D813                   +0        285         753 	extsw wa
-00000292  D8A1                   +0        286         754 	subw bc,wa
-00000294  D9CA1000               +0        287         755 	subw bc,PLAYER_HEIGHT ;foot pos to regular pos
-00000298  C100003F01           R +0        288         756 	cpb (player_mode),MODE_AIR
-0000029D  6E09                   +0        289         757 	j nz,normal_ground
-                                 +0        290         758 	;when in air, compare original and transformed y positions. if original moves character
-                                 +0        291         759 	;0 or more pixels upwards, then do it. otherwise don't mess with y position
-0000029F  D9F2                   +0        292         760 	cpw de,bc
-000002A1  650B                   +0        293         761 	j mi,done_vcollision
-000002A3  F100000000           R +0        294         762 	ldb (player_mode),MODE_GROUND
-000002A8                         +0        295         763 normal_ground:	
-000002A8  F1000051             R +0        296         764 	ldw (player_y+2),bc
-000002AC  6800                   +0        297         765 	j done_vcollision
-                                 +0        298         766 	
-                                 +0        299         767 	
-000002AE                         +0        300         768 done_vcollision:
-                                 +0        301         769 	
-000002AE  D1000020             R +0        302         770 	ldw wa,(player_x+2) ;move pixel portion of x coord into wa
-000002B2  D8CA4800               +0        303         771 	subw wa,SPRITE_X
-000002B6  6D0C                   +0        304         772 	j pl,right_checkx
-                                 +0        305         773 	;when scroll pos is less than 0, set scroll pos to 0 and instead move sprite
-000002B8  C1000021             R +0        306         774 	ldb a,(player_x+2)
-000002BC  F1028841               +0        307         775 	ldb (SPR_VRAM+2),a
-000002C0  D8A8                   +0        308         776 	ldw wa,0
-000002C2  681C                   +0        309         777 	j done_sprx
-000002C4                         +0        310         778 right_checkx:
-000002C4  D8CF6001               +0        311         779 	cpw wa,512-160 ;map is 64x64 8x8 tiles, ngpc is 160x152
-000002C8  6511                   +0        312         780 	j mi,normal_x
-000002CA  D1000020             R +0        313         781 	ldw wa,(player_x+2)
-000002CE  D8CA6001               +0        314         782 	subw wa,512-160
-000002D2  F1028841               +0        315         783 	ldb (SPR_VRAM+2),a
-000002D6  306001                 +0        316         784 	ldw wa,512-160
-000002D9  6805                   +0        317         785 	j done_sprx
-000002DB                         +0        318         786 normal_x:	
-000002DB  F102880048             +0        319         787 	ldb (SPR_VRAM+2),SPRITE_X
-000002E0                         +0        320         788 done_sprx:	
-000002E0  D1000021             R +0        321         789 	ldw bc,(player_y+2)
-000002E4  D9CA5000               +0        322         790 	subw bc,SPRITE_Y
-000002E8  6D0C                   +0        323         791 	j pl,down_checky
-000002EA  C1000023             R +0        324         792 	ldb c,(player_y+2)
-000002EE  F1038843               +0        325         793 	ldb (SPR_VRAM+3),c
-000002F2  D9A8                   +0        326         794 	ldw bc,0
-000002F4  681C                   +0        327         795 	j done_spry
-000002F6                         +0        328         796 down_checky:
-000002F6  D9CF6801               +0        329         797 	cpw bc,512-152 ;map is 64x64 8x8 tiles, ngpc is 160x152
-000002FA  6511                   +0        330         798 	j mi,normal_y
-000002FC  D1000021             R +0        331         799 	ldw bc,(player_y+2)
-00000300  D9CA6801               +0        332         800 	subw bc,512-152
-00000304  F1038843               +0        333         801 	ldb (SPR_VRAM+3),c
-00000308  316801                 +0        334         802 	ldw bc,512-152
-0000030B  6805                   +0        335         803 	j done_spry
-0000030D                         +0        336         804 normal_y:
-0000030D  F103880050             +0        337         805 	ldb (SPR_VRAM+3),SPRITE_Y
-00000312                         +0        338         806 done_spry:
-00000312  1D000000             R +0        339         807 	cal scroll_set
-00000316  0E                     +0        340         808 	ret
-                                 +0        341         809 
-                                 +0        342         810 ;-------------------------------------------------------
-                                 +0        343         811 ; get_sensor: returns # of pixels needed to change height by
-                                 +0        344         812 ;-------------------------------------------------------
-                                 +0        345         813 ; wa: pixel x
-                                 +0        346         814 ; bc: pixel y
-                                 +0        347         815 ;-------------------------------------------------------
-00000317                         +0        348         816 get_sensor:
-00000317  D7EA98                 +0        349         817 	ldw qde,wa ;stash original values
-0000031A  D7EE99                 +0        350         818 	ldw qhl,bc
-0000031D  1E2E00                 +0        351         819 	cal get_height
-00000320  C9C1                   +0        352         820 	andb a,a
-00000322  6607                   +0        353         821 	j z,check_below ;if height is 0, check below block
-00000324  C9CF10                 +0        354         822 	cpb a,16
-00000327  6614                   +0        355         823 	j z,check_above ;if height is 16, check above block
-00000329  6822                   +0        356         824 	j get_sensor_end ;otherwise just return
-0000032B                         +0        357         825 check_below:
-0000032B  D7EA88                 +0        358         826 	ldw wa,qde
-0000032E  D7EE89                 +0        359         827 	ldw bc,qhl
-00000331  D9C81000               +0        360         828 	addw bc,16 ;below tile
-00000335  1E1600                 +0        361         829 	cal get_height
-00000338  C9CA10                 +0        362         830 	subb a,16 ;have to subtract 16 to counter the 16 we added
-0000033B  6810                   +0        363         831 	j get_sensor_end
-0000033D                         +0        364         832 check_above:
-0000033D  D7EA88                 +0        365         833 	ldw wa,qde
-00000340  D7EE89                 +0        366         834 	ldw bc,qhl
-00000343  D9CA1000               +0        367         835 	subw bc,16 ;above tile
-00000347  1E0400                 +0        368         836 	cal get_height
-0000034A  C9C810                 +0        369         837 	addb a,16 ;have to add 16 to counter the 16 we subtracted
-                                 +0        370         838 
-0000034D                         +0        371         839 get_sensor_end:
-0000034D  0E                     +0        372         840 	ret
-                                 +0        373         841 
-                                 +0        374         842 ;-------------------------------------------------------
-                                 +0        375         843 ; get_height: returns height of given pixel in a
-                                 +0        376         844 ;-------------------------------------------------------
-                                 +0        377         845 ; wa: pixel x
-                                 +0        378         846 ; bc: pixel y
-                                 +0        379         847 ;-------------------------------------------------------	
-0000034E                         +0        380         848 get_height:
-0000034E  C98C                   +0        381         849 	ldb d,a
-00000350  CCCC0F                 +0        382         850 	andb d,0xf ;d has x position within tile
-00000353  1D000000             R +0        383         851 	cal scroll_get_tile
-00000357  D88B                   +0        384         852 	ldw hl,wa
-00000359  DBCC0080               +0        385         853 	andw hl,0x8000 ;isolate horizontal mirror bit
-0000035D  6606                   +0        386         854 	j z,no_mirror
-0000035F  CC8D                   +0        387         855 	ldb e,d ;if tile is mirrored, array index = 15 - array index
-00000361  240F                   +0        388         856 	ldb d,15
-00000363  CDA4                   +0        389         857 	subb d,e
-00000365                         +0        390         858 no_mirror:
-                                 +0        391         859 	;my bg tile image is 128 pixels wide so taking off that bit and shiftng
-                                 +0        392         860 	;left 1 allows me to convert from 8x8 to 16x16
-00000365  D8CCEF01               +0        393         861 	andw wa,0x1ef
-00000369  D8EF01                 +0        394         862 	srlw 1,wa
-0000036C  F200000031           R +0        395         863 	lda xbc,block_types
-00000371  D881                   +0        396         864 	addw bc,wa
-00000373  E8A8                   +0        397         865 	ldl xwa,0
-00000375  8121                   +0        398         866 	ldb a,(xbc)
-00000377  D8EC04                 +0        399         867 	slaw 4,wa ;each array entry is 16 bits
-0000037A  CC81                   +0        400         868 	addb a,d
-0000037C  F200000031           R +0        401         869 	lda xbc,block_arrs
-00000381  E881                   +0        402         870 	addl xbc,xwa
-00000383  8121                   +0        403         871 	ldb a,(xbc)
-00000385  0E                     +0        404         872 	ret
-                                 +0        405         873 	
-                                 +0        406         874 ;TODO refactor into separate source
-00000386                         +0        407         875 block_arrs:
-                                 +0        408         876 ;empty block
-  00000000                       +0        409         877 TYPE_EMPTY equ 0
-00000386                         +0        410         878 HeightEmpty:
-00000386  00000000000000000000   +0        411         879 	db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                                 +0         11          11 	extern medium player_frame ;byte
+                                 +0         12          12 	extern medium player_timer ;keeps track of # of frames between animation frames (byte)
+                                 +0         13          13 ;  ---------------------------------
+                                 +0         14          14 ;   EXTERNAL DEFINITION
+                                 +0         15          15 ;  ---------------------------------
+                                 +0         16          16 	public player_init
+                                 +0         17          17 	public player_move
+                                 +0         18          18 	public get_sensor
+                                 +0         19          19 
+                                 +0         20          20 ;  ---------------------------------
+                                 +0         21          21 ;	INCLUDE
+                                 +0         22          22 ;  ---------------------------------
+                                 +0         23          23 	$include "k1head.inc"
+                                 +1          1          24 ;=======================================================
+                                 +1          2          25 
+                                 +1          3          26 ;		SYSTEM RELATED EQU
+                                 +1          4          27 
+                                 +1          5          28 ;=======================================================
+                                 +1          6          29 
+  00008000                       +1          7          30 DISP_CTL0		EQU	0x08000			;interrupt control register
+                                 +1          8          31 
+                                 +1          9          32 ;D7 : 1 = Vint allowed / 0 = not allowed
+                                 +1         10          33 
+                                 +1         11          34 ;D6 : 1 = Hint allowed / 0 = not allowed
+                                 +1         12          35 
+                                 +1         13          36 
+                                 +1         14          37 
+  00008010                       +1         15          38 STS_RG_ADD		EQU	0x08010			;2D status register (READ)
+                                 +1         16          39 
+                                 +1         17          40 ;D7 : 1 = character over / 0 = no character over
+                                 +1         18          41 
+                                 +1         19          42 ;D6 : 1 = while V blanking / 0 = while in display mode
+                                 +1         20          43 
+                                 +1         21          44 
+                                 +1         22          45 
+  00008012                       +1         23          46 LCD_CTR_ADD		EQU	0x08012			;2D control register
+                                 +1         24          47 
+                                 +1         25          48 ;D7 : 1 = screen color inverse display / 0 = normal display
+                                 +1         26          49 
+                                 +1         27          50 ;D2Å`D0 : outside window frame color CODE
+                                 +1         28          51 
+                                 +1         29          52 
+                                 +1         30          53 
+  00008118                       +1         31          54 BG_COLOR		EQU 0x08118			;Background color register
+                                 +1         32          55 
+                                 +1         33          56 ;D7`D6: BGON. D7 = 1, D6 = 0: Use specified BG color. Defaults to D7/D6 both 0
+                                 +1         34          57 
+                                 +1         35          58 ;D2`D0: BG color code
+                                 +1         36          59 
+                                 +1         37          60 
+                                 +1         38          61 
+                                 +1         39          62 
+  000087E0                       +1         40          63 RESET_ADD		EQU	0X087E0			;2D software reset (WRITE)
+                                 +1         41          64 
+                                 +1         42          65 ;2D cicuit initialization with "52" write
+                                 +1         43          66 
+                                 +1         44          67 
+                                 +1         45          68 
+  000087FE                       +1         46          69 VERSION_ADD		EQU	0x087FE			;2D cicuit version (READ)
+                                 +1         47          70 
+                                 +1         48          71 ;D7 : 1 = white LCD panel /0 = balck LCD panel 
+                                 +1         49          72 
+                                 +1         50          73 ;D5Å`D0 : 2D circuit version
+                                 +1         51          74 
+                                 +1         52          75 
+                                 +1         53          76 
+                                 +1         54          77 
+                                 +1         55          78 
+                                 +1         56          79 ;=======================================================
+                                 +1         57          80 
+                                 +1         58          81 ;		CHARACTER EQU
+                                 +1         59          82 
+                                 +1         60          83 ;=======================================================
+                                 +1         61          84 
+  0000A000                       +1         62          85 CHR_VRAM		EQU	0x0A000			;character data RAM address
+                                 +1         63          86 
+                                 +1         64          87 
+                                 +1         65          88 
+                                 +1         66          89 
+                                 +1         67          90 
+                                 +1         68          91 ;=======================================================
+                                 +1         69          92 
+                                 +1         70          93 ;		SCROLL EQU
+                                 +1         71          94 
+                                 +1         72          95 ;=======================================================
+                                 +1         73          96 
+  00009000                       +1         74          97 SCRL1_VRAM		EQU	0x09000
+                                 +1         75          98 
+  00009800                       +1         76          99 SCRL2_VRAM		EQU	0x09800
+                                 +1         77         100 
+                                 +1         78         101 
+                                 +1         79         102 
+  00008030                       +1         80         103 SCRL_PRIO_ADR		EQU	0X08030			;scroll priority level invert register 
+                                 +1         81         104 
+  00008032                       +1         82         105 SCRL_X1_ADR		EQU	0x08032			;scroll 1 offset H register
+                                 +1         83         106 
+  00008033                       +1         84         107 SCRL_Y1_ADR		EQU	0x08033			;scroll 1 offset V register
+                                 +1         85         108 
+  00008034                       +1         86         109 SCRL_X2_ADR		EQU	0x08034			;scroll 2 offset H register
+                                 +1         87         110 
+  00008035                       +1         88         111 SCRL_Y2_ADR		EQU	0x08035			;scroll 2 offset V register
+                                 +1         89         112 
+                                 +1         90         113 
+                                 +1         91         114 
+                                 +1         92         115 ;=======================================================
+                                 +1         93         116 
+                                 +1         94         117 ;		SPRITE EQU
+                                 +1         95         118 
+                                 +1         96         119 ;=======================================================
+                                 +1         97         120 
+  00008800                       +1         98         121 SPR_VRAM		EQU	0x08800
+                                 +1         99         122 
+  00008020                       +1        100         123 SPR_OFFSET_X_ADR	EQU	0x08020			;sprite offset H
+                                 +1        101         124 
+  00008021                       +1        102         125 SPR_OFFSET_Y_ADR	EQU	0x08021			;sprite offset V
+                                 +1        103         126 
+  00008C00                       +1        104         127 SPR_PALCODE EQU 0x8C00 ;what palette # to use for each sprite 
+                                 +1        105         128 
+                                 +1        106         129 
+                                 +1        107         130 
+                                 +1        108         131 
+                                 +1        109         132 ;=======================================================
+                                 +1        110         133 
+                                 +1        111         134 ;		WINDOW SYSTEM EQU
+                                 +1        112         135 
+                                 +1        113         136 ;=======================================================
+                                 +1        114         137 
+  00008002                       +1        115         138 WIN_WBAX_ADR		EQU	0x08002			;window origin H
+                                 +1        116         139 
+  00008003                       +1        117         140 WIN_WBAY_ADR		EQU	0x08003			;window origin V
+                                 +1        118         141 
+  00008004                       +1        119         142 WIN_WSIX_ADR		EQU	0x08004			;window size H
+                                 +1        120         143 
+  00008005                       +1        121         144 WIN_WSIY_ADR		EQU	0x08005			;window size V
+                                 +1        122         145 
+                                 +1        123         146 
+                                 +1        124         147 
+  00008008                       +1        125         148 WD_LCDST_HPOS		EQU	0x08008			;raster H position register (READ)
+                                 +1        126         149 
+  00008009                       +1        127         150 WD_LCDST_VPOS		EQU	0x08009			;raster V position register (READ)
+                                 +1        128         151 
+                                 +1        129         152 
+                                 +1        130         153 
+                                 +1        131         154 ;=======================================================
+                                 +1        132         155 
+                                 +1        133         156 ;		PALETTE EQU
+                                 +1        134         157 
+                                 +1        135         158 ;=======================================================
+                                 +1        136         159 
+                                 +1        137         160 ;sprite palette 0
+                                 +1        138         161 
+  00008101                       +1        139         162 PL_SPR_00		EQU	0x08101	
+                                 +1        140         163 
+  00008102                       +1        141         164 PL_SPR_01		EQU	0x08102
+                                 +1        142         165 
+  00008103                       +1        143         166 PL_SPR_02		EQU	0x08103
+                                 +1        144         167 
+                                 +1        145         168 ;sprite palette 1
+                                 +1        146         169 
+  00008105                       +1        147         170 PL_SPR_10		EQU	0x08105
+                                 +1        148         171 
+  00008106                       +1        149         172 PL_SPR_11		EQU	0x08106
+                                 +1        150         173 
+  00008107                       +1        151         174 PL_SPR_12		EQU	0x08107
+                                 +1        152         175 
+                                 +1        153         176 
+                                 +1        154         177 
+                                 +1        155         178 ;scroll 0 palette 0
+                                 +1        156         179 
+  00008109                       +1        157         180 PL_SCR0_00		EQU	0x08109
+                                 +1        158         181 
+  0000810A                       +1        159         182 PL_SCR0_01		EQU	0x0810A
+                                 +1        160         183 
+  0000810B                       +1        161         184 PL_SCR0_02		EQU	0x0810B
+                                 +1        162         185 
+                                 +1        163         186 ;scroll 0 palette 1
+                                 +1        164         187 
+  0000810D                       +1        165         188 PL_SCR0_10		EQU	0x0810D
+                                 +1        166         189 
+  0000810E                       +1        167         190 PL_SCR0_11		EQU	0x0810E
+                                 +1        168         191 
+  0000810F                       +1        169         192 PL_SCR0_12		EQU	0x0810F
+                                 +1        170         193 
+                                 +1        171         194 ;scroll 1 palette 0
+                                 +1        172         195 
+  00008111                       +1        173         196 PAL_SCR1_00		EQU	0x08111
+                                 +1        174         197 
+  00008112                       +1        175         198 PAL_SCR1_01		EQU	0x08112
+                                 +1        176         199 
+  00008113                       +1        177         200 PAL_SCR1_02		EQU	0x08113
+                                 +1        178         201 
+                                 +1        179         202 ;scroll 1 palette 1
+                                 +1        180         203 
+  00008115                       +1        181         204 PAL_SCR1_10		EQU	0x08115
+                                 +1        182         205 
+  00008116                       +1        183         206 PAL_SCR1_11		EQU	0x08116
+                                 +1        184         207 
+  00008117                       +1        185         208 PAL_SCR1_12		EQU	0x08117
+                                 +1        186         209 
+                                 +1        187         210 
+                                 +1        188         211 ;=======================================================
+                                 +1        189         212 
+                                 +1        190         213 ;		COLOR PALETTE RAM EQU
+                                 +1        191         214 
+                                 +1        192         215 ;=======================================================
+                                 +1        193         216 
+  00008200                       +1        194         217 SPRITE_CRAM		EQU 0x08200
+                                 +1        195         218 
+  00008280                       +1        196         219 SCROLL1_CRAM	EQU 0x08280
+                                 +1        197         220 
+  00008300                       +1        198         221 SCROLL2_CRAM	EQU 0x08300
+                                 +1        199         222 
+  000083E0                       +1        200         223 BGCOL_CRAM		EQU 0x083E0 ;for the background color
+                                 +1        201         224 
+  000083F0                       +1        202         225 WINDOW_CRAM		EQU 0x083F0
+                                 +1        203         226 
+                                 +1        204         227 
+                                 +1        205         228 ;=======================================================
+                                 +1        206         229 
+                                 +1        207         230 ;		TIMER EQU
+                                 +1        208         231 
+                                 +1        209         232 ;=======================================================
+                                 +1        210         233 
+  00000020                       +1        211         234 T8RUN	EQU 0x0020 ;bitmask controlling 8 bit timers
+                                 +1        212         235 
+                                 +1        213         236 
+                                 +1        214         237 
+                                 +1        215         238 ;=======================================================
+                                 +0         24         239 	$include "system.inc"
+                                 +1          1         240 ;-----------------------------------------------------------------
+                                 +1          2         241 
+                                 +1          3         242 ;	SYSTEM CALL
+                                 +1          4         243 
+                                 +1          5         244 ;-----------------------------------------------------------------
+                                 +1          6         245 
+  00000000                       +1          7         246 SYS_SUCCESS		equ	0x00			;run success
+                                 +1          8         247 
+  000000FF                       +1          9         248 SYS_FAILURE		equ	0xff			;run failure
+                                 +1         10         249 
+                                 +1         11         250 ;-----------------------------------------------------------------
+                                 +1         12         251 
+  00000000                       +1         13         252 VECT_SHUTDOWN		equ	0x00			;shutdown (power OFF)
+                                 +1         14         253 
+  00000001                       +1         15         254 VECT_CLOCKGEARSET	equ	0x01			;clock gear change
+                                 +1         16         255 
+  00000002                       +1         17         256 VECT_RTCGET		equ	0x02			;obtain time
+                                 +1         18         257 
+  00000004                       +1         19         258 VECT_INTLVSET		equ	0x04			;set interrupt level
+                                 +1         20         259 
+  00000005                       +1         21         260 VECT_SYSFONTSET	equ	0x05			;set system font
+                                 +1         22         261 
+  00000006                       +1         23         262 VECT_FLASHWRITE	equ	0x06			;flash memory data write
+                                 +1         24         263 
+  00000007                       +1         25         264 VECT_FLASHALLERS	equ	0x07			;flash memory erase all blocks
+                                 +1         26         265 
+  00000008                       +1         27         266 VECT_FLASHERS		equ	0x08			;flash memory erase specified blocks
+                                 +1         28         267 
+  00000009                       +1         29         268 VECT_ALARMSET		equ	0x09			;game alarm setting
+                                 +1         30         269 
+  0000000B                       +1         31         270 VECT_ALARMDOWNSET	equ	0x0b			;alarm setting during shutdown
+                                 +1         32         271 
+  0000000D                       +1         33         272 VECT_FLASHPROTECT	equ	0x0d			;protect using tool
+                                 +1         34         273 
+  0000000E                       +1         35         274 VECT_GEMODESET	equ	0x0e			;switching GE mode
+                                 +1         36         275 
+                                 +1         37         276 ;-----------------------------------------------------------------
+                                 +1         38         277 
+                                 +1         39         278 ;	SYSTEM BIT EQU
+                                 +1         40         279 
+                                 +1         41         280 ;-----------------------------------------------------------------
+                                 +1         42         281 
+  00000007                       +1         43         282 INT_CLR_BIT		equ	0x07			;interrupt request clear bit
+                                 +1         44         283 
+  00000080                       +1         45         284 _INT_CLR_BIT		equ	0y10000000		;
+                                 +1         46         285 
+                                 +1         47         286 ;-----------------------------------------------------------------
+                                 +1         48         287 
+                                 +1         49         288 ;	SYSTEM WORK
+                                 +1         50         289 
+                                 +1         51         290 ;-----------------------------------------------------------------
+                                 +1         52         291 
+  00006F80                       +1         53         292 Battery_Voltage	equ	0x6f80			;estimated voltage
+                                 +1         54         293 
+  00006F82                       +1         55         294 Sys_lever		equ	0x6f82			;lever value
+                                 +1         56         295 
+  00006F87                       +1         57         296 Language		equ	0x6f87			;language chosen
+                                 +1         58         297 
+  00006F85                       +1         59         298 User_Shutdown		equ	0x6f85			;shutdown re1uest bit
+                                 +1         60         299 
+  00006F84                       +1         61         300 User_Boot		equ	0x6f84			;startup bit flag
+                                 +1         62         301 
+  00006F86                       +1         63         302 User_Answer		equ	0x6f86			;user request bit
+                                 +1         64         303 
+  00006F91                       +1         65         304 OS_Version		equ	0x6f91			;system version reserve work
+                                 +1         66         305 
+                                 +1         67         306 ;-----------------------------------------------------------------
+                                 +1         68         307 
+                                 +1         69         308 ;	WATCH DOG
+                                 +1         70         309 
+                                 +1         71         310 ;-----------------------------------------------------------------
+                                 +1         72         311 
+  0000006F                       +1         73         312 WDCR			equ	0x06F		;watch dog control address
+                                 +1         74         313 
+  0000004E                       +1         75         314 WD_CLR			equ	0x04e		;watch dog clear code
+                                 +1         76         315 
+                                 +1         77         316 ;-----------------------------------------------------------------
+                                 +1         78         317 
+                                 +1         79         318 ;	SYSTEM WORK BIT
+                                 +1         80         319 
+                                 +1         81         320 ;-----------------------------------------------------------------
+                                 +1         82         321 
+  00000001                       +1         83         322 JOY_UP 		equ 0x1
+  00000002                       +1         84         323 JOY_DOWN 	equ 0x2
+  00000004                       +1         85         324 JOY_LEFT 	equ 0x4
+  00000008                       +1         86         325 JOY_RIGHT 	equ 0x8
+  00000010                       +1         87         326 JOY_A		equ 0x10
+  00000020                       +1         88         327 JOY_B		equ 0x20
+  00000040                       +1         89         328 JOY_OPTION	equ 0x40
+                                 +1         90         329 
+  00000000                       +1         91         330 BIT_UP		equ 0
+  00000001                       +1         92         331 BIT_DOWN	equ 1
+  00000002                       +1         93         332 BIT_LEFT	equ 2
+  00000003                       +1         94         333 BIT_RIGHT	equ 3
+  00000004                       +1         95         334 BIT_A		equ 4
+  00000005                       +1         96         335 BIT_B		equ 5
+  00000006                       +1         97         336 BIT_OPTION	equ 6
+                                 +1         98         337 
+                                 +1         99         338 ;======================================================= 
+                                 +1        100         339 
+                                 +1        101         340 ;	USER START UP BIT
+                                 +1        102         341 
+                                 +1        103         342 ;======================================================= 
+                                 +1        104         343 
+                                 +1        105         344 ;User_Boot
+                                 +1        106         345 
+                                 +1        107         346 ;	00000000
+                                 +1        108         347 
+                                 +1        109         348 ;	||+------ resume startup			0:not resume startup		1:resume startup
+                                 +1        110         349 
+                                 +1        111         350 ;	|+------- POWER startup			0:not POWER startup		1:POWER startup
+                                 +1        112         351 
+                                 +1        113         352 ;	+-------- alarm startup			0:not alarm statup		1:alarm statup
+                                 +1        114         353 
+                                 +1        115         354 ;	=================================================
+                                 +1        116         355 
+                                 +1        117         356 
+                                 +1        118         357 
+  00000007                       +1        119         358 ALARM_BOOT_REQ		equ	0x07
+                                 +1        120         359 
+  00000006                       +1        121         360 POWER_BOOT_REQ		equ	0x06
+                                 +1        122         361 
+  00000005                       +1        123         362 RESUME_BOOT_REQ		equ	0x05
+                                 +1        124         363 
+  00000080                       +1        125         364 _ALARM_BOOT_REQ		equ	0y10000000
+                                 +1        126         365 
+  00000040                       +1        127         366 _POWER_BOOT_REQ		equ	0y01000000
+                                 +1        128         367 
+  00000020                       +1        129         368 _RESUME_BOOT_REQ	equ	0y00100000
+                                 +1        130         369 
+                                 +1        131         370 
+                                 +1        132         371 
+                                 +1        133         372 ;======================================================= 
+                                 +1        134         373 
+                                 +1        135         374 ;	USER SHUTDOWN BIT
+                                 +1        136         375 
+                                 +1        137         376 ;======================================================= 
+                                 +1        138         377 
+                                 +1        139         378 ;User_Shutdown
+                                 +1        140         379 
+                                 +1        141         380 ;	00000000
+                                 +1        142         381 
+                                 +1        143         382 ;	||+--------- main power use shutdown request	0:no request	1:request
+                                 +1        144         383 
+                                 +1        145         384 ;	|+---------- no use shutdown request		0:no request	1:request
+                                 +1        146         385 
+                                 +1        147         386 ;	+----------- power off shutdown request		0:no request	1:request
+                                 +1        148         387 
+                                 +1        149         388 ;	=================================================
+                                 +1        150         389 
+                                 +1        151         390 
+                                 +1        152         391 
+  00000007                       +1        153         392 MP_SHUTDOWN_REQ	equ	0x07
+                                 +1        154         393 
+  00000006                       +1        155         394 TIME_SHUTDOWN_REQ	equ	0x06
+                                 +1        156         395 
+  00000005                       +1        157         396 BAT_SHUTDOWN_REQ	equ	0x05
+                                 +1        158         397 
+  00000080                       +1        159         398 _MP_SHUTDOWN_REQ	equ	0y10000000
+                                 +1        160         399 
+  00000040                       +1        161         400 _TIME_SHUTDOWN_REQ	equ	0y01000000
+                                 +1        162         401 
+  00000020                       +1        163         402 _BAT_SHUTDOWN_REQ	equ	0y00100000
+                                 +1        164         403 
+                                 +1        165         404 
+                                 +1        166         405 
+                                 +1        167         406 ;======================================================= 
+                                 +1        168         407 
+                                 +1        169         408 ;	USER ANSWER BIT
+                                 +1        170         409 
+                                 +1        171         410 ;======================================================= 
+                                 +1        172         411 
+                                 +1        173         412 ;User_Answer
+                                 +1        174         413 
+                                 +1        175         414 ;	00000000
+                                 +1        176         415 
+                                 +1        177         416 ;	|+----------- no use shutdown operation	0:non-existent	1:exists
+                                 +1        178         417 
+                                 +1        179         418 ;	+------------ resume operation		0:non-existent	1:exists
+                                 +1        180         419 
+                                 +1        181         420 ;	=================================================
+                                 +1        182         421 
+                                 +1        183         422 
+                                 +1        184         423 
+  00000007                       +1        185         424 RESUME_ANS		equ	0x07
+                                 +1        186         425 
+  00000006                       +1        187         426 TIMER_SHUTDOWN_ANS	equ	0x06
+                                 +1        188         427 
+  00000080                       +1        189         428 _RESUME_ANS		equ	0y10000000
+                                 +1        190         429 
+  00000040                       +1        191         430 _TIMER_SHUTDOWN_ANS	equ	0y01000000
+                                 +1        192         431 
+                                 +0         25         432 	$include "graphics.inc"
+                                 +1          1         433 ;*****************************************
+                                 +1          2         434 ;	Graphics data 
+                                 +1          3         435 ;*****************************************
+                                 +1          4         436 
+                                 +1          5         437 	extern palette
+                                 +1          6         438 	extern palette_end
+                                 +1          7         439 	extern tiles
+                                 +1          8         440 	extern tiles_end
+                                 +1          9         441 	extern map
+                                 +1         10         442 	extern map_end
+                                 +1         11         443 	extern hills
+                                 +1         12         444 	extern hills_end
+                                 +1         13         445 	extern hills_map
+                                 +1         14         446 	extern hills_map_end
+                                 +1         15         447 	extern hills_pal
+                                 +1         16         448 	extern hills_pal_end
+                                 +1         17         449 	extern guy
+                                 +1         18         450 	extern guy_end
+                                 +1         19         451 	extern guy_pal
+                                 +1         20         452 	extern guy_pal_end
+                                 +0         26         453 	$include "glbwork.inc"
+                                 +1          1         454 ;================================================================
+                                 +1          2         455 ; global vars
+                                 +1          3         456 ;================================================================
+                                 +1          4         457 
+                                 +1          5         458 	extern medium start_work
+                                 +1          6         459 	extern medium stopper ; keeps main loop spinning until vblank (byte)
+                                 +1          7         460 	extern medium joypad ;joypad bitmask (byte)
+                                 +1          8         461 	extern medium joylast ;last frame's joypad bitmask (byte)
+                                 +1          9         462 	extern medium joyedge ;what buttons were pressed this frame (byte)
+                                 +1         10         463 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
+                                 +1         11         464 	extern medium frame_cnt ; counts number of frames (word)
+                                 +1         12         465 	extern medium sprite_mirror ;mirror of sprite memory (256 bytes)
+                                 +1         13         466 	
+                                 +1         14         467 	extern medium scroll_x ;scroll x pos (word)
+                                 +1         15         468 	extern medium scroll_y ;scroll y pos (word)
+                                 +1         16         469 	
+                                 +1         17         470 	extern medium player_x ;player x pos (long)
+                                 +1         18         471 	extern medium player_y ;player y pos (long)
+                                 +1         19         472 	extern medium player_dx ;long
+                                 +1         20         473 	extern medium player_dy ;long
+                                 +1         21         474 ;================================================================
+                                 +1         22         475 
+                                 +0         27         476 	$include "scroll.inc"
+                                 +1          1         477 ;-------------------------------------------------------
+                                 +1          2         478 ; scroll_set: set scroll to specified coords
+                                 +1          3         479 ;-------------------------------------------------------
+                                 +1          4         480 ; wa: x pos
+                                 +1          5         481 ; bc: y pos
+                                 +1          6         482 ;-------------------------------------------------------
+                                 +1          7         483 extern scroll_set
+                                 +1          8         484 
+                                 +1          9         485 ;-------------------------------------------------------
+                                 +1         10         486 ; scroll_get_tile: returns tile # at given coordinates in wa
+                                 +1         11         487 ;-------------------------------------------------------
+                                 +1         12         488 ; wa: x pos
+                                 +1         13         489 ; bc: y pos
+                                 +1         14         490 ;-------------------------------------------------------
+                                 +1         15         491 extern scroll_get_tile
+                                 +1         16         492 
+                                 +1         17         493 ;-------------------------------------------------------
+                                 +1         18         494 ; scroll_copy: carry out scroll changes made in scroll_set (run during vblank)
+                                 +1         19         495 ;-------------------------------------------------------
+                                 +1         20         496 extern scroll_copy
+                                 +0         28         497 	
+  00000048                       +0         29         498 SPRITE_X equ 72
+  00000050                       +0         30         499 SPRITE_Y equ 80
+  00000010                       +0         31         500 PLAYER_WIDTH equ 16
+  00000010                       +0         32         501 PLAYER_HEIGHT equ 16
+  00000004                       +0         33         502 TSENSOR_HEIGHT equ 4
+  0000000C                       +0         34         503 BSENSOR_HEIGHT equ 12
+  00008000                       +0         35         504 PLAYER_ACCEL equ 0x8000
+  00038000                       +0         36         505 MAX_SPEED equ 0x38000
+  00000000                       +0         37         506 MODE_GROUND equ 0
+  00000001                       +0         38         507 MODE_AIR equ 1
+                                 +0         39         508 
+  0000A000                       +0         40         509 GRAVITY equ 0xa000
+  00007000                       +0         41         510 JUMP_GRAVITY equ 0x7000
+  00070000                       +0         42         511 MAX_GRAVITY equ 0x70000
+                                 +0         43         512 
+  00000000                       +0         44         513 STAND_FRAME equ 0
+  00000001                       +0         45         514 START_WALK_FRAME equ 1
+  00000007                       +0         46         515 END_WALK_FRAME equ 7
+  00000007                       +0         47         516 JUMP_FRAME equ 7
+  00000003                       +0         48         517 WALK_TIMER equ 3
+                                 +0         49         518 
+                                 +0         50         519 ;-------------------------------------------------------
+                                 +0         51         520 PROG section code large
+                                 +0         52         521 ;-------------------------------------------------------
+                                 +0         53         522 	
+                                 +0         54         523 ;-------------------------------------------------------
+                                 +0         55         524 ; player_init: initialize player sprite
+                                 +0         56         525 ;-------------------------------------------------------	
+00000000                         +0         57         526 player_init:
+00000000  D8A8                   +0         58         527 	ldw wa,0
+00000002  F1000041             R +0         59         528 	ldb (player_mode),a	
+00000006  D7E2034800             +0         60         529 	ldw qwa,SPRITE_X
+0000000B  F1000060             R +0         61         530 	ldl (player_x),xwa
+                                 +0         62         531 	
+0000000F  D7E2035000             +0         63         532 	ldw qwa,SPRITE_Y
+00000014  F1000060             R +0         64         533 	ldl (player_y),xwa
+                                 +0         65         534 	
+                                 +0         66         535 	;---copy guy sprite---
+00000018  F200000035           R +0         67         536 	lda xiy,guy
+0000001D  F200000034           R +0         68         537 	lda xix,CHR_VRAM+tiles_end-tiles+hills_end-hills
+00000022  4140000000             +0         69         538 	ldl xbc,16*4 ;16 rows * 4 bytes per row
+00000027  8511                   +0         70         539 	ldir (xix+),(xiy+)
+                                 +0         71         540 	;---copy guy palette---
+00000029  F200000035           R +0         72         541 	lda xiy,guy_pal
+0000002E  F1008234               +0         73         542 	lda xix,SPRITE_CRAM
+00000032  4100000000           R +0         74         543 	ldl xbc,guy_pal_end-guy_pal ;should be a ldw but needs to be an ldl
+00000037                         +0         75         544 guy_pal_copy:                   ;to appease the assembler
+00000037  D5F520                 +0         76         545 	ldw wa,(xiy+)
+0000003A  F5F150                 +0         77         546 	ldw (xix+),wa
+0000003D  D91CF7                 +0         78         547 	djnz bc,guy_pal_copy
+                                 +0         79         548 
+                                 +0         80         549 	;upper left
+00000040  F100000030           R +0         81         550 	ldb (sprite_mirror),304 & 0xff ;first byte of tile number
+00000045  F100000019           R +0         82         551 	ldb (sprite_mirror+1),0y00011001 ;attributes and tile # upper bit
+0000004A  F100000048           R +0         83         552 	ldb (sprite_mirror+2),SPRITE_X ;x position
+0000004F  F100000050           R +0         84         553 	ldb (sprite_mirror+3),SPRITE_Y ;y position
+00000054  F1008C0000             +0         85         554 	ldb (SPR_PALCODE),0 ;palette number
+                                 +0         86         555 	;upper right
+00000059  F100000031           R +0         87         556 	ldb (sprite_mirror+4),305 & 0xff
+0000005E  F10000001F           R +0         88         557 	ldb (sprite_mirror+5),0y00011111 ;turn on h/v chain
+00000063  F100000008           R +0         89         558 	ldb (sprite_mirror+6),8 ;offset 8 px from prev sprite on x axis
+00000068  F100000000           R +0         90         559 	ldb (sprite_mirror+7),0
+0000006D  F1018C0000             +0         91         560 	ldb (SPR_PALCODE+1),0
+                                 +0         92         561 	;lower left
+00000072  F100000032           R +0         93         562 	ldb (sprite_mirror+8),306 & 0xff
+00000077  F10000001F           R +0         94         563 	ldb (sprite_mirror+9),0y00011111 ;turn on h/v chain
+0000007C  F1000000F8           R +0         95         564 	ldb (sprite_mirror+10),248 ;offset -8 px from prev sprite on x axis
+00000081  F100000008           R +0         96         565 	ldb (sprite_mirror+11),8 ;offset 8 px on y axis
+00000086  F1028C0000             +0         97         566 	ldb (SPR_PALCODE+2),0		
+                                 +0         98         567 	;lower right
+0000008B  F100000033           R +0         99         568 	ldb (sprite_mirror+12),307 & 0xff
+00000090  F10000001F           R +0        100         569 	ldb (sprite_mirror+13),0y00011111 ;turn on h/v chain
+00000095  F100000008           R +0        101         570 	ldb (sprite_mirror+14),8 ;offset 8 px from prev sprite on x axis
+0000009A  F100000000           R +0        102         571 	ldb (sprite_mirror+15),0 ;offset 0 px on y axis
+0000009F  F1038C0000             +0        103         572 	ldb (SPR_PALCODE+3),0
+000000A4  0E                     +0        104         573 	ret
+                                 +0        105         574 
+                                 +0        106         575 ;-------------------------------------------------------
+                                 +0        107         576 ; player_move: handle player movement
+                                 +0        108         577 ;-------------------------------------------------------
+000000A5                         +0        109         578 player_move:
+                                 +0        110         579 	;---horizontal movement---
+000000A5  C1000021             R +0        111         580 	ldb a,(joypad)
+000000A9  E1000021             R +0        112         581 	ldl xbc,(player_dx)
+000000AD  C93302                 +0        113         582 	bit BIT_LEFT,a
+000000B0  660E                   +0        114         583 	j z,not_left
+000000B2  E9CF0080FCFF           +0        115         584 	cpl xbc,-MAX_SPEED
+000000B8  6506                   +0        116         585 	j mi,not_left
+000000BA  E9CA00800000           +0        117         586 	subl xbc,PLAYER_ACCEL
+000000C0                         +0        118         587 not_left:
+000000C0  C93303                 +0        119         588 	bit BIT_RIGHT,a
+000000C3  660E                   +0        120         589 	j z,not_right
+000000C5  E9CF00800300           +0        121         590 	cpl xbc,MAX_SPEED
+000000CB  6D06                   +0        122         591 	j pl,not_right
+000000CD  E9C800800000           +0        123         592 	addl xbc,PLAYER_ACCEL
+000000D3                         +0        124         593 not_right:
+                                 +0        125         594 	;if we're not pressing left or right, decelerate
+000000D3  C1000021             R +0        126         595 	ldb a,(joypad)
+000000D7  C9CC0C                 +0        127         596 	andb a,JOY_LEFT | JOY_RIGHT
+000000DA  6E2E                   +0        128         597 	j nz,no_decel
+000000DC  E9CF00000000           +0        129         598 	cpl xbc,0
+000000E2  6626                   +0        130         599 	j z,no_decel ;if player_dx is 0, don't have to decelerate
+000000E4  6D02                   +0        131         600 	j pl,decel_right
+000000E6  6512                   +0        132         601 	j mi,decel_left
+000000E8                         +0        133         602 decel_right:
+000000E8  E9CA00800000           +0        134         603 	subl xbc,PLAYER_ACCEL
+                                 +0        135         604 	;if value goes under 0, make it 0
+000000EE  E9CF00000000           +0        136         605 	cpl xbc,0
+000000F4  6D14                   +0        137         606 	j pl,no_decel
+000000F6  E9A8                   +0        138         607 	ldl xbc,0
+000000F8  6810                   +0        139         608 	j no_decel
+000000FA                         +0        140         609 decel_left:
+000000FA  E9C800800000           +0        141         610 	addl xbc,PLAYER_ACCEL
+                                 +0        142         611 	;if value goes over 0, make it 0
+00000100  E9CF00000000           +0        143         612 	cpl xbc,0
+00000106  6502                   +0        144         613 	j mi,no_decel
+00000108  E9A8                   +0        145         614 	ldl xbc,0
+0000010A                         +0        146         615 no_decel:	
+0000010A  E1000020             R +0        147         616 	ldl xwa,(player_x)
+0000010E  F1000061             R +0        148         617 	ldl (player_dx),xbc
+00000112  E980                   +0        149         618 	addl xwa,xbc
+00000114  F1000060             R +0        150         619 	ldl (player_x),xwa
+                                 +0        151         620 	
+                                 +0        152         621 	;---horizontal collision detection---
+                                 +0        153         622 	;top left
+00000118  D1000020             R +0        154         623 	ldw wa,(player_x+2)
+0000011C  D1000021             R +0        155         624 	ldw bc,(player_y+2)
+00000120  D9C80400               +0        156         625 	addw bc,TSENSOR_HEIGHT
+00000124  1ED802                 +0        157         626 	cal get_height
+00000127  C9CF10                 +0        158         627 	cpb a,16
+0000012A  6646                   +0        159         628 	j z,hcollision_left
+                                 +0        160         629 	;bottom left
+0000012C  D1000020             R +0        161         630 	ldw wa,(player_x+2)
+00000130  D1000021             R +0        162         631 	ldw bc,(player_y+2)
+00000134  D9C80C00               +0        163         632 	addw bc,BSENSOR_HEIGHT
+00000138  1EC402                 +0        164         633 	cal get_height
+0000013B  C9CF10                 +0        165         634 	cpb a,16
+0000013E  6632                   +0        166         635 	j z,hcollision_left
+                                 +0        167         636 	;top right
+00000140  D1000020             R +0        168         637 	ldw wa,(player_x+2)
+00000144  D8C80F00               +0        169         638 	addw wa,PLAYER_WIDTH-1
+00000148  D1000021             R +0        170         639 	ldw bc,(player_y+2)
+0000014C  D9C80400               +0        171         640 	addw bc,TSENSOR_HEIGHT
+00000150  1EAC02                 +0        172         641 	cal get_height
+00000153  C9CF10                 +0        173         642 	cpb a,16
+00000156  6636                   +0        174         643 	j z,hcollision_right
+                                 +0        175         644 	;bottom right
+00000158  D1000020             R +0        176         645 	ldw wa,(player_x+2)
+0000015C  D8C80F00               +0        177         646 	addw wa,PLAYER_WIDTH-1
+00000160  D1000021             R +0        178         647 	ldw bc,(player_y+2)
+00000164  D9C80C00               +0        179         648 	addw bc,BSENSOR_HEIGHT
+00000168  1E9402                 +0        180         649 	cal get_height
+0000016B  C9CF10                 +0        181         650 	cpb a,16
+0000016E  661E                   +0        182         651 	j z,hcollision_right
+00000170  6833                   +0        183         652 	j done_hcollision
+00000172                         +0        184         653 hcollision_left:
+                                 +0        185         654 	;reset dx and subpixel position
+00000172  E8A8                   +0        186         655 	ldl xwa,0
+00000174  F1000060             R +0        187         656 	ldl (player_dx),xwa
+00000178  E1000020             R +0        188         657 	ldl xwa,(player_x)
+0000017C  E8CC0000F8FF           +0        189         658 	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
+00000182  E8C800000800           +0        190         659 	addl xwa,0x80000 ;eject into next tile
+00000188  F1000060             R +0        191         660 	ldl (player_x),xwa
+0000018C  6817                   +0        192         661 	j done_hcollision
+0000018E                         +0        193         662 hcollision_right:
+                                 +0        194         663 	;reset dx and subpixel position
+0000018E  E8A8                   +0        195         664 	ldl xwa,0
+00000190  F1000060             R +0        196         665 	ldl (player_dx),xwa
+00000194  E1000020             R +0        197         666 	ldl xwa,(player_x)
+00000198  E8CC0000F8FF           +0        198         667 	andl xwa,0xfff80000 ;reset to start of tile you're colliding with
+0000019E  30FFFF                 +0        199         668 	ldw wa,0xffff ;subpixel portion- almost into next tile
+000001A1  F1000060             R +0        200         669 	ldl (player_x),xwa
+000001A5                         +0        201         670 done_hcollision:
+                                 +0        202         671 
+                                 +0        203         672 	;---jumping and falling---
+                                 +0        204         673 	; ldb a,(joyedge)
+000001A5  F10000CD             R +0        205         674 	bit BIT_B,(joyedge)
+000001A9  6616                   +0        206         675 	j z,not_start_jump
+000001AB  C1000021             R +0        207         676 	ldb a,(player_mode)
+000001AF  C9D9                   +0        208         677 	cpb a,MODE_AIR ;don't start jumping if you press the button in air
+000001B1  660E                   +0        209         678 	j z,not_start_jump
+000001B3  400000F8FF             +0        210         679 	ldl xwa,-0x80000
+000001B8  F1000060             R +0        211         680 	ldl (player_dy),xwa
+000001BC  F100000001           R +0        212         681 	ldb (player_mode),MODE_AIR
+000001C1                         +0        213         682 not_start_jump:
+                                 +0        214         683 	;gravity
+000001C1  C1000021             R +0        215         684 	ldb a,(player_mode)
+000001C5  C9D9                   +0        216         685 	cpb a,MODE_AIR
+000001C7  6E36                   +0        217         686 	j nz,done_air
+000001C9  E1000020             R +0        218         687 	ldl xwa,(player_dy)
+000001CD  E8CF00000700           +0        219         688 	cpl xwa,MAX_GRAVITY
+000001D3  6D1C                   +0        220         689 	j pl,done_add_gravity
+                                 +0        221         690 	;if holding down the jump button, jump higher
+000001D5  F10000CD             R +0        222         691 	bit BIT_B,(joypad)
+000001D9  6610                   +0        223         692 	j z,normal_add_gravity
+000001DB  E8CF00000000           +0        224         693 	cpl xwa,0 ;don't use low gravity when falling
+000001E1  6D08                   +0        225         694 	j pl,normal_add_gravity
+000001E3  E8C800700000           +0        226         695 	addl xwa,JUMP_GRAVITY
+000001E9  6806                   +0        227         696 	j done_add_gravity
+000001EB                         +0        228         697 normal_add_gravity:	
+000001EB  E8C800A00000           +0        229         698 	addl xwa,GRAVITY
+000001F1                         +0        230         699 done_add_gravity:	
+000001F1  F1000060             R +0        231         700 	ldl (player_dy),xwa
+000001F5  E1000021             R +0        232         701 	ldl xbc,(player_y)
+000001F9  E881                   +0        233         702 	addl xbc,xwa
+000001FB  F1000061             R +0        234         703 	ldl (player_y),xbc
+000001FF                         +0        235         704 done_air:
+                                 +0        236         705 	
+                                 +0        237         706 	;---vertical collision detection---
+000001FF  E8CF00000000           +0        238         707 	cpl xwa,0
+00000205  6D40                   +0        239         708 	j pl,floor_collision
+00000207  663E                   +0        240         709 	j z,floor_collision
+00000209                         +0        241         710 ceiling_collision:
+                                 +0        242         711 	;top left
+00000209  D1000020             R +0        243         712 	ldw wa,(player_x+2)
+0000020D  D1000021             R +0        244         713 	ldw bc,(player_y+2)
+00000211  1EEB01                 +0        245         714 	cal get_height
+00000214  C9C1                   +0        246         715 	andb a,a
+00000216  6E14                   +0        247         716 	j nz,ceil_rebound
+                                 +0        248         717 	;top right
+00000218  D1000020             R +0        249         718 	ldw wa,(player_x+2)
+0000021C  D8C80F00               +0        250         719 	addw wa,PLAYER_WIDTH-1
+00000220  D1000021             R +0        251         720 	ldw bc,(player_y+2)
+00000224  1ED801                 +0        252         721 	cal get_height
+00000227  C9C1                   +0        253         722 	andb a,a
+00000229  768200                 +0        254         723 	j z,done_vcollision
+0000022C                         +0        255         724 ceil_rebound:
+0000022C  E8A8                   +0        256         725 	ldl xwa,0
+0000022E  F1000060             R +0        257         726 	ldl (player_dy),xwa
+00000232  E1000020             R +0        258         727 	ldl xwa,(player_y)
+00000236  E8CC0000F0FF           +0        259         728 	andl xwa,0xfff00000 ;top of tile you're in
+0000023C  D7E2C81000             +0        260         729 	addw qwa,0x10 ;move to bottom
+00000241  F1000060             R +0        261         730 	ldl (player_y),xwa
+00000245  6867                   +0        262         731 	j done_vcollision
+                                 +0        263         732 
+00000247                         +0        264         733 floor_collision:	
+                                 +0        265         734 	;left foot
+00000247  D1000020             R +0        266         735 	ldw wa,(player_x+2)
+                                 +0        267         736 	; addw wa,4
+0000024B  D1000021             R +0        268         737 	ldw bc,(player_y+2)
+0000024F  D9C81000               +0        269         738 	addw bc,PLAYER_HEIGHT
+00000253  1E7201                 +0        270         739 	cal get_sensor
+00000256  14                     +0        271         740 	pushb a
+                                 +0        272         741 	;right foot
+00000257  D1000020             R +0        273         742 	ldw wa,(player_x+2)
+0000025B  D8C80F00               +0        274         743 	addw wa,PLAYER_WIDTH-1
+0000025F  D1000021             R +0        275         744 	ldw bc,(player_y+2)
+00000263  D9C81000               +0        276         745 	addw bc,PLAYER_HEIGHT
+00000267  1E5E01                 +0        277         746 	cal get_sensor ;right sensor height in a
+0000026A  CA05                   +0        278         747 	popb b ;left sensor height in b
+0000026C  C9F2                   +0        279         748 	cpb b,a
+0000026E  6502                   +0        280         749 	j mi,left_higher
+00000270  CA89                   +0        281         750 	ldb a,b
+00000272                         +0        282         751 left_higher:
+00000272  C9CFF0                 +0        283         752 	cpb a,0xf0 ;value returned if no floor found
+00000275  6E07                   +0        284         753 	j nz,on_ground
+00000277  F100000001           R +0        285         754 	ldb (player_mode),MODE_AIR
+0000027C  6830                   +0        286         755 	j done_vcollision
+0000027E                         +0        287         756 on_ground:
+0000027E  D1000021             R +0        288         757 	ldw bc,(player_y+2)
+00000282  D98A                   +0        289         758 	ldw de,bc ;player_y in de for later "if in air" comparison
+00000284  D9C81000               +0        290         759 	addw bc,PLAYER_HEIGHT ;foot pos in bc
+00000288  D9CCF0FF               +0        291         760 	andw bc,0xfff0 ;place feet at bottom of block
+0000028C  D9C81000               +0        292         761 	addw bc,16
+00000290  D813                   +0        293         762 	extsw wa
+00000292  D8A1                   +0        294         763 	subw bc,wa
+00000294  D9CA1000               +0        295         764 	subw bc,PLAYER_HEIGHT ;foot pos to regular pos
+00000298  C100003F01           R +0        296         765 	cpb (player_mode),MODE_AIR
+0000029D  6E09                   +0        297         766 	j nz,normal_ground
+                                 +0        298         767 	;when in air, compare original and transformed y positions. if original moves character
+                                 +0        299         768 	;0 or more pixels upwards, then do it. otherwise don't mess with y position
+0000029F  D9F2                   +0        300         769 	cpw de,bc
+000002A1  650B                   +0        301         770 	j mi,done_vcollision
+000002A3  F100000000           R +0        302         771 	ldb (player_mode),MODE_GROUND
+000002A8                         +0        303         772 normal_ground:	
+000002A8  F1000051             R +0        304         773 	ldw (player_y+2),bc
+000002AC  6800                   +0        305         774 	j done_vcollision
+                                 +0        306         775 	
+                                 +0        307         776 	
+000002AE                         +0        308         777 done_vcollision:
+                                 +0        309         778 	
+000002AE  D1000020             R +0        310         779 	ldw wa,(player_x+2) ;move pixel portion of x coord into wa
+000002B2  D8CA4800               +0        311         780 	subw wa,SPRITE_X
+000002B6  6D0C                   +0        312         781 	j pl,right_checkx
+                                 +0        313         782 	;when scroll pos is less than 0, set scroll pos to 0 and instead move sprite
+000002B8  C1000021             R +0        314         783 	ldb a,(player_x+2)
+000002BC  F1000041             R +0        315         784 	ldb (sprite_mirror+2),a
+000002C0  D8A8                   +0        316         785 	ldw wa,0
+000002C2  681C                   +0        317         786 	j done_sprx
+000002C4                         +0        318         787 right_checkx:
+000002C4  D8CF6001               +0        319         788 	cpw wa,512-160 ;map is 64x64 8x8 tiles, ngpc is 160x152
+000002C8  6511                   +0        320         789 	j mi,normal_x
+000002CA  D1000020             R +0        321         790 	ldw wa,(player_x+2)
+000002CE  D8CA6001               +0        322         791 	subw wa,512-160
+000002D2  F1000041             R +0        323         792 	ldb (sprite_mirror+2),a
+000002D6  306001                 +0        324         793 	ldw wa,512-160
+000002D9  6805                   +0        325         794 	j done_sprx
+000002DB                         +0        326         795 normal_x:	
+000002DB  F100000048           R +0        327         796 	ldb (sprite_mirror+2),SPRITE_X
+000002E0                         +0        328         797 done_sprx:	
+000002E0  D1000021             R +0        329         798 	ldw bc,(player_y+2)
+000002E4  D9CA5000               +0        330         799 	subw bc,SPRITE_Y
+000002E8  6D0C                   +0        331         800 	j pl,down_checky
+000002EA  C1000023             R +0        332         801 	ldb c,(player_y+2)
+000002EE  F1000043             R +0        333         802 	ldb (sprite_mirror+3),c
+000002F2  D9A8                   +0        334         803 	ldw bc,0
+000002F4  681C                   +0        335         804 	j done_spry
+000002F6                         +0        336         805 down_checky:
+000002F6  D9CF6801               +0        337         806 	cpw bc,512-152 ;map is 64x64 8x8 tiles, ngpc is 160x152
+000002FA  6511                   +0        338         807 	j mi,normal_y
+000002FC  D1000021             R +0        339         808 	ldw bc,(player_y+2)
+00000300  D9CA6801               +0        340         809 	subw bc,512-152
+00000304  F1000043             R +0        341         810 	ldb (sprite_mirror+3),c
+00000308  316801                 +0        342         811 	ldw bc,512-152
+0000030B  6805                   +0        343         812 	j done_spry
+0000030D                         +0        344         813 normal_y:
+0000030D  F100000050           R +0        345         814 	ldb (sprite_mirror+3),SPRITE_Y
+00000312                         +0        346         815 done_spry:
+00000312  1D000000             R +0        347         816 	cal scroll_set
+                                 +0        348         817 	
+                                 +0        349         818 	;---set player's animation frame---
+00000316  C1000021             R +0        350         819 	ldb a,(player_mode)
+0000031A  C9D9                   +0        351         820 	cpb a,MODE_AIR
+0000031C  6E0D                   +0        352         821 	j ne,no_air_frame
+0000031E  F100000007           R +0        353         822 	ldb (player_frame),JUMP_FRAME
+00000323  F10000020000         R +0        354         823 	ldw (player_timer),0
+00000329  683C                   +0        355         824 	j done_set_frame
+0000032B                         +0        356         825 no_air_frame:
+                                 +0        357         826 
+0000032B  D1000020             R +0        358         827 	ldw wa,(player_dx+2)
+0000032F  D8C0                   +0        359         828 	andw wa,wa
+00000331  6E0C                   +0        360         829 	j ne,no_stand_frame
+00000333  F100000000           R +0        361         830 	ldb (player_frame),STAND_FRAME
+00000338  F100000000           R +0        362         831 	ldb (player_timer),0
+0000033D  6828                   +0        363         832 	j done_set_frame
+0000033F                         +0        364         833 no_stand_frame:
+                                 +0        365         834 
+0000033F  C1000021             R +0        366         835 	ldb a,(player_timer)
+00000343  C9C1                   +0        367         836 	andb a,a
+00000345  6608                   +0        368         837 	j eq,change_frame
+00000347  C969                   +0        369         838 	dec 1,a
+00000349  F1000041             R +0        370         839 	ldb (player_timer),a
+0000034D  6818                   +0        371         840 	j done_set_frame
+0000034F                         +0        372         841 change_frame:
+0000034F  F100000003           R +0        373         842 	ldb (player_timer),WALK_TIMER
+00000354  C1000021             R +0        374         843 	ldb a,(player_frame)
+00000358  C961                   +0        375         844 	inc 1,a
+0000035A  F1000041             R +0        376         845 	ldb (player_frame),a
+0000035E  C9DF                   +0        377         846 	cpb a,END_WALK_FRAME
+00000360  6705                   +0        378         847 	j c,done_set_frame
+00000362  F100000001           R +0        379         848 	ldb (player_frame),START_WALK_FRAME
+00000367                         +0        380         849 done_set_frame:
+                                 +0        381         850 	
+                                 +0        382         851 	;set up sprite mirroring
+00000367  E1000020             R +0        383         852 	ldl xwa,(player_dx)
+0000036B  E8CF00000000           +0        384         853 	cpl xwa,0
+00000371  6654                   +0        385         854 	j eq,done_mirror ;keep facing the direction you were
+00000373  6D2A                   +0        386         855 	j pl,moving_right
+00000375                         +0        387         856 moving_left:
+                                 +0        388         857 	;set tile numbers
+00000375  F100000031           R +0        389         858 	ldb (sprite_mirror),305 & 0xff ;first byte of tile number
+0000037A  F100000030           R +0        390         859 	ldb (sprite_mirror+4),304 & 0xff ;first byte of tile number
+0000037F  F100000033           R +0        391         860 	ldb (sprite_mirror+8),307 & 0xff ;first byte of tile number
+00000384  F100000032           R +0        392         861 	ldb (sprite_mirror+12),306 & 0xff ;first byte of tile number
+                                 +0        393         862 	;set mirror bit
+00000389  C100003E80           R +0        394         863 	orb (sprite_mirror+1),0x80
+0000038E  C100003E80           R +0        395         864 	orb (sprite_mirror+5),0x80
+00000393  C100003E80           R +0        396         865 	orb (sprite_mirror+9),0x80
+00000398  C100003E80           R +0        397         866 	orb (sprite_mirror+13),0x80
+0000039D  6828                   +0        398         867 	j done_mirror
+0000039F                         +0        399         868 moving_right:
+                                 +0        400         869 	;set tile numbers
+0000039F  F100000030           R +0        401         870 	ldb (sprite_mirror),304 & 0xff ;first byte of tile number
+000003A4  F100000031           R +0        402         871 	ldb (sprite_mirror+4),305 & 0xff ;first byte of tile number
+000003A9  F100000032           R +0        403         872 	ldb (sprite_mirror+8),306 & 0xff ;first byte of tile number
+000003AE  F100000033           R +0        404         873 	ldb (sprite_mirror+12),307 & 0xff ;first byte of tile number
+                                 +0        405         874 	;clear mirror bit
+000003B3  C100003C7F           R +0        406         875 	andb (sprite_mirror+1),0x7f
+000003B8  C100003C7F           R +0        407         876 	andb (sprite_mirror+5),0x7f
+000003BD  C100003C7F           R +0        408         877 	andb (sprite_mirror+9),0x7f
+000003C2  C100003C7F           R +0        409         878 	andb (sprite_mirror+13),0x7f
+000003C7                         +0        410         879 done_mirror:	
+000003C7  0E                     +0        411         880 	ret
+                                 +0        412         881 
+                                 +0        413         882 ;-------------------------------------------------------
+                                 +0        414         883 ; get_sensor: returns # of pixels needed to change height by
+                                 +0        415         884 ;-------------------------------------------------------
+                                 +0        416         885 ; wa: pixel x
+                                 +0        417         886 ; bc: pixel y
+                                 +0        418         887 ;-------------------------------------------------------
+000003C8                         +0        419         888 get_sensor:
+000003C8  D7EA98                 +0        420         889 	ldw qde,wa ;stash original values
+000003CB  D7EE99                 +0        421         890 	ldw qhl,bc
+000003CE  1E2E00                 +0        422         891 	cal get_height
+000003D1  C9C1                   +0        423         892 	andb a,a
+000003D3  6607                   +0        424         893 	j z,check_below ;if height is 0, check below block
+000003D5  C9CF10                 +0        425         894 	cpb a,16
+000003D8  6614                   +0        426         895 	j z,check_above ;if height is 16, check above block
+000003DA  6822                   +0        427         896 	j get_sensor_end ;otherwise just return
+000003DC                         +0        428         897 check_below:
+000003DC  D7EA88                 +0        429         898 	ldw wa,qde
+000003DF  D7EE89                 +0        430         899 	ldw bc,qhl
+000003E2  D9C81000               +0        431         900 	addw bc,16 ;below tile
+000003E6  1E1600                 +0        432         901 	cal get_height
+000003E9  C9CA10                 +0        433         902 	subb a,16 ;have to subtract 16 to counter the 16 we added
+000003EC  6810                   +0        434         903 	j get_sensor_end
+000003EE                         +0        435         904 check_above:
+000003EE  D7EA88                 +0        436         905 	ldw wa,qde
+000003F1  D7EE89                 +0        437         906 	ldw bc,qhl
+000003F4  D9CA1000               +0        438         907 	subw bc,16 ;above tile
+000003F8  1E0400                 +0        439         908 	cal get_height
+000003FB  C9C810                 +0        440         909 	addb a,16 ;have to add 16 to counter the 16 we subtracted
+                                 +0        441         910 
+000003FE                         +0        442         911 get_sensor_end:
+000003FE  0E                     +0        443         912 	ret
+                                 +0        444         913 
+                                 +0        445         914 ;-------------------------------------------------------
+                                 +0        446         915 ; get_height: returns height of given pixel in a
+                                 +0        447         916 ;-------------------------------------------------------
+                                 +0        448         917 ; wa: pixel x
+                                 +0        449         918 ; bc: pixel y
+                                 +0        450         919 ;-------------------------------------------------------	
+000003FF                         +0        451         920 get_height:
+000003FF  C98C                   +0        452         921 	ldb d,a
+00000401  CCCC0F                 +0        453         922 	andb d,0xf ;d has x position within tile
+00000404  1D000000             R +0        454         923 	cal scroll_get_tile
+00000408  D88B                   +0        455         924 	ldw hl,wa
+0000040A  DBCC0080               +0        456         925 	andw hl,0x8000 ;isolate horizontal mirror bit
+0000040E  6606                   +0        457         926 	j z,no_mirror
+00000410  CC8D                   +0        458         927 	ldb e,d ;if tile is mirrored, array index = 15 - array index
+00000412  240F                   +0        459         928 	ldb d,15
+00000414  CDA4                   +0        460         929 	subb d,e
+00000416                         +0        461         930 no_mirror:
+                                 +0        462         931 	;my bg tile image is 128 pixels wide so taking off that bit and shiftng
+                                 +0        463         932 	;left 1 allows me to convert from 8x8 to 16x16
+00000416  D8CCEF01               +0        464         933 	andw wa,0x1ef
+0000041A  D8EF01                 +0        465         934 	srlw 1,wa
+0000041D  F200000031           R +0        466         935 	lda xbc,block_types
+00000422  D881                   +0        467         936 	addw bc,wa
+00000424  E8A8                   +0        468         937 	ldl xwa,0
+00000426  8121                   +0        469         938 	ldb a,(xbc)
+00000428  D8EC04                 +0        470         939 	slaw 4,wa ;each array entry is 16 bits
+0000042B  CC81                   +0        471         940 	addb a,d
+0000042D  F200000031           R +0        472         941 	lda xbc,block_arrs
+00000432  E881                   +0        473         942 	addl xbc,xwa
+00000434  8121                   +0        474         943 	ldb a,(xbc)
+00000436  0E                     +0        475         944 	ret
+                                 +0        476         945 	
+                                 +0        477         946 ;TODO refactor into separate source
+00000437                         +0        478         947 block_arrs:
+                                 +0        479         948 ;empty block
+  00000000                       +0        480         949 TYPE_EMPTY equ 0
+00000437                         +0        481         950 HeightEmpty:
+00000437  00000000000000000000   +0        482         951 	db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
           000000000000                                     
-                                 +0        412         880 	
-                                 +0        413         881 ;full block
-  00000001                       +0        414         882 TYPE_FULL equ 1
-00000396                         +0        415         883 HeightFull:
-00000396  10101010101010101010   +0        416         884 	db 16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16
+                                 +0        483         952 	
+                                 +0        484         953 ;full block
+  00000001                       +0        485         954 TYPE_FULL equ 1
+00000447                         +0        486         955 HeightFull:
+00000447  10101010101010101010   +0        487         956 	db 16,16,16,16,16,16,16,16,16,16,16,16,16,16,16,16
           101010101010                                     
-                                 +0        417         885 	
-                                 +0        418         886 ;45 degree
-  00000002                       +0        419         887 TYPE_45 equ 2
-000003A6                         +0        420         888 Height45:
-000003A6  00010203040506070809   +0        421         889 	db 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
+                                 +0        488         957 	
+                                 +0        489         958 ;45 degree
+  00000002                       +0        490         959 TYPE_45 equ 2
+00000457                         +0        491         960 Height45:
+00000457  00010203040506070809   +0        492         961 	db 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15
           0A0B0C0D0E0F                                     
-                                 +0        422         890 	
-                                 +0        423         891 ;22.5 degree part 1
-  00000003                       +0        424         892 TYPE_2251 equ 3
-000003B6                         +0        425         893 Height2251:
-000003B6  00000101020203030404   +0        426         894 	db 0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7
+                                 +0        493         962 	
+                                 +0        494         963 ;22.5 degree part 1
+  00000003                       +0        495         964 TYPE_2251 equ 3
+00000467                         +0        496         965 Height2251:
+00000467  00000101020203030404   +0        497         966 	db 0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7
           050506060707                                     
-                                 +0        427         895 	
-                                 +0        428         896 ;22.5 degree part 2
-  00000004                       +0        429         897 TYPE_2252 equ 4
-000003C6                         +0        430         898 Height2252:
-000003C6  080809090A0A0B0B0C0C   +0        431         899 	db 8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15
+                                 +0        498         967 	
+                                 +0        499         968 ;22.5 degree part 2
+  00000004                       +0        500         969 TYPE_2252 equ 4
+00000477                         +0        501         970 Height2252:
+00000477  080809090A0A0B0B0C0C   +0        502         971 	db 8,8,9,9,10,10,11,11,12,12,13,13,14,14,15,15
           0D0D0E0E0F0F                                     
-                                 +0        432         900 	
-                                 +0        433         901 ;what angle each 16x16 block is
-000003D6                         +0        434         902 block_types:
-000003D6  0001020304010101       +0        435         903 	db TYPE_EMPTY,TYPE_FULL,TYPE_45,TYPE_2251,TYPE_2252,TYPE_FULL,TYPE_FULL,TYPE_FULL
-000003DE  0101010101010101       +0        436         904 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-000003E6  0101010101010101       +0        437         905 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-000003EE  0101010101010101       +0        438         906 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-000003F6  0101010101010101       +0        439         907 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-000003FE  0101010101010101       +0        440         908 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-00000406  0101010101010101       +0        441         909 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-0000040E  0101010101010101       +0        442         910 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
-                                 +0        443         911 	
-                                 +0        444         912 ;-------------------------------------------------------
-                                 +0        445         913 	end
-                                 +0        446         914 ;-------------------------------------------------------
+                                 +0        503         972 	
+                                 +0        504         973 ;what angle each 16x16 block is
+00000487                         +0        505         974 block_types:
+00000487  0001020304010101       +0        506         975 	db TYPE_EMPTY,TYPE_FULL,TYPE_45,TYPE_2251,TYPE_2252,TYPE_FULL,TYPE_FULL,TYPE_FULL
+0000048F  0101010101010101       +0        507         976 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+00000497  0101010101010101       +0        508         977 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+0000049F  0101010101010101       +0        509         978 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+000004A7  0101010101010101       +0        510         979 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+000004AF  0101010101010101       +0        511         980 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+000004B7  0101010101010101       +0        512         981 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+000004BF  0101010101010101       +0        513         982 	db TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL,TYPE_FULL
+                                 +0        514         983 	
+                                 +0        515         984 ;-------------------------------------------------------
+                                 +0        516         985 	end
+                                 +0        517         986 ;-------------------------------------------------------
 
 Assembly complete, No error
 TLCS-900 Relocatable Assembler (32) V2.2k  [Page     2]  player.lst
@@ -949,12 +1021,13 @@ BSENSOR_HEIGHT           NUM      0000000C  A
 Battery_Voltage          NUM      00006F80  A           
 CHR_VRAM                 NUM      0000A000  A           
 DISP_CTL0                NUM      00008000  A           
+END_WALK_FRAME           NUM      00000007  A           
 GRAVITY                  NUM      0000A000  A           
-Height2251       C L     LAB      000003B6  R           PROG
-Height2252       C L     LAB      000003C6  R           PROG
-Height45         C L     LAB      000003A6  R           PROG
-HeightEmpty      C L     LAB      00000386  R           PROG
-HeightFull       C L     LAB      00000396  R           PROG
+Height2251       C L     LAB      00000467  R           PROG
+Height2252       C L     LAB      00000477  R           PROG
+Height45         C L     LAB      00000457  R           PROG
+HeightEmpty      C L     LAB      00000437  R           PROG
+HeightFull       C L     LAB      00000447  R           PROG
 INT_CLR_BIT              NUM      00000007  A           
 JOY_A                    NUM      00000010  A           
 JOY_B                    NUM      00000020  A           
@@ -963,6 +1036,7 @@ JOY_LEFT                 NUM      00000004  A
 JOY_OPTION               NUM      00000040  A           
 JOY_RIGHT                NUM      00000008  A           
 JOY_UP                   NUM      00000001  A           
+JUMP_FRAME               NUM      00000007  A           
 JUMP_GRAVITY             NUM      00007000  A           
 LCD_CTR_ADD              NUM      00008012  A           
 Language                 NUM      00006F87  A           
@@ -994,7 +1068,7 @@ PL_SPR_10                NUM      00008105  A
 PL_SPR_11                NUM      00008106  A           
 PL_SPR_12                NUM      00008107  A           
 POWER_BOOT_REQ           NUM      00000006  A           
-PROG             C L     SEC      00000000  R 416       
+PROG             C L     SEC      00000000  R 4C7       
 RESET_ADD                NUM      000087E0  A           
 RESUME_ANS               NUM      00000007  A           
 RESUME_BOOT_REQ          NUM      00000005  A           
@@ -1016,6 +1090,9 @@ SPR_OFFSET_Y_ADR
                          NUM      00008021  A           
 SPR_PALCODE              NUM      00008C00  A           
 SPR_VRAM                 NUM      00008800  A           
+STAND_FRAME              NUM      00000000  A           
+START_WALK_FRAME
+                         NUM      00000001  A           
 STS_RG_ADD               NUM      00008010  A           
 SYS_FAILURE              NUM      000000FF  A           
 SYS_SUCCESS              NUM      00000000  A           
@@ -1051,6 +1128,7 @@ VECT_RTCGET              NUM      00000002  A
 VECT_SHUTDOWN            NUM      00000000  A           
 VECT_SYSFONTSET          NUM      00000005  A           
 VERSION_ADD              NUM      000087FE  A           
+WALK_TIMER               NUM      00000003  A           
 WDCR                     NUM      0000006F  A           
 WD_CLR                   NUM      0000004E  A           
 WD_LCDST_HPOS            NUM      00008008  A           
@@ -1074,29 +1152,31 @@ _TIMER_SHUTDOWN_ANS
                          NUM      00000040  A           
 _TIME_SHUTDOWN_REQ
                          NUM      00000040  A           
-block_arrs       C L     LAB      00000386  R           PROG
-block_types      C L     LAB      000003D6  R           PROG
+block_arrs       C L     LAB      00000437  R           PROG
+block_types      C L     LAB      00000487  R           PROG
 ceil_rebound     C L     LAB      0000022C  R           PROG
 ceiling_collision
                  C L     LAB      00000209  R           PROG
-check_above      C L     LAB      0000033D  R           PROG
-check_below      C L     LAB      0000032B  R           PROG
+change_frame     C L     LAB      0000034F  R           PROG
+check_above      C L     LAB      000003EE  R           PROG
+check_below      C L     LAB      000003DC  R           PROG
 decel_left       C L     LAB      000000FA  R           PROG
 decel_right      C L     LAB      000000E8  R           PROG
 done_add_gravity
                  C L     LAB      000001F1  R           PROG
 done_air         C L     LAB      000001FF  R           PROG
 done_hcollision  C L     LAB      000001A5  R           PROG
+done_mirror      C L     LAB      000003C7  R           PROG
+done_set_frame   C L     LAB      00000367  R           PROG
 done_sprx        C L     LAB      000002E0  R           PROG
 done_spry        C L     LAB      00000312  R           PROG
 done_vcollision  C L     LAB      000002AE  R           PROG
 down_checky      C L     LAB      000002F6  R           PROG
 floor_collision  C L     LAB      00000247  R           PROG
-get_height       C L     LAB      0000034E  R           PROG
-get_sensor       C L     LAB      00000317  R PUB       PROG
-get_sensor_end   C L     LAB      0000034D  R           PROG
+get_height       C L     LAB      000003FF  R           PROG
+get_sensor       C L     LAB      000003C8  R PUB       PROG
+get_sensor_end   C L     LAB      000003FE  R           PROG
 guy                               00000000  R EXT       
-guy_end                           00000000  R EXT       
 guy_pal                           00000000  R EXT       
 guy_pal_copy     C L     LAB      00000037  R           PROG
 guy_pal_end                       00000000  R EXT       
@@ -1108,8 +1188,12 @@ hills_end                         00000000  R EXT
 joyedge                           00000000  R EXT       
 joypad                            00000000  R EXT       
 left_higher      C L     LAB      00000272  R           PROG
+moving_left      C L     LAB      00000375  R           PROG
+moving_right     C L     LAB      0000039F  R           PROG
+no_air_frame     C L     LAB      0000032B  R           PROG
 no_decel         C L     LAB      0000010A  R           PROG
-no_mirror        C L     LAB      00000365  R           PROG
+no_mirror        C L     LAB      00000416  R           PROG
+no_stand_frame   C L     LAB      0000033F  R           PROG
 normal_add_gravity
                  C L     LAB      000001EB  R           PROG
 normal_ground    C L     LAB      000002A8  R           PROG
@@ -1122,18 +1206,21 @@ on_ground        C L     LAB      0000027E  R           PROG
 player                   MOD
 player_dx                         00000000  R EXT       
 player_dy                         00000000  R EXT       
+player_frame                      00000000  R EXT       
 player_init      C L     LAB      00000000  R PUB       PROG
 player_mode                       00000000  R EXT       
 player_move      C L     LAB      000000A5  R PUB       PROG
+player_timer                      00000000  R EXT       
 player_x                          00000000  R EXT       
 player_y                          00000000  R EXT       
 right_checkx     C L     LAB      000002C4  R           PROG
 scroll_get_tile                   00000000  R EXT       
 scroll_set                        00000000  R EXT       
+sprite_mirror                     00000000  R EXT       
 tiles                             00000000  R EXT       
 tiles_end                         00000000  R EXT       
 
 
 TOTAL
-  181 user defined symbol(s)
-   16 unreferenced external symbol(s)
+  195 user defined symbol(s)
+   17 unreferenced external symbol(s)

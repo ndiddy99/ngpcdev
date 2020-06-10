@@ -1,3 +1,5 @@
+extern medium player_frame ;byte, what frame the player's displaying
+
 ;-------------------------------------------------------
 ; player_init: initialize player sprite
 ;-------------------------------------------------------	

@@ -9,6 +9,7 @@
 	extern medium joyedge ;what buttons were pressed this frame (byte)
 	extern medium hint_cnt ;how many times horizontal interrupt has fired (byte)
 	extern medium frame_cnt ; counts number of frames (word)
+	extern medium sprite_mirror ;mirror of sprite memory (256 bytes)
 	
 	extern medium scroll_x ;scroll x pos (word)
 	extern medium scroll_y ;scroll y pos (word)

@@ -152,7 +152,24 @@ v_int:
 ;	--------------------------------
 	ldb	(WDCR),WD_CLR ;watch dog clear
 	ldb	(stopper),0xff
-	cal scroll_copy
+	cal scroll_copy ;copy scroll tiles to vram
+	
+	;copy sprite mirror to sprite memory
+	lda xiy,sprite_mirror
+	lda xix,SPR_VRAM
+	ldw bc,256
+	ldir (xix+),(xiy+)
+	
+	;copy current player frame to vram
+	lda xiy,guy
+	ldl xwa,0
+	ldb a,(player_frame)
+	slal 6,xwa ;multiply by 64 since each frame is 64 bytes
+	addl xiy,xwa
+	ldl xix,CHR_VRAM+tiles_end-tiles+hills_end-hills
+	ldw bc,64
+	ldir (xix+),(xiy+)
+	
 	;set up joypad variables
 	ldb a,(joypad)
 	ldb (joylast),a
